@@ -5,16 +5,18 @@ export default createStore({
 
     state: {
         message: 'Hello Vuex!',
-        email: '',
+        username: '',
         password: '' // ⚠️ usata solo in modo effimero
     },
     mutations: {
         setMessage(state, newMessage) {
             state.message = newMessage
         },
-        setEmail(state, newEmail) {
-            state.email = newEmail
+
+        setUsername(state, payload) {
+            state.username = payload
         },
+
         setPassword(state, newPassword) {
             state.password = newPassword
         },
