@@ -15,7 +15,7 @@
                        class="d-flex align-center pa-0 bg-white"
                        style="height: 50px; width: 260px;"
                        @click="creaNuovaPratica">
-                    Crea nuova pratica
+                    Crea nuova pratica {{store.state.username}}
                 </v-btn>
             </v-col>
         </v-row>
@@ -106,7 +106,9 @@
 
 <script setup lang="ts">
     import { ref, computed } from 'vue'
-    import { useStore } from 'vuex'  // ✅ aggiunto
+    import { useStore } from 'vuex' 
+    import { useRouter } from 'vue-router'
+    const router = useRouter()
     const store = useStore()
     type Item = {
         id: number
@@ -126,7 +128,7 @@
         { title: 'AZIONI', key: 'azioni', sortable: false },
     ]
 
-    // ⚠️ RENDI REATTIVI GLI ARRAY
+    //  RENDI REATTIVI GLI ARRAY
     const items = ref<Item[]>([
         { id: 1, nomeProgetto: 'IMPIANTO FOTOVOLTAICO', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022' },
         { id: 2, nomeProgetto: 'IMPIANTO EOLICO', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022' },
@@ -179,15 +181,8 @@
 
     // Crea nuova
     function creaNuovaPratica() {
-        const nuova: Item = {
-            id: Date.now(),
-            nomeProgetto: 'NUOVA PRATICA',
-            dataInizio: new Date().toLocaleDateString('it-IT'),
-            ente: 'ENTE',
-            scadenza: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toLocaleDateString('it-IT'),
-        }
-            (tab.value === 'one' ? items.value : items2.value).unshift(nuova)
-        showSnack('Pratica creata')
+        router.push({ name: 'formPratica' })
+
     }
 
     // Delete

@@ -1,5 +1,23 @@
-# Vue 3 + TypeScript + Vite
+﻿
+# 📦 Progetto Vue 3 + TypeScript + Vite
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Applicazione frontend basata su **Vue 3** con **TypeScript** e **Vite** come bundler.  
+Include **Vue Router** per la navigazione, **Vuex** per lo state management e (opzionale) **Vuetify** per i componenti UI.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## 🚀 Avvio rapido
+
+```bash
+# 1) Installa le dipendenze
+npm install
+
+# 2) Avvia il server di sviluppo (hot-reload)
+npm run dev
+
+# 3) Lint (facoltativo)
+npm run lint
+
+# 4) Build produzione
+npm run build
+
+# 5) Anteprima build (serve dist/)
+npm run preview
