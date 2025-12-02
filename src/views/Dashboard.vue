@@ -106,7 +106,8 @@
 
 <script setup lang="ts">
     import { ref, computed } from 'vue'
-
+    import { useStore } from 'vuex'  // ✅ aggiunto
+    const store = useStore()
     type Item = {
         id: number
         nomeProgetto: string
@@ -232,6 +233,15 @@
         }
         closeEditDialog()
     }
+
+
+    // Controllo se la variabile è presente
+    if (store.state.username && store.state.username.trim() !== '') {
+        console.log('Username presente nello store:', store.state.username)
+    } else {
+        console.warn('Nessun username salvato nello store')
+    }
+
 </script>
 
 <style scoped>

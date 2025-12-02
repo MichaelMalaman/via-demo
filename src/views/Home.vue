@@ -172,6 +172,7 @@
 </template>
 
 <script setup lang="ts">
+
     import { ref } from 'vue'
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
@@ -191,7 +192,7 @@
     // Vuex
     const store = useStore()
 
-    // ✅ Snackbar stato
+    // Snackbar stato
     const snackbar = ref<{ show: boolean; message: string; color: string }>({
         show: false,
         message: '',
@@ -205,34 +206,11 @@
     const salvaUsername = () => {
         store.commit('setUsername', usernameInput.value)
         console.log('Username salvato:', store.state.username)
-        instradaPerNome(usernameInput.value)
+        router.push({ name: 'dashboard' })
+
     }
 
-    // Instradamento per nome
-    function instradaPerNome(nameRaw?: string) {
-        const name =
-            (nameRaw ?? store.state.username ?? usernameInput.value ?? '')
-                .trim()
-                .toLowerCase()
-
-        // mappa nome → route (usa 'name' per push)
-        const routeByName: Record<string, { name: string }> = {
-            pippo: { name: 'dashboardProponente' },
-            topolino: { name: 'dashboardEnte' }, // ✅ corretto
-            minny: { name: 'dashboardAutoritaCompetente' },
-            paperino: { name: 'dashboardUtenteCommunity' },
-        }
-
-        const target = routeByName[name]
-
-        if (!target) {
-            // ✅ Mostra snackbar errore
-            showSnack('Utente non trovato', 'error')
-            return
-        }
-
-        router.push(target)
-    }
+    
 </script>
 
 <style scoped>
