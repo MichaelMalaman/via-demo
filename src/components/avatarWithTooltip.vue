@@ -18,6 +18,7 @@
 <script setup lang="ts">
 
     import { ref, computed } from 'vue'         // importa computed
+
     import { useStore } from 'vuex'
 
     const store = useStore()

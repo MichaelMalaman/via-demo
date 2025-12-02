@@ -6,7 +6,16 @@
 
         <!-- Riga con tabella centrata -->
         <v-row class="justify-center align-center flex-grow-1">
-            <v-col  class="d-flex justify-end" cols="12">
+            <v-col class="d-flex justify-start" cols="6">
+                <v-btn 
+                       @click="goToDashboard"
+                       color="#0066CC"
+                       class="bg-white text-primary"
+                       style="height: 50px;">
+                    <v-icon>mdi-arrow-left</v-icon>
+                </v-btn>
+            </v-col>
+            <v-col  class="d-flex justify-end" cols="6">
 
                 <v-dialog max-width="800" height="600" >
                     <template v-slot:activator="{ props: activatorProps }">
@@ -120,6 +129,8 @@
 
 <script setup lang="ts">
     import { ref } from 'vue'
+    import { useRouter } from 'vue-router'
+
 
     type Item = {
         nomeFile: string
@@ -232,8 +243,12 @@ function onFileDrop(e: DragEvent) {
     console.log('File droppato:', file.name)
   }
 }
+    // Router
+    const router = useRouter()
+    function goToDashboard() {
+        router.push({ name: 'dashboard' })
 
-
+    } 
 </script>
 
 <style scoped>

@@ -129,7 +129,7 @@
                                                         <p>Apri l'App CieID ed inquadra il QR Code.</p>
                                                         <div class="text-center my-6">
                                                             <!-- QR Code casuale -->
-                                                            <v-img >qrUrl</v-img>
+                                                            <v-img>qrUrl</v-img>
                                                         </div>
                                                     </v-card-text>
                                                 </v-card>
@@ -210,7 +210,7 @@
 
     }
 
-    
+
 </script>
 
 <style scoped>

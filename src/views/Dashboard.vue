@@ -1,17 +1,19 @@
 ﻿
 <template>
-    <v-container class="fill-height d-flex justify-center align-center w-60">
+    <v-container class="fill-height d-flex justify-center align-center w-60 fixed-min-height">
+
         <v-row no-gutters class="align-center">
-            <v-col>
-                <!-- Tabs -->
-                <v-tabs v-model="tab" color="white">
-                    <v-tab value="one">Pratiche in corso</v-tab>
-                    <v-tab value="two">Pratiche chiuse</v-tab>
-                </v-tabs>
+            <v-col cols="6">
+                <v-btn @click="goToHome"
+                       color="#0066CC"
+                       class="bg-white text-primary"
+                       style="height: 50px;">
+                    <v-icon>mdi-arrow-left</v-icon>
+                </v-btn>
             </v-col>
-            <v-col></v-col>
-            <v-col>
+            <v-col cols="6">
                 <v-btn color="#0066CC"
+                       v-if="store.state.username === 'pippo'"
                        class="d-flex align-center pa-0 bg-white"
                        style="height: 50px; width: 260px;"
                        @click="creaNuovaPratica">
@@ -21,8 +23,12 @@
         </v-row>
 
         <v-row no-gutters>
-            <v-col>
+            <v-col cols="12">
                 <!-- Tabella -->
+                <v-tabs v-model="tab" color="white">
+                    <v-tab value="one">Pratiche in corso</v-tab>
+                    <v-tab value="two">Pratiche chiuse</v-tab>
+                </v-tabs>
                 <div class="flex-grow-1 overflow-auto">
                     <v-data-table :headers="headers"
                                   :items="currentItems"
@@ -33,7 +39,7 @@
                         <template #item="{ item, index }">
                             <!-- Se con Vuetify 3 l’item reale è item.raw, usa item.raw.nomeProgetto ecc. -->
                             <tr :class="index % 2 === 0 ? 'bg-grey-lighten-4' : 'bg-white'">
-                                <td>{{ item.nomeProgetto }}</td>
+                                <td @click="vaiSingleProjectDocument">{{ item.nomeProgetto }}</td>
                                 <td>{{ item.dataInizio }}</td>
                                 <td>{{ item.ente }}</td>
                                 <td>{{ item.scadenza }}</td>
@@ -106,8 +112,9 @@
 
 <script setup lang="ts">
     import { ref, computed } from 'vue'
-    import { useStore } from 'vuex' 
+    import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
+
     const router = useRouter()
     const store = useStore()
     type Item = {
@@ -184,7 +191,10 @@
         router.push({ name: 'formPratica' })
 
     }
+    function vaiSingleProjectDocument() {
+        router.push({ name: 'singleProjectDocumentsView' })
 
+    }
     // Delete
     function openDeleteDialog(item: Item) {
         selectedItem.value = { ...item }
@@ -237,6 +247,10 @@
         console.warn('Nessun username salvato nello store')
     }
 
+    function goToHome() {
+        router.push({ name: 'Home' })
+
+    }
 </script>
 
 <style scoped>
@@ -259,5 +273,10 @@
 
     .blur-overlay {
         backdrop-filter: blur(2px);
+    }
+
+
+    v-table {
+        min-height: 800px; /* o la misura che corrisponde alla tab "Pratiche chiuse" */
     }
 </style>
