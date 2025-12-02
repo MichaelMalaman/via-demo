@@ -1,114 +1,92 @@
 ﻿
 <template>
-    <v-container class="fill-height d-flex justify-center align-center w-60 fixed-min-height">
+    <v-container class="fill-height d-flex flex-column align-center w-75 pa-6">
+        <!-- Sezione pulsanti sopra -->
+        <v-row class="mb-4" justify="space-between">
+            <v-col cols="6">
+                <v-btn @click="goToHome">
+                    <v-icon start>mdi-arrow-left</v-icon>
+                    Indietro
+                </v-btn>
+            </v-col>
 
-        <v-row no-gutters class="align-center">
             <v-col cols="6">
-                <v-btn @click="goToHome"
-                       color="#0066CC"
+
+                <v-btn v-if="store.state.username === 'pippo'"
                        class="bg-white text-primary"
-                       style="height: 50px;">
-                    <v-icon>mdi-arrow-left</v-icon>
-                </v-btn>
-            </v-col>
-            <v-col cols="6">
-                <v-btn color="#0066CC"
-                       v-if="store.state.username === 'pippo'"
-                       class="d-flex align-center pa-0 bg-white"
-                       style="height: 50px; width: 260px;"
+                       style="width: 260px;"
                        @click="creaNuovaPratica">
-                    Crea nuova pratica {{store.state.username}}
+                    <v-icon start>mdi-plus</v-icon>
+                    Crea nuova pratica
                 </v-btn>
-            </v-col>
+                </v-col>
         </v-row>
 
-        <v-row no-gutters>
-            <v-col cols="12">
-                <!-- Tabella -->
-                <v-tabs v-model="tab" color="white">
-                    <v-tab value="one">Pratiche in corso</v-tab>
-                    <v-tab value="two">Pratiche chiuse</v-tab>
-                </v-tabs>
-                <div class="flex-grow-1 overflow-auto">
+        <!-- Tabs sempre sopra la tabella -->
+        <v-tabs v-model="tab" class="mb-4">
+            <v-tab value="one">Pratiche in corso</v-tab>
+            <v-tab value="two">Pratiche chiuse</v-tab>
+        </v-tabs>
+
+        <!-- Contenitore tabella con altezza fissa -->
+        <v-card class="w-100 pa-4" style="min-height: 600px;">
+            <v-window v-model="tab">
+                <v-window-item value="one">
+
                     <v-data-table :headers="headers"
                                   :items="currentItems"
-                                  class="striped-table"
                                   :items-per-page="10"
                                   hover>
-                        <!-- Riga personalizzata -->
-                        <template #item="{ item, index }">
-                            <!-- Se con Vuetify 3 l’item reale è item.raw, usa item.raw.nomeProgetto ecc. -->
-                            <tr :class="index % 2 === 0 ? 'bg-grey-lighten-4' : 'bg-white'">
-                                <td @click="vaiSingleProjectDocument">{{ item.nomeProgetto }}</td>
-                                <td>{{ item.dataInizio }}</td>
-                                <td>{{ item.ente }}</td>
-                                <td>{{ item.scadenza }}</td>
-                                <td>
-                                    <v-btn icon color="error" @click="openDeleteDialog(item)" aria-label="Elimina">
-                                        <v-icon>mdi-delete</v-icon>
-                                    </v-btn>
-                                    <v-btn icon color="primary" @click="openEditDialog(item)" aria-label="Modifica">
-                                        <v-icon>mdi-pencil</v-icon>
-                                    </v-btn>
-                                </td>
-                            </tr>
+                        <!-- Colonna: NOME PROGETTO -->
+                        <template #item.nomeProgetto="{ item }">
+                            <!-- Se usi Vuetify 3, spesso i dati reali sono in item.raw -->
+                            <span v-if="getRaw(item).nomeProgetto !== 'IMPIANTO FOTOVOLTAICO'">
+                                {{ getRaw(item).nomeProgetto }}
+                            </span>
+
+                            <!-- Cliccabile SOLO se è 'IMPIANTO FOTOVOLTAICO' -->
+                            <v-btn v-else
+                                   variant="text"
+                                   color="primary"
+                                   class="pa-0"
+                                   @click="goToSingleProjectDocument(getRaw(item))">
+                                {{ getRaw(item).nomeProgetto }}
+                            </v-btn>
+                        </template>
+
+                        <!-- Colonna: AZIONI (esempio) -->
+                        <template #item.azioni="{ item }">
+                            <v-btn icon color="error" @click="openDeleteDialog(getRaw(item))">
+                                <v-icon>mdi-delete</v-icon>
+                            </v-btn>
+                            <v-btn icon color="primary" @click="openEditDialog(getRaw(item))">
+                                <v-icon>mdi-pencil</v-icon>
+                            </v-btn>
                         </template>
                     </v-data-table>
-                </div>
-            </v-col>
-        </v-row>
 
-        <!-- Dialog DELETE -->
-        <v-dialog v-model="deleteDialog" max-width="480" scrim="transparent" class="blur-overlay" persistent>
-            <v-card>
-                <v-card-title class="text-h6">Conferma eliminazione</v-card-title>
-                <v-card-text>
-                    Sei sicuro di voler cancellare
-                    <strong>{{ selectedItem?.nomeProgetto || 'l’elemento' }}</strong>?
-                </v-card-text>
-                <v-card-actions class="justify-end">
-                    <v-btn variant="text" color="grey" @click="closeDeleteDialog">Annulla</v-btn>
-                    <v-btn color="error" prepend-icon="mdi-delete" @click="confirmDelete">Conferma</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+                </v-window-item>
 
-        <!-- Dialog EDIT -->
-        <v-dialog v-model="editDialog" max-width="560" scrim="transparent" class="blur-overlay" persistent>
-            <v-card>
-                <v-card-title class="text-h6">Modifica pratica</v-card-title>
-                <v-card-text>
-                    <v-row dense>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="editItemData.nomeProgetto" label="Nome Progetto" />
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="editItemData.ente" label="Ente" />
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="editItemData.dataInizio" label="Data Inizio" />
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="editItemData.scadenza" label="Scadenza" />
-                        </v-col>
-                    </v-row>
-                </v-card-text>
-                <v-card-actions class="justify-end">
-                    <v-btn variant="text" color="grey" @click="closeEditDialog">Annulla</v-btn>
-                    <v-btn color="primary" prepend-icon="mdi-content-save" @click="confirmEdit">Salva</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-
-        <!-- Snackbar feedback -->
-        <v-snackbar v-model="snackbar.show" :timeout="3000" :color="snackbar.color">
-            {{ snackbar.message }}
-            <template #actions>
-                <v-btn variant="text" @click="snackbar.show = false">Chiudi</v-btn>
-            </template>
-        </v-snackbar>
+                <v-window-item value="two">
+                    <v-data-table :headers="headers"
+                                  :items="items2"
+                                  :items-per-page="10"
+                                  hover>
+                        <template #item.azioni="{ item }">
+                            <v-btn icon color="error" @click="openDeleteDialog(item)">
+                                <v-icon>mdi-delete</v-icon>
+                            </v-btn>
+                            <v-btn icon color="primary" @click="openEditDialog(item)">
+                                <v-icon>mdi-pencil</v-icon>
+                            </v-btn>
+                        </template>
+                    </v-data-table>
+                </v-window-item>
+            </v-window>
+        </v-card>
     </v-container>
 </template>
+
 
 <script setup lang="ts">
     import { ref, computed } from 'vue'
@@ -191,7 +169,7 @@
         router.push({ name: 'formPratica' })
 
     }
-    function vaiSingleProjectDocument() {
+    function goToSingleProjectDocument() {
         router.push({ name: 'singleProjectDocumentsView' })
 
     }
@@ -246,6 +224,11 @@
     } else {
         console.warn('Nessun username salvato nello store')
     }
+
+// Se Vuetify ti passa row come item.raw, questo helper normalizza
+function getRaw(row: any) {
+  return row?.raw ?? row
+}
 
     function goToHome() {
         router.push({ name: 'Home' })
