@@ -1,8 +1,7 @@
-<!-- pagina per selezionare il metodo di login spid o CIE -->
+
 <template>
     <v-container class="fill-height d-flex justify-center align-center bg-primary">
 
-        <v-card class=" pa-0 w-70 h-70">
             <v-sheet elevation="4">
                 <!-- Tabs con v-model -->
                 <v-tabs v-model="tab" color="primary">
@@ -13,13 +12,12 @@
                 <v-divider></v-divider>
 
                 <!-- Contenuto delle tabs -->
-                <v-tabs-window v-model="tab">
+                <v-tabs-window v-model="tab" class="fixed-height">
                     <v-tabs-window-item value="one">
                         <v-container>
                             <v-row no-gutters>
                                 <v-col>
                                     <v-sheet class="pa-2 ma-2">
-                                        <meta charset="UTF-8">
                                         <p>
                                             SPID, il Sistema Pubblico di Identità Digitale, è il sistema di accesso che consente di utilizzare,
                                             con un'identità digitale unica, i servizi online della Pubblica Amministrazione e dei privati accreditati.
@@ -34,15 +32,14 @@
                                 <v-col>
                                     <v-sheet class="pa-2 ma-2">
                                         <ul class="no-bullets">
-                                            <li><a href="#"> Maggiori informazioni su SPID</a></li>
-                                            <li><a href="#"> #Non hai lo SPID?</a></li>
-                                            <li><a href="#"> #Serve aiuto?</a></li>
+                                            <li><a href="#"># Maggiori informazioni su SPID</a></li>
+                                            <li><a href="#"># #Non hai lo SPID?</a></li>
+                                            <li><a href="#"># #Serve aiuto?</a></li>
                                         </ul>
                                     </v-sheet>
                                 </v-col>
 
                                 <v-col>
-                                    <v-sheet class="pa-2 ma-2 ">
                                         <v-btn color="#0066CC"
                                                class="d-flex align-center pa-0"
                                                style="height: 80px; width: 260px;">
@@ -57,14 +54,6 @@
                                             <!-- Testo -->
                                             <span class="text-white font-weight-bold">Entra con SPID</span>
                                         </v-btn>
-                                    </v-sheet>
-                                </v-col>
-
-                                <v-responsive width="100%"></v-responsive>
-
-                                <v-col>
-                                    <v-sheet class="pa-2 ma-2">
-                                    </v-sheet>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -72,8 +61,6 @@
 
                     <v-tabs-window-item value="two">
                         <v-container class="fill-height d-flex justify-center align-center">
-                            <v-card class="pa-0 w-70 fixed-min-height">
-                                <v-sheet elevation="4">
                                     <v-container class="py-8">
                                         <!-- Titolo -->
                                         <v-row>
@@ -88,11 +75,11 @@
                                         <v-row class="justify-center align-stretch" dense>
                                             <!-- Card credenziali -->
                                             <v-col cols="6" md="6">
-                                                <v-card class="d-flex flex-column fixed-min-height">
-                                                    <v-card-title class="text-h6">
+
+                                                    <h2 class="text-h6">
                                                         Entra con le tue credenziali CIE
-                                                    </v-card-title>
-                                                    <v-card-text>
+                                                    </h2>
+
                                                         <v-form>
                                                             <v-text-field v-model="usernameInput"
                                                                           label="Numero CIE o Codice fiscale o Email"
@@ -117,44 +104,40 @@
                                                                 <strong>#Attivale ora</strong>
                                                             </p>
                                                         </v-form>
-                                                    </v-card-text>
-                                                </v-card>
+
                                             </v-col>
 
                                             <!-- Card QR -->
                                             <v-col cols="6" md="6">
-                                                <v-card class="d-flex flex-column fixed-min-height">
-                                                    <v-card-title class="text-h6">Entra con App CieID</v-card-title>
-                                                    <v-card-text class="d-flex flex-column justify-center align-center">
-                                                        <p>Apri l'App CieID ed inquadra il QR Code.</p>
+                                                    <span class="text-h6">Entra con App CieID</span>
+                                                    <span class="d-flex flex-column justify-center align-center"></span>
+
+
                                                         <div class="text-center my-6">
-                                                            <!-- QR Code casuale -->
-                                                            <v-img>qrUrl</v-img>
+                                                            <v-img width="220" height="220" :src="qrUrl">
+
+                                                            </v-img>
                                                         </div>
-                                                    </v-card-text>
-                                                </v-card>
+                                                        <p>Apri l'App CieID ed inquadra il QR Code.</p>
+
                                             </v-col>
                                         </v-row>
 
                                         <!-- Card lettura carta -->
                                         <v-row class="mt-6">
                                             <v-col cols="12">
-                                                <v-card class="fixed-min-height">
-                                                    <v-card-title class="text-h6">Entra con lettura carta</v-card-title>
-                                                    <v-card-text>
+                                                    <Span class="text-h6">Entra con lettura carta</Span>
                                                         <p>
                                                             Puoi entrare con la lettura della Carta (livello 3) da smartphone NFC o PC con lettore smart card.
                                                             <br /><br />
                                                             <strong>#Scopri di più</strong>
                                                         </p>
                                                         <v-btn color="primary" block class="mt-4">Entra con lettura carta</v-btn>
-                                                    </v-card-text>
-                                                </v-card>
+                                       
                                             </v-col>
                                         </v-row>
                                     </v-container>
-                                </v-sheet>
-                            </v-card>
+                
                         </v-container>
                     </v-tabs-window-item>
                 </v-tabs-window>
@@ -167,9 +150,25 @@
                     </template>
                 </v-snackbar>
             </v-sheet>
-        </v-card>
+
     </v-container>
 </template>
+
+<style scoped>
+    .fixed-height {
+        min-height: 600px; /* Altezza fissa per evitare resize */
+    }
+
+    .fixed-min-height {
+        min-height: 200px; /* Per le card interne */
+    }
+
+    .no-bullets {
+        list-style: none;
+        padding: 0;
+    }
+</style>
+
 
 <script setup lang="ts">
 
@@ -181,11 +180,9 @@
     const tab = ref('one') // valore iniziale
 
     // QR
-    const qrUrl = ref(`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${Math.random()}`)
-
-    // Router
+    const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=0.11978395002270947"// Router
     const router = useRouter()
-
+    console.log("qrUrl", qrUrl)
     // Campo username
     const usernameInput = ref('')
 
