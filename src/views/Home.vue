@@ -126,7 +126,7 @@
                                         <!-- Card lettura carta -->
                                         <v-row class="mt-6">
                                             <v-col cols="12">
-                                                    <Span class="text-h6">Entra con lettura carta</Span>
+                                                    <pan class="text-h6">Entra con lettura carta</pan>
                                                         <p>
                                                             Puoi entrare con la lettura della Carta (livello 3) da smartphone NFC o PC con lettore smart card.
                                                             <br /><br />
