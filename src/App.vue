@@ -5,7 +5,7 @@ import topNavbar from './components/topNavbar.vue'
 <template>
     <v-app class="bg-primary">
         <topNavbar/>
-        <router-view style="margin-top:80px"/>
+        <router-view style="margin-top:2%"/>
     </v-app>
 </template>
 

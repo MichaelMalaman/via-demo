@@ -7,6 +7,7 @@ import authCIE from '../views/authCIE.vue'
 import dashboard from '../views/Dashboard.vue'
 import singleProjectDocumentsView from '../views/SingleProjectDocumentsView.vue'
 import formPratica from '../views/formPratica.vue'
+import singleFileOpen from '../views/SingleFileOpen.vue'
 
 
 const routes = [
@@ -15,7 +16,8 @@ const routes = [
     { path: '/authCIE', name: 'authCIE', component: authCIE, meta: { title: 'authCIE' } },
     { path: '/dashboard', name: 'dashboard', component: dashboard, meta: { title: 'dashboard' } },
     { path: '/singleProjectDocumentsView', name: 'singleProjectDocumentsView', component: singleProjectDocumentsView, meta: { title: 'singleProjectDocumentsView' } },
-    { path: '/formPratica', name: 'formPratica', component: formPratica, meta: { title: 'formPratica' } }
+    { path: '/formPratica', name: 'formPratica', component: formPratica, meta: { title: 'formPratica' } },
+    { path: '/singleFileOpen', name: 'singleFileOpen', component: singleFileOpen, meta: { title: 'singleFileOpen' } }
 
 ]
 

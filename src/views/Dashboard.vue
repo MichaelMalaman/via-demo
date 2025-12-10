@@ -2,24 +2,32 @@
 <template>
     <v-container class="fill-height d-flex flex-column align-center w-75 pa-6">
         <!-- Sezione pulsanti sopra -->
-        <v-row class="mb-4" justify="space-between">
-            <v-col cols="6">
-                <v-btn @click="goToHome">
-                    <v-icon start>mdi-arrow-left</v-icon>
+        <v-row justify="space-between" align="center">
+            <v-col cols="auto" class="d-flex justify-start">
+
+                <v-btn prepend-icon="mdi-arrow-left"
+                       @click="goToHome"
+                       variant="elevated"
+                       color="white"
+                       class="bg-white text-primary ">
                     Indietro
                 </v-btn>
+
             </v-col>
 
-            <v-col cols="6">
+            <!-- Spinge il secondo bottone a destra -->
+            <v-spacer />
+
+            <v-col cols="auto">
+
 
                 <v-btn v-if="store.state.username === 'pippo'"
                        class="bg-white text-primary"
-                       style="width: 260px;"
                        @click="creaNuovaPratica">
                     <v-icon start>mdi-plus</v-icon>
                     Crea nuova pratica
                 </v-btn>
-                </v-col>
+            </v-col>
         </v-row>
 
         <!-- Tabs sempre sopra la tabella -->
@@ -262,4 +270,7 @@ function getRaw(row: any) {
     v-table {
         min-height: 800px; /* o la misura che corrisponde alla tab "Pratiche chiuse" */
     }
+
+
+
 </style>

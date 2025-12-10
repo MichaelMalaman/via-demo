@@ -1,4 +1,4 @@
-
+﻿
 
 <template>
     <v-container class="fill-height d-flex flex-column">
@@ -7,17 +7,16 @@
         <!-- Riga con tabella centrata -->
         <v-row class="justify-center align-center flex-grow-1">
             <v-col class="d-flex justify-start" cols="6">
-                <v-btn 
-                       @click="goToDashboard"
+                <v-btn @click="goToDashboard"
                        color="#0066CC"
                        class="bg-white text-primary"
                        style="height: 50px;">
                     <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
             </v-col>
-            <v-col  class="d-flex justify-end" cols="6">
+            <v-col class="d-flex justify-end" cols="6">
 
-                <v-dialog max-width="800" height="600" >
+                <v-dialog max-width="800" height="600">
                     <template v-slot:activator="{ props: activatorProps }">
                         <v-btn v-bind="activatorProps"
                                color="#0066CC"
@@ -131,7 +130,6 @@
     import { ref } from 'vue'
     import { useRouter } from 'vue-router'
 
-
     type Item = {
         nomeFile: string
         dataUltimaModifica: string
@@ -167,11 +165,10 @@
 
     const currentItems = ref<Item[]>([...items])
 
-    // Stato dialog eliminazione
+    /* ---------- Dialog eliminazione ---------- */
     const deleteDialog = ref(false)
     const selectedItem = ref<Item | null>(null)
 
-    // Funzioni
     function openDeleteDialog(item: Item) {
         selectedItem.value = item
         deleteDialog.value = true
@@ -190,65 +187,91 @@
         }
         closeDeleteDialog()
     }
-    
-// Stato dialog modifica
-const editDialog = ref(false)
-const editItemData = ref<Item>({
-  nomeFile: '',
-  dataUltimaModifica: '',
-  tipoFile: '',
-  size: ''
-})
 
-    function editItem(item: Item) {
-        console.log('Modifica:', item.nomeFile)
-        // TODO: apri un form/modale di modifica
+    /* ---------- Dialog modifica ---------- */
+    const editDialog = ref(false)
+    const editItemData = ref<Item>({
+        nomeFile: '',
+        dataUltimaModifica: '',
+        tipoFile: '',
+        size: ''
+    })
+
+    function openEditDialog(item: Item) {
+        editItemData.value = { ...item }
+        editDialog.value = true
+    }
+    function closeEditDialog() {
+        editDialog.value = false
+    }
+    function confirmEdit() {
+        const idx = currentItems.value.findIndex(i => i.nomeFile === editItemData.value.nomeFile)
+        if (idx !== -1) currentItems.value[idx] = { ...editItemData.value }
+        closeEditDialog()
     }
 
-// Funzioni modifica
-function openEditDialog(item: Item) {
-  editItemData.value = { ...item }
-  editDialog.value = true
-}
-function closeEditDialog() {
-  editDialog.value = false
-}
-function confirmEdit() {
-  const idx = currentItems.value.findIndex(i => i.nomeFile === editItemData.value.nomeFile)
-  if (idx !== -1) currentItems.value[idx] = { ...editItemData.value }
-  closeEditDialog()
-}
+    /* ---------- Upload: input + D&D ---------- */
+    const fileInputRef = ref<HTMLInputElement | null>(null)
 
+    function onSelectFromPC() {
+        fileInputRef.value?.click()
+    }
 
-import { ref } from 'vue'
+    // Utility
+    function formatBytes(bytes: number) {
+        if (bytes === 0) return '0 B'
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+        const i = Math.floor(Math.log(bytes) / Math.log(1024))
+        const value = bytes / Math.pow(1024, i)
+        return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${sizes[i]}`
+    }
+    function getExtension(name: string) {
+        const ext = name.split('.').pop() || ''
+        return ext.toUpperCase()
+    }
+    function todayDDMMYYYY() {
+        const d = new Date()
+        const dd = String(d.getDate()).padStart(2, '0')
+        const mm = String(d.getMonth() + 1).padStart(2, '0')
+        const yyyy = d.getFullYear()
+        return `${dd}/${mm}/${yyyy}`
+    }
 
-const fileInputRef = ref<HTMLInputElement | null>(null)
+    function addFileAsFirstItem(file: File) {
+        const nuovo: Item = {
+            nomeFile: file.name,
+            dataUltimaModifica: todayDDMMYYYY(),
+            tipoFile: getExtension(file.name) || 'FILE',
+            size: formatBytes(file.size) || ''
+        }
+        currentItems.value.unshift(nuovo) // 👈 PRIMO ITEM
+        console.log('currentItems (head):', currentItems.value.slice(0, 3))
+    }
 
-function onSelectFromPC() {
-  fileInputRef.value?.click()
-}
+    function onFileChosen(e: Event) {
+        const input = e.target as HTMLInputElement
+        const file = input.files?.[0]
+        if (file) {
+            console.log('File scelto:', file.name)
+            addFileAsFirstItem(file) // 👈 MANCAVA QUESTA CHIAMATA
+        }
+        // resetta l'input per permettere di riselezionare lo stesso file
+        if (input) input.value = ''
+    }
 
-function onFileChosen(e: Event) {
-  const input = e.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (file) {
-    console.log('File scelto:', file.name)
-  }
-  if (input) input.value = ''
-}
+    function onFileDrop(e: DragEvent) {
+        const file = e.dataTransfer?.files?.[0]
+        if (file) {
+            console.log('File droppato:', file.name)
+            addFileAsFirstItem(file)
+        }
+    }
 
-function onFileDrop(e: DragEvent) {
-  const file = e.dataTransfer?.files?.[0]
-  if (file) {
-    console.log('File droppato:', file.name)
-  }
-}
-    // Router
+    /* ---------- Router ---------- */
     const router = useRouter()
     function goToDashboard() {
         router.push({ name: 'dashboard' })
-
-    } 
+    }
 </script>
 
 <style scoped>
@@ -274,6 +297,4 @@ function onFileDrop(e: DragEvent) {
         color: #FFFFFF !important;
         font-weight: 600;
     }
-
-
 </style>
