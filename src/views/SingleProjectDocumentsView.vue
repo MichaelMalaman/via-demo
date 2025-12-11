@@ -16,7 +16,7 @@
             </v-col>
             <v-col class="d-flex justify-end" cols="6">
 
-                <v-dialog max-width="800" height="600">
+                <v-dialog v-model="dialogOpen" max-width="800" height="600">
                     <template v-slot:activator="{ props: activatorProps }">
                         <v-btn v-bind="activatorProps"
                                color="#0066CC"
@@ -33,7 +33,7 @@
                                  rounded
                                  @dragover.prevent
                                  @drop.prevent="onFileDrop">
-                            <v-btn icon color="error" @click="isActive.value = false" aria-label="Elimina" style="position: absolute; top: 8px; right: 8px;">
+                            <v-btn icon color="error" @click="dialogOpen = false" aria-label="Elimina" style="position: absolute; top: 8px; right: 8px;">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                             <div class="text-body-1">
@@ -129,6 +129,8 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useRouter } from 'vue-router'
+
+    const dialogOpen = ref(false)
 
     type Item = {
         nomeFile: string
@@ -244,7 +246,7 @@
             tipoFile: getExtension(file.name) || 'FILE',
             size: formatBytes(file.size) || ''
         }
-        currentItems.value.unshift(nuovo) // 👈 PRIMO ITEM
+        currentItems.value.unshift(nuovo) // 
         console.log('currentItems (head):', currentItems.value.slice(0, 3))
     }
 
@@ -253,7 +255,10 @@
         const file = input.files?.[0]
         if (file) {
             console.log('File scelto:', file.name)
-            addFileAsFirstItem(file) // 👈 MANCAVA QUESTA CHIAMATA
+            addFileAsFirstItem(file)
+
+            dialogOpen.value = false   //
+
         }
         // resetta l'input per permettere di riselezionare lo stesso file
         if (input) input.value = ''
@@ -264,6 +269,8 @@
         if (file) {
             console.log('File droppato:', file.name)
             addFileAsFirstItem(file)
+
+            dialogOpen.value = false
         }
     }
 
