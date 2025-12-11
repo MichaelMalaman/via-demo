@@ -16,9 +16,9 @@
             <v-tabs-window v-model="tab" class="tabs-window h-100" :touch="false">
                 <!-- TAB SPID -->
                 <v-tabs-window-item value="one" class="h-100">
-                    <!-- Contenuto scrollabile e centrato verticalmente -->
-                    <div class="tab-scroll d-flex flex-column justify-center align-center h-100">
-                        <v-row no-gutters class="align-center">
+                    <!-- Contenuto scrollabile -->
+                    <div class="tab-scroll">
+                        <v-row no-gutters>
                             <v-col>
                                 <v-sheet class="pa-2 ma-2">
                                     <p>
@@ -35,14 +35,14 @@
                             <v-col>
                                 <v-sheet class="pa-2 ma-2">
                                     <ul class="no-bullets">
-                                        <li><a href="#">### Maggiori informazioni su SPID</a></li>
-                                        <li><a href="#">### #Non hai lo SPID?</a></li>
-                                        <li><a href="#">### #Serve aiuto?</a></li>
+                                        <li><a href="#">## Maggiori informazioni su SPID</a></li>
+                                        <li><a href="#">## #Non hai lo SPID?</a></li>
+                                        <li><a href="#">## #Serve aiuto?</a></li>
                                     </ul>
                                 </v-sheet>
                             </v-col>
 
-                            <v-col class="d-flex justify-center">
+                            <v-col>
                                 <v-btn color="#0066CC"
                                        class="d-flex align-center pa-0"
                                        style="height: 80px; width: 260px;">
@@ -113,7 +113,8 @@
                                 <span class="d-flex flex-column justify-center align-center"></span>
 
                                 <div class="d-flex justify-center my-4">
-                                    <v-img width=220 heigh=220 :src="qrUrl"></v-img>
+                                <v-img :src="qrUrl" width="220px" height="220px"></v-img>
+
                                 </div>
 
                                 <p>Apri l'App CieID ed inquadra il QR Code.</p>
@@ -155,7 +156,7 @@
 
     const tab = ref<'one' | 'two'>('one')
 
-    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=0.11978395002270947'
+    const qrUrl ='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=0.11978395002270947'
 
     const router = useRouter()
     const usernameInput = ref('')
@@ -201,12 +202,12 @@
     /* la finestra dei tab deve riempire la card */
     .tabs-window {
         flex: 1 1 auto;
-        min-height: 0; /* cruciale per abilitare lo scroll del figlio */
+        min-height: 0; /* crucial per abilitare lo scroll del figlio */
     }
 
     /* contenuto dei tab scrollabile, non cambia l'altezza del frame */
     .tab-scroll {
-        min-height: 100%; /* ✅ importante per centraggio verticale + overflow */
+        height: 100%;
         overflow: auto;
         padding: 16px;
     }
