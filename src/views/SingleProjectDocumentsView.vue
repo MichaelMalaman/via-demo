@@ -14,8 +14,8 @@
 
             <v-col class="d-flex justify-end" cols="6">
                 <v-dialog v-model="dialogOpen" max-width="800" height="600">
-                    <template v-slot:activator="{ props: activatorProps }">
-                        <v-btn v-bind="activatorProps"
+                    <template #activator="{ props }">
+                        <v-btn v-bind="props"
                                color="#0066CC"
                                class="bg-white text-primary"
                                style="height: 50px; width: 260px;">
@@ -23,7 +23,7 @@
                         </v-btn>
                     </template>
 
-                    <template v-slot:default="{ isActive }">
+                    <template #default="{ isActive }">
                         <v-sheet class="upload-zone d-flex flex-column align-center justify-center text-center"
                                  rounded
                                  @dragover.prevent
@@ -37,8 +37,7 @@
                             </v-btn>
                             <div class="text-body-1">
                                 DROP FILE HERE TO UPLOAD OR
-                                <span class="text-primary text-decoration-underline cursor-pointer"
-                                      @click="onSelectFromPC">
+                                <span class="text-primary text-decoration-underline cursor-pointer" @click="onSelectFromPC">
                                     CLICK HERE TO BROWSE
                                 </span>
                             </div>
@@ -50,6 +49,36 @@
                 </v-dialog>
             </v-col>
         </v-row>
+
+        <!-- Modale timeline -->
+        <v-dialog v-model="dialogOpenHistory" max-width="640">
+            <v-card>
+                <v-card-title class="d-flex align-center justify-space-between">
+                    <span class="text-h6">Cronologia documento</span>
+                    <v-btn icon variant="text" @click="dialogOpenHistory = false" aria-label="Chiudi">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+
+                <v-divider />
+
+                <v-card-text>
+                    <WorkflowTimeline :events="history"
+                                      :current-status="currentStatus"
+                                      :current-status-date="currentStatusDate"
+                                      height="420px" />
+                </v-card-text>
+
+                <v-divider />
+
+                <v-card-actions class="justify-end">
+                    <v-btn variant="text" color="grey" @click="dialogOpenHistory = false">Chiudi</v-btn>
+                    <v-btn color="primary" @click="dialogOpenHistory = false" prepend-icon="mdi-check">
+                        Ok
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
         <!-- FILTRI IN UNICA RIGA -->
         <v-toolbar flat class="filters-toolbar px-3 py-2">
@@ -67,10 +96,7 @@
 
             <!-- Data Dal -->
             <div class="filter-item" style="min-width: 220px; max-width: 260px;">
-                <v-menu v-model="menuDal"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y>
+                <v-menu v-model="menuDal" :close-on-content-click="false" transition="scale-transition" offset-y>
                     <template #activator="{ props }">
                         <v-text-field v-bind="props"
                                       readonly
@@ -79,17 +105,19 @@
                                       label="Ultima modifica (dal)"
                                       prepend-inner-icon="mdi-calendar"
                                       :model-value="filters.dataDal || ''"
-                                      clearable
-                                      @click:clear="clearDal"
-                                      hide-details="auto" />
+              clearable
+              @click:clear="clearDal"
+              hide-details="auto"
+            />
                     </template>
                     <v-card>
                         <v-date-picker v-model="pickerDal"
                                        color="primary"
                                        show-adjacent-months
                                        locale="it-IT"
-                                       :max="pickerAl || undefined"
-                                       @update:model-value="onPickDal"></v-date-picker>
+                                       :max="maxDal || undefined"       
+              @update:model-value="onPickDal"
+            ></v-date-picker>
                         <v-card-actions class="justify-end">
                             <v-btn variant="text" color="grey" @click="menuDal = false">Chiudi</v-btn>
                             <v-btn color="primary" @click="menuDal = false">Applica</v-btn>
@@ -100,10 +128,7 @@
 
             <!-- Data Al -->
             <div class="filter-item" style="min-width: 220px; max-width: 260px;">
-                <v-menu v-model="menuAl"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y>
+                <v-menu v-model="menuAl" :close-on-content-click="false" transition="scale-transition" offset-y>
                     <template #activator="{ props }">
                         <v-text-field v-bind="props"
                                       readonly
@@ -111,18 +136,20 @@
                                       density="comfortable"
                                       label="Ultima modifica (al)"
                                       prepend-inner-icon="mdi-calendar-end"
-                                      :model-value="filters.dataAl || ''"
-                                      clearable
-                                      @click:clear="clearAl"
-                                      hide-details="auto" />
+                                      :model-value="filters.dataAl || ''"     
+              clearable
+              @click:clear="clearAl"
+              hide-details="auto"
+            />
                     </template>
                     <v-card>
                         <v-date-picker v-model="pickerAl"
                                        color="primary"
                                        show-adjacent-months
                                        locale="it-IT"
-                                       :min="pickerDal || undefined"
-                                       @update:model-value="onPickAl"></v-date-picker>
+                                       :min="minAl || undefined"               
+              @update:model-value="onPickAl"
+            ></v-date-picker>
                         <v-card-actions class="justify-end">
                             <v-btn variant="text" color="grey" @click="menuAl = false">Chiudi</v-btn>
                             <v-btn color="primary" @click="menuAl = false">Applica</v-btn>
@@ -147,15 +174,9 @@
 
             <v-spacer />
 
-
-            <v-spacer />
-
             <!-- Badge conteggio risultati -->
             <div class="filter-item" style="min-width: 180px;">
-                <v-chip color="primary"
-                        class="mr-2"
-                        variant="tonal"
-                        label>
+                <v-chip color="primary" class="mr-2" variant="tonal" label>
                     Mostrati {{ filteredItems.length }} di {{ currentItems.length }}
                 </v-chip>
             </div>
@@ -166,7 +187,6 @@
                     Reset filtri
                 </v-btn>
             </div>
-
         </v-toolbar>
 
         <!-- Tabella -->
@@ -179,8 +199,22 @@
                               hover>
                     <template #item="{ item, index }">
                         <tr :class="index % 2 === 0 ? 'bg-grey-lighten-4' : 'bg-white'">
-                            <td>{{ item.nomeFile }}</td>
-                            <td>{{ item.dataUltimaModifica }}</td>
+                            <td>
+                                <!-- Azione download simulata con nome file -->
+                                <DownloadSimulator :filename="item.nomeFile" :content="testo" :mime-type="item.tipoFile" />
+                            </td>
+
+                            <td>
+                                {{ item.dataUltimaModifica }}
+                                <v-tooltip text="Cronologia / Note temporali">
+                                    <template #activator="{ props }">
+                                        <v-btn v-bind="props" icon variant="text" color="primary"
+                                               @click="dialogOpenHistory = true" aria-label="Apri cronologia">
+                                            <v-icon>mdi-clipboard-text-clock</v-icon>
+                                        </v-btn>
+                                    </template>
+                                </v-tooltip>
+                            </td>
 
                             <td>
                                 <template v-if="item.statoPratica === 'chiusa'">
@@ -231,8 +265,11 @@
 <script setup lang="ts">
     import { ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
+    import DownloadSimulator from '../components/DownloadSimulator.vue'
+    import WorkflowTimeline from '../components/WorkflowTimeline.vue'
 
     const dialogOpen = ref(false)
+    const dialogOpenHistory = ref(false)
 
     /* ---------- Tipi ---------- */
     type Item = {
@@ -289,6 +326,8 @@
 
     function resetFilters() {
         filters.value = { nomeFile: null, dataDal: null, dataAl: null, statoPratica: null }
+        pickerDal.value = null
+        pickerAl.value = null
     }
 
     /* Stati disponibili (dinamici dalla tabella corrente) */
@@ -301,11 +340,30 @@
         return Array.from(set).sort()
     })
 
-    /* ---------- Date picker state (ISO per pickers) ---------- */
+    /* ---------- Date picker state ---------- */
     const menuDal = ref(false)
     const menuAl = ref(false)
-    const pickerDal = ref<string | null>(null) // 'YYYY-MM-DD'
-    const pickerAl = ref<string | null>(null) // 'YYYY-MM-DD'
+    const pickerDal = ref<string | Date | null>(null)  // ISO o Date
+    const pickerAl = ref<string | Date | null>(null)
+
+    /** Normalizza in ISO 'YYYY-MM-DD' */
+    function normalizeToISO(val: string | Date | null): string | null {
+        if (!val) return null
+        if (typeof val === 'string') {
+            return /^\d{4}-\d{2}-\d{2}$/.test(val) ? val : null
+        }
+        if (val instanceof Date && !isNaN(val.getTime())) {
+            const yyyy = val.getFullYear()
+            const mm = String(val.getMonth() + 1).padStart(2, '0')
+            const dd = String(val.getDate()).padStart(2, '0')
+            return `${yyyy}-${mm}-${dd}`
+        }
+        return null
+    }
+
+    /* Constraints in ISO */
+    const maxDal = computed(() => normalizeToISO(pickerAl.value))
+    const minAl = computed(() => normalizeToISO(pickerDal.value))
 
     function clearDal() {
         filters.value.dataDal = null
@@ -316,14 +374,16 @@
         pickerAl.value = null
     }
 
-    /* Eventi di update: formatto e mostro nel campo */
-    function onPickDal(val: string | null) {
+    /* Update handlers: normalizza ISO e formatta per campo */
+    function onPickDal(val: string | Date | null) {
         pickerDal.value = val
-        filters.value.dataDal = val ? formatISOtoDDMMYYYY(val) : null
+        const iso = normalizeToISO(val)
+        filters.value.dataDal = iso ? formatISOtoDDMMYYYY(iso) : null
     }
-    function onPickAl(val: string | null) {
+    function onPickAl(val: string | Date | null) {
         pickerAl.value = val
-        filters.value.dataAl = val ? formatISOtoDDMMYYYY(val) : null
+        const iso = normalizeToISO(val)
+        filters.value.dataAl = iso ? formatISOtoDDMMYYYY(iso) : null
     }
 
     /* ---------- Utilità date ---------- */
@@ -358,7 +418,7 @@
 
         const dal = filters.value.dataDal ? parseDDMMYYYY(filters.value.dataDal) : null
         const al = filters.value.dataAl ? parseDDMMYYYY(filters.value.dataAl) : null
-        // Inclusivo sul limite superiore (opzionale):
+        // Se vuoi includere tutta la giornata per "al", decommenta:
         // if (al) al.setHours(23, 59, 59, 999)
 
         return currentItems.value.filter(it => {
@@ -379,28 +439,18 @@
     const deleteDialog = ref(false)
     const selectedItem = ref<Item | null>(null)
 
-    function openDeleteDialog(item: Item) {
-        selectedItem.value = item
-        deleteDialog.value = true
-    }
-    function closeDeleteDialog() {
-        deleteDialog.value = false
-        selectedItem.value = null
-    }
+    function openDeleteDialog(item: Item) { selectedItem.value = item; deleteDialog.value = true }
+    function closeDeleteDialog() { deleteDialog.value = false; selectedItem.value = null }
     function confirmDelete() {
         if (!selectedItem.value) return
         const idx = currentItems.value.findIndex(i => i === selectedItem.value)
-        if (idx !== -1) {
-            currentItems.value.splice(idx, 1)
-        }
+        if (idx !== -1) currentItems.value.splice(idx, 1)
         closeDeleteDialog()
     }
 
     /* ---------- Upload ---------- */
     const fileInputRef = ref<HTMLInputElement | null>(null)
-    function onSelectFromPC() {
-        fileInputRef.value?.click()
-    }
+    function onSelectFromPC() { fileInputRef.value?.click() }
     function formatBytes(bytes: number) {
         if (bytes === 0) return '0 B'
         const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
@@ -447,9 +497,23 @@
 
     /* ---------- Router ---------- */
     const router = useRouter()
-    function goToDashboard() {
-        router.push({ name: 'dashboard' })
-    }
+    function goToDashboard() { router.push({ name: 'dashboard' }) }
+
+    /* ---------- Timeline demo ---------- */
+    const history = ref([
+        { id: 1, author: 'Andrea Cozzolino', date: '2022-02-15', comment: 'Documento iniziale creato.', type: 'created' },
+        { id: 2, author: 'Michael Malaman', date: '2023-03-03', comment: 'Aggiornati materiali e note tecniche.', type: 'edited' },
+        { id: 3, author: 'Giuseppe Perrone', date: '2024-10-19', comment: 'Inviata per approvazione.', type: 'submitted' },
+        { id: 4, author: 'Reviewer Team', date: '2025-03-21', comment: 'Richieste correzioni minori.', type: 'edited' }
+    ])
+    const currentStatus = ref('pending')
+    const currentStatusDate = ref('2025-12-11')
+
+    /* Contenuto per DownloadSimulator */
+    const testo = `Relazione finale progetto
+- Sezione A
+- Sezione B
+© 2025`
 </script>
 
 <style scoped>

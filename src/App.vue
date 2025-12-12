@@ -4,8 +4,14 @@ import topNavbar from './components/topNavbar.vue'
 
 <template>
     <v-app class="bg-primary">
-        <topNavbar/>
-        <router-view style="margin-top:2%"/>
+        <topNavbar />
+
+        <div class="pa-1 mt-14">
+
+            <router-view />
+
+        </div>
+
     </v-app>
 </template>
 
