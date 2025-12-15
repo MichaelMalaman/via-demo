@@ -1,26 +1,21 @@
-﻿
+﻿<!-- src/components/PraticheView.vue -->
 <template>
-    <v-container class="fill-height d-flex flex-column align-center w-75 pa-6">
-        <!-- Sezione pulsanti sopra -->
-        <v-row justify="space-between" align="center">
-            <v-col cols="auto" class="d-flex justify-start">
-
+    <v-container class="fill-height d-flex flex-column align-center px-10">
+        <!-- Barra azioni (griglia senza gap) -->
+        <v-row class="w-100 align-center justify-space-between ga-0 mt-4 mb-4">
+            <!-- Pulsante sinistro -->
+            <v-col cols="auto" class="pa-0">
                 <v-btn prepend-icon="mdi-arrow-left"
                        @click="goToHome"
                        variant="elevated"
                        color="white"
-                       class="bg-white text-primary ">
+                       class="bg-white text-primary">
                     Indietro
                 </v-btn>
-
             </v-col>
 
-            <!-- Spinge il secondo bottone a destra -->
-            <v-spacer />
-
-            <v-col cols="auto">
-
-
+            <!-- Pulsante destro -->
+            <v-col cols="auto" class="pa-0">
                 <v-btn v-if="store.state.username === 'pippo'"
                        class="bg-white text-primary"
                        @click="creaNuovaPratica">
@@ -36,23 +31,20 @@
             <v-tab value="two">Pratiche chiuse</v-tab>
         </v-tabs>
 
-        <!-- Contenitore tabella con altezza fissa -->
+        <!-- Contenitore tabella -->
         <v-card class="w-100 pa-4" style="min-height: 600px;">
             <v-window v-model="tab">
+                <!-- Tab: Pratiche in corso -->
                 <v-window-item value="one">
-
                     <v-data-table :headers="headers"
                                   :items="currentItems"
                                   :items-per-page="10"
                                   hover>
                         <!-- Colonna: NOME PROGETTO -->
                         <template #item.nomeProgetto="{ item }">
-                            <!-- Se usi Vuetify 3, spesso i dati reali sono in item.raw -->
                             <span v-if="getRaw(item).nomeProgetto !== 'IMPIANTO FOTOVOLTAICO'">
                                 {{ getRaw(item).nomeProgetto }}
                             </span>
-
-                            <!-- Cliccabile SOLO se è 'IMPIANTO FOTOVOLTAICO' -->
                             <v-btn v-else
                                    variant="text"
                                    color="primary"
@@ -62,7 +54,7 @@
                             </v-btn>
                         </template>
 
-                        <!-- Colonna: AZIONI (esempio) -->
+                        <!-- Colonna: AZIONI -->
                         <template #item.azioni="{ item }">
                             <v-btn icon color="error" @click="openDeleteDialog(getRaw(item))">
                                 <v-icon>mdi-delete</v-icon>
@@ -72,9 +64,9 @@
                             </v-btn>
                         </template>
                     </v-data-table>
-
                 </v-window-item>
 
+                <!-- Tab: Pratiche chiuse -->
                 <v-window-item value="two">
                     <v-data-table :headers="headers"
                                   :items="items2"
@@ -92,9 +84,51 @@
                 </v-window-item>
             </v-window>
         </v-card>
+
+        <!-- Dialog elimina -->
+        <v-dialog v-model="deleteDialog" max-width="480">
+            <v-card>
+                <v-card-title>Confermi l'eliminazione?</v-card-title>
+                <v-card-text>
+                    Stai per eliminare: <strong>{{ selectedItem?.nomeProgetto }}</strong>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn variant="text" @click="closeDeleteDialog">Annulla</v-btn>
+                    <v-btn color="error" @click="confirmDelete">Elimina</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- Dialog modifica -->
+        <v-dialog v-model="editDialog" max-width="640">
+            <v-card>
+                <v-card-title>Modifica pratica</v-card-title>
+                <v-card-text>
+                    <v-form>
+                        <v-text-field v-model="editItemData.nomeProgetto" label="Nome progetto" />
+                        <v-text-field v-model="editItemData.dataInizio" label="Data inizio" />
+                        <v-text-field v-model="editItemData.ente" label="Ente" />
+                        <v-text-field v-model="editItemData.scadenza" label="Scadenza" />
+                    </v-form>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn variant="text" @click="closeEditDialog">Annulla</v-btn>
+                    <v-btn color="primary" @click="confirmEdit">Salva</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- Snackbar -->
+        <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="2500">
+            {{ snackbar.message }}
+            <template #actions>
+                <v-btn variant="text" @click="snackbar.show = false">Chiudi</v-btn>
+            </template>
+        </v-snackbar>
     </v-container>
 </template>
-
 
 <script setup lang="ts">
     import { ref, computed } from 'vue'
@@ -103,6 +137,7 @@
 
     const router = useRouter()
     const store = useStore()
+
     type Item = {
         id: number
         nomeProgetto: string
@@ -121,7 +156,6 @@
         { title: 'AZIONI', key: 'azioni', sortable: false },
     ]
 
-    //  RENDI REATTIVI GLI ARRAY
     const items = ref<Item[]>([
         { id: 1, nomeProgetto: 'IMPIANTO FOTOVOLTAICO', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022' },
         { id: 2, nomeProgetto: 'IMPIANTO EOLICO', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022' },
@@ -146,10 +180,9 @@
         { id: 110, nomeProgetto: 'IMPIANTO SOLARE TERMICO', dataInizio: '01/07/2023', ente: 'REGIONE SICILIA', scadenza: '15/09/2023' },
     ])
 
-    // Lista corrente
     const currentItems = computed<Item[]>(() => (tab.value === 'one' ? items.value : items2.value))
 
-    // Dialog & selezione
+    // Dialog & selezioni
     const deleteDialog = ref(false)
     const editDialog = ref(false)
     const selectedItem = ref<Item | null>(null)
@@ -172,15 +205,22 @@
         snackbar.value = { show: true, message, color }
     }
 
-    // Crea nuova
+    // Helper per compatibilità slot v-data-table (spesso item.raw in Vuetify 3)
+    function getRaw(row: any) {
+        return row?.raw ?? row
+    }
+
+    // Navigazione
     function creaNuovaPratica() {
         router.push({ name: 'formPratica' })
-
     }
-    function goToSingleProjectDocument() {
+    function goToSingleProjectDocument(item?: Item) {
         router.push({ name: 'singleProjectDocumentsView' })
-
     }
+    function goToHome() {
+        router.push({ name: 'Home' })
+    }
+
     // Delete
     function openDeleteDialog(item: Item) {
         selectedItem.value = { ...item }
@@ -217,7 +257,7 @@
         const list = tab.value === 'one' ? items.value : items2.value
         const index = list.findIndex(i => i.id === editItemData.value.id)
         if (index !== -1) {
-            list[index] = { ...editItemData.value } // aggiorna la riga
+            list[index] = { ...editItemData.value }
             showSnack('Pratica aggiornata')
         } else {
             showSnack('Elemento non trovato', 'error')
@@ -225,22 +265,11 @@
         closeEditDialog()
     }
 
-
-    // Controllo se la variabile è presente
+    // Log username se presente
     if (store.state.username && store.state.username.trim() !== '') {
         console.log('Username presente nello store:', store.state.username)
     } else {
         console.warn('Nessun username salvato nello store')
-    }
-
-// Se Vuetify ti passa row come item.raw, questo helper normalizza
-function getRaw(row: any) {
-  return row?.raw ?? row
-}
-
-    function goToHome() {
-        router.push({ name: 'Home' })
-
     }
 </script>
 
@@ -262,15 +291,8 @@ function getRaw(row: any) {
         background: none !important;
     }
 
-    .blur-overlay {
-        backdrop-filter: blur(2px);
-    }
-
-
+    /* Esempio: card/table min-height per tab */
     v-table {
-        min-height: 800px; /* o la misura che corrisponde alla tab "Pratiche chiuse" */
+        min-height: 800px;
     }
-
-
-
-</style>
+    </style>

@@ -8,6 +8,7 @@ import dashboard from '../views/Dashboard.vue'
 import singleProjectDocumentsView from '../views/SingleProjectDocumentsView.vue'
 import formPratica from '../views/formPratica.vue'
 import singleFileOpen from '../views/SingleFileOpen.vue'
+import messages from '../views/Messages.vue'
 
 
 const routes = [
@@ -17,7 +18,8 @@ const routes = [
     { path: '/dashboard', name: 'dashboard', component: dashboard, meta: { title: 'dashboard' } },
     { path: '/singleProjectDocumentsView', name: 'singleProjectDocumentsView', component: singleProjectDocumentsView, meta: { title: 'singleProjectDocumentsView' } },
     { path: '/formPratica', name: 'formPratica', component: formPratica, meta: { title: 'formPratica' } },
-    { path: '/singleFileOpen', name: 'singleFileOpen', component: singleFileOpen, meta: { title: 'singleFileOpen' } }
+    { path: '/singleFileOpen', name: 'singleFileOpen', component: singleFileOpen, meta: { title: 'singleFileOpen' } },
+    { path: '/messages', name: 'messages', component: messages, meta: { title: 'messages' } }
 
 ]
 

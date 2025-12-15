@@ -1,7 +1,7 @@
 
 <template>
     <!-- Frame a tutta viewport -->
-    <v-container class="app-frame d-flex justify-center align-center bg-primary" fluid>
+    <v-container class="app-frame d-flex justify-center align-center bg-primary px-10" fluid>
         <!-- Card centrale con dimensioni determinate -->
         <v-sheet class="app-card" elevation="4">
             <!-- Tabs -->

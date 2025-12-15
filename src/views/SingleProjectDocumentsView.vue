@@ -1,8 +1,8 @@
 ﻿
 <template>
-    <v-container class="fill-height d-flex flex-column">
+    <v-container fluid class="px-10">
         <!-- Barra azioni -->
-        <v-row class="justify-center align-center">
+        <v-row class="align-center justify-space-between align-center mt-4 mb-4">
             <v-col class="d-flex justify-start" cols="6">
                 <v-btn @click="goToDashboard"
                        color="#0066CC"
@@ -190,7 +190,7 @@
         </v-toolbar>
 
         <!-- Tabella -->
-        <v-row class="justify-center align-center flex-grow-1">
+        <v-row class="justify-center align-center flex-grow-1  mt-4 mb-4">
             <v-col cols="12" md="12" lg="12">
                 <v-data-table :headers="headers"
                               :items="filteredItems"
@@ -231,7 +231,6 @@
                                 </template>
                             </td>
 
-                            <td>{{ item.tipoFile }}</td>
                             <td>{{ item.size }}</td>
                             <td>
                                 <v-btn icon color="error" @click="openDeleteDialog(item)" aria-label="Elimina">
@@ -271,6 +270,7 @@
     const dialogOpen = ref(false)
     const dialogOpenHistory = ref(false)
 
+
     /* ---------- Tipi ---------- */
     type Item = {
         nomeFile: string
@@ -286,7 +286,6 @@
         { title: 'NOME FILE', key: 'nomeFile' },
         { title: 'DATA ULTIMA MODIFICA', key: 'dataUltimaModifica' },
         { title: 'STATO PRATICA', key: 'statoPratica' },
-        { title: 'TIPO DI FILE', key: 'tipoFile' },
         { title: 'SIZE', key: 'size' },
         { title: 'FUNZIONI', key: 'funzioni', sortable: false }
     ]

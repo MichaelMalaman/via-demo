@@ -8,6 +8,7 @@
         <v-btn color="secondary" @click="$router.push('/singleProjectDocumentsView')">SingleProjectDocumentsView</v-btn>
         <v-btn color="secondary" @click="$router.push('/formPratica')">Form nuov pratica</v-btn>
         <v-btn color="secondary" @click="$router.push('/singleFileOpen')">Form nuov pratica</v-btn>
+        <v-btn color="secondary" @click="$router.push('/messages')">Messagggi</v-btn>
 
     </v-container>
 
