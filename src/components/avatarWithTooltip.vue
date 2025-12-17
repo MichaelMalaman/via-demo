@@ -1,83 +1,73 @@
 ﻿
 <template>
-    <div class="d-flex align-center">
-        <!-- Tooltip sull'icona utente, come nel tuo codice -->
-        <v-tooltip v-if="store.state.username" v-model="showTooltip" location="start">
-            <template #activator="{ props }">
-                <v-icon v-bind="props"
-                        size="56"
-                        class="cursor-pointer"
-                        style="color:white"
-                        @click="toggleTooltip">
-                    mdi-account-circle
-                </v-icon>
-            </template>
-            <span>{{ tooltipText }}</span>
-        </v-tooltip>
+    <div class="d-flex align-items-center">
+        <!-- Icona utente con tooltip -->
+        <button v-if="store.state.username"
+                ref="avatarBtnRef"
+                type="button"
+                class="btn btn-link p-0 me-2"
+                aria-label="Utente autenticato"
+                @click="toggleTooltip">
+            <!-- Sostituibile con sprite BI -->
+            <svg class="icon" style="width:56px;height:56px;color:white;">
+                <circle cx="28" cy="28" r="28" fill="currentColor" opacity="0.0"></circle>
+                <circle cx="28" cy="22" r="10" fill="currentColor"></circle>
+                <rect x="14" y="34" width="28" height="14" rx="7" fill="currentColor"></rect>
+            </svg>
+        </button>
 
-        <!-- MENU sulla label: si attiva solo se label != 'Utente' -->
-        <v-menu v-if="label !== 'Utente'"
-                v-model="menuOpen"
-                :close-on-content-click="true"
-                location="bottom"
-                :offset="8">
-            <!-- Attivatore: lo span della label -->
-            <template #activator="{ props }">
-                <span class="ml-4 font-weight-medium cursor-pointer"
-                      v-bind="props"
-                      role="button"
-                      aria-haspopup="menu"
-                      :aria-expanded="menuOpen ? 'true' : 'false'">
-                    {{ label }}
-                </span>
-            </template>
+        <!-- MENU sulla label (dropdown) -->
+        <div v-if="label !== 'Utente'" class="dropdown">
+            <span class="ms-3 fw-medium cursor-pointer"
+                  role="button"
+                  id="userMenuToggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                {{ label }}
+            </span>
 
-            <!-- Contenuto del menu -->
-            <v-list density="comfortable" nav>
-                <v-list-item value="account"
-                             prepend-icon="mdi-account"
-                             @click="goToAccount">
-                    <v-list-item-title>Account utente</v-list-item-title>
-                </v-list-item>
-
-                <v-list-item value="messages"
-                             prepend-icon="mdi-email"
-                             @click="goToMessages">
-                    <v-list-item-title>Messaggi</v-list-item-title>
-                </v-list-item>
-
-                <v-divider class="my-1" />
-
-                <v-list-item value="logout"
-                             prepend-icon="mdi-logout"
-                             class="text-error"
-                             @click="doLogout">
-                    <v-list-item-title>Logout</v-list-item-title>
-                </v-list-item>
-            </v-list>
-        </v-menu>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuToggle">
+                <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2" @click="goToAccount">
+                        <span>Account utente</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2" @click="goToMessages">
+                        <span>Messaggi</span>
+                    </button>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                    <button class="dropdown-item text-danger d-flex align-items-center gap-2" @click="doLogout">
+                        <span>Logout</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
 
         <!-- Fallback quando non autenticato -->
-        <span v-else class="ml-4 font-weight-medium">
-            <v-btn color="secondary" @click="$router.push('/')">
+        <span v-else class="ms-3 fw-medium">
+            <button type="button" class="btn btn-secondary" @click="$router.push('/')">
                 vai alla pagina di autenticazione
-            </v-btn>
+            </button>
         </span>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { ref, computed } from 'vue'
+    import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
+    // Se vuoi usare le icone BI via sprite:
+    // import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
+
+    declare global { interface Window { bootstrap: any } }
 
     const store = useStore()
     const router = useRouter()
 
-    // Computed che legge lo username dallo store
     const username = computed(() => store.state.username ?? '')
-
-    // (Opzionale) calcola un ruolo a partire dallo username
     const ruolo = computed(() => {
         switch (username.value.toLowerCase()) {
             case 'pippo': return 'Proponente'
@@ -87,51 +77,61 @@
             default: return 'Utente'
         }
     })
-
-    // Tooltip: usa una computed per testi dinamici
     const tooltipText = computed(() => `Sei autenticato con il ruolo di ${ruolo.value}`)
-
-    // Label accanto all’avatar: mostra lo username, con fallback
     const label = computed(() => username.value || 'Utente')
 
-    // Stato tooltip + toggle
-    const showTooltip = ref(false)
-    const toggleTooltip = () => { showTooltip.value = !showTooltip.value }
+    const avatarBtnRef = ref<HTMLElement | null>(null)
+    let tooltipInstance: any = null
 
-    // Stato del menu
-    const menuOpen = ref(false)
-
-    // Azioni del menu
-    const goToAccount = () => {
-        menuOpen.value = false
-        router.push('/account') // aggiorna con il tuo path reale
+    function toggleTooltip() {
+        if (!tooltipInstance) return
+        const isVisible = avatarBtnRef.value?.getAttribute('aria-describedby')
+        isVisible ? tooltipInstance.hide() : tooltipInstance.show()
     }
 
-    const goToMessages = () => {
-        menuOpen.value = false
-        router.push('/messaggi') // aggiorna con il tuo path reale
-    }
+    onMounted(() => {
+        if (avatarBtnRef.value && window.bootstrap) {
+            tooltipInstance = new window.bootstrap.Tooltip(avatarBtnRef.value, {
+                title: tooltipText.value,
+                placement: 'left',
+                trigger: 'manual',
+                customClass: 'text-wrap'
+            })
+        }
+    })
 
+    watch(tooltipText, (val) => {
+        if (tooltipInstance) {
+            tooltipInstance.setContent({ '.tooltip-inner': val })
+        }
+    })
+
+    onBeforeUnmount(() => {
+        tooltipInstance?.dispose()
+        tooltipInstance = null
+    })
+
+    const goToAccount = () => router.push('/account')
+    const goToMessages = () => router.push('/messaggi')
     const doLogout = async () => {
-        menuOpen.value = false
         try {
-            // Esempio di logout: pulisci lo store e vai alla login
-            // Adatta a come gestisci l’autenticazione (action Vuex, token, ecc.)
-            await store.dispatch?.('logout') // se hai un'azione 'logout', altrimenti rimuovi questa riga
-            store.commit?.('setUsername', '') // se hai una mutation dedicata; altrimenti:
-            // store.state.username = '' // NON consigliato: evita mutazioni dirette
+            await store.dispatch?.('logout')
+            store.commit?.('setUsername', '')
         } catch (e) {
             console.error('Errore logout:', e)
         } finally {
-            router.push('/') // pagina di autenticazione
+            router.push('/')
         }
     }
-
-    console.log('username:', username.value)
 </script>
 
 <style scoped>
     .cursor-pointer {
         cursor: pointer;
     }
+
+    .fw-medium {
+        font-weight: 500;
+    }
 </style>
+``

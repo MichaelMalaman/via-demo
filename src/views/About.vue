@@ -1,45 +1,36 @@
 
 <template>
-    <v-container class="text-center">
-        <h1>Menu pagine solo per DEV</h1>
-        <v-btn color="secondary" @click="$router.push('/')">Torna alla Home</v-btn>
-        <v-btn color="secondary" @click="$router.push('/dashboardProponente')">DashboardProponente</v-btn>
-        <v-btn color="secondary" @click="$router.push('/authCIE')">EntraConCIE</v-btn>
-        <v-btn color="secondary" @click="$router.push('/singleProjectDocumentsView')">SingleProjectDocumentsView</v-btn>
-        <v-btn color="secondary" @click="$router.push('/formPratica')">Form nuov pratica</v-btn>
-        <v-btn color="secondary" @click="$router.push('/singleFileOpen')">Form nuov pratica</v-btn>
-        <v-btn color="secondary" @click="$router.push('/messages')">Messagggi</v-btn>
+    <div class="container text-center my-5">
+        <h1 class="mb-4">Menu pagine solo per DEV</h1>
 
-    </v-container>
-
-
-
-    <template>
-        <v-card>
-            <v-card-title>Gestione Webcam</v-card-title>
-            <v-card-text>
-                <v-select :items="cameraOptions" v-model="selectedCamera" label="Seleziona Webcam" />
-                <v-btn @click="startCamera">Avvia</v-btn>
-                <v-btn @click="stopCamera">Stop</v-btn>
-                <video ref="video" autoplay playsinline style="width: 100%;"></video>
-            </v-card-text>
-        </v-card>
-    </template>
-
-
-
-
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <button type="button" class="btn btn-secondary" @click="goTo('/')">Torna alla Home</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/dashboard')">Dashboard</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/authCIE')">EntraConCIE</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/singleProjectDocumentsView')">SingleProjectDocumentsView</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/formPratica')">Form nuov pratica</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/singleFileOpen')">Form nuov pratica</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/messages')">Messaggi</button>
+        </div>
+    </div>
 </template>
 
-<script>
-    export default {
-        name: 'About'
-    }
+<script setup lang="ts">
+    import { useRouter } from 'vue-router'
+    const router = useRouter()
 
+    function goTo(path: string) {
+        router.push(path)
+    }
 </script>
 
 <style scoped>
     h1 {
-        margin-top: 50px;
+        margin-top: 50px; /* come nell'originale */
+    }
+
+    /* utility per gap quando non si usa Bootstrap 5.3+ */
+    .gap-2 {
+        gap: .5rem;
     }
 </style>
