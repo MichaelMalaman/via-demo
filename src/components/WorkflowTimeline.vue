@@ -1,203 +1,354 @@
-
+Ôªø<!-- ModalExample.vue -->
 <template>
-    <v-card class="pa-3">
-        <!-- Header -->
-        <div class="d-flex align-center justify-space-between mb-2">
-            <div class="text-h6">Stato workflow di approvazione</div>
-            <v-chip :color="statusColorComputed" variant="tonal" label>
-                Stato attuale: {{ currentStatus || 'ó' }}
-            </v-chip>
-        </div>
+    <!-- Bottone che apre la modale -->
+    <button type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#extraLargeModal">
+        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-clock`"></use></svg>
+    </button>
 
-        <!-- Timeline scrollabile -->
-        <div class="timeline-scroll" :style="{ maxHeight: height, overflowY: 'auto' }">
-            <v-timeline side="end" density="compact" align="start" class="pr-2">
-                <!-- Eventi storici (ordinati per data ascendente) -->
-                <v-timeline-item v-for="(ev, idx) in sortedEvents"
-                                 :key="ev.id ?? idx"
-                                 :dot-color="eventColor(ev.type)"
-                                 :icon="eventIcon(ev.type)"
-                                 size="small">
-                    <!-- Data a sinistra -->
-                    <template #opposite>
-                        <span class="text-caption text-medium-emphasis">
-                            {{ formatDate(ev.date) }}
-                        </span>
-                    </template>
+    <!-- Teleport nel body per evitare problemi di stacking/z-index -->
+    <Teleport to="body">
+        <div class="modal fade"
+             id="extraLargeModal"
+             tabindex="-1"
+             aria-labelledby="extraLargeModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title h5" id="extraLargeModalLabel">Stato approvazione del documento</h2>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Chiudi finestra modale"></button>
+                    </div>
 
-                    <!-- Card evento -->
-                    <v-card class="pa-3" elevation="0" variant="tonal">
-                        <div class="d-flex align-center mb-1">
-                            <v-avatar class="mr-2" size="28" color="primary" variant="tonal">
-                                <v-icon size="20">mdi-account</v-icon>
-                            </v-avatar>
-                            <div class="text-body-2">
-                                <strong>{{ ev.author || 'Autore sconosciuto' }}</strong>
-                                <v-chip class="ml-2"
-                                        size="x-small"
-                                        :color="eventColor(ev.type)"
-                                        variant="tonal"
-                                        label>
-                                    {{ typeLabel(ev.type) }}
-                                </v-chip>
+                    <div class="modal-body">
+
+
+
+
+
+
+
+
+                            <!-- Header + Stepper di sintesi stato corrente -->
+                            <header class="mb-3">
+                                <h2 class="h5 mb-2">Cronologia approvazione</h2>
+
+                                <!-- Stepper solo-intestazione (sintesi fasi) -->
+                                <div class="steppers">
+                                    <div class="steppers-header">
+                                        <ul>
+                                            <li :class="{ confirmed: currentStepIndex > 0 }">
+                                                Invio
+                                                <svg class="icon"><use :href="`${spritesHref}#it-arrow-right`"></use></svg>
+
+                                            </li>
+
+                                            <li :class="{ confirmed: currentStepIndex > 1, active: currentStepIndex === 1 }">
+                                                Revisione
+                                                <svg class="icon"><use :href="`${spritesHref}#it-arrow`"></use></svg>
+                                            </li>
+
+                                            <li :class="{ active: currentStepIndex >= 2 }">
+                                                Decisione
+                                                <span v-if="currentStepIndex >= 2" class="visually-hidden">Attivo</span>
+                                            </li>
+                                        </ul>
+                                        <span class="steppers-index" aria-hidden="true">{{ stepperIndexLabel }}</span>
+                                    </div>
+                                </div>
+                            </header>
+
+                            <!-- FILTRI (opzionali) -->
+                            <div class="d-flex gap-2 align-items-center flex-wrap mb-3">
+                                <button class="btn btn-sm"
+                                        :class="filterStatus ? 'btn-outline-primary' : 'btn-primary'"
+                                        @click="filterStatus = ''">
+                                    Tutti
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-secondary" @click="filterStatus = 'inviato'">
+                                    <span class="badge bg-secondary me-1" aria-hidden="true">‚óè</span> Inviato
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-warning" @click="filterStatus = 'in_revisione'">
+                                    <span class="badge bg-warning text-dark me-1" aria-hidden="true">‚óè</span> In revisione
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-success" @click="filterStatus = 'approvato'">
+                                    <span class="badge bg-success me-1" aria-hidden="true">‚óè</span> Approvato
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-danger" @click="filterStatus = 'respinto'">
+                                    <span class="badge bg-danger me-1" aria-hidden="true">‚óè</span> Respinto
+                                </button>
                             </div>
-                        </div>
 
-                        <div class="text-body-2">
-                            {{ ev.comment || 'ó' }}
-                        </div>
-                    </v-card>
-                </v-timeline-item>
+                            <!-- TIMELINE -->
+                            <div class="it-timeline-wrapper">
+                                <div class="row">
+                                    <div class="col-12" v-for="(ev, idx) in filteredEvents" :key="ev.id">
 
-                <!-- Nodo conclusivo: stato attuale -->
-                <v-timeline-item :dot-color="statusColorComputed" icon="mdi-flag-checkered" size="small">
-                    <template #opposite>
-                        <span class="text-caption text-medium-emphasis">
-                            {{ formatDate(currentStatusDate) }}
-                        </span>
-                    </template>
+                                        <div class="timeline-element">
+                                            <!-- Etichetta 'Oggi' quando l'evento √® il pi√π recente -->
+                                            <span v-if="idx === 0 && isToday(ev.date)" class="it-now-label d-none d-lg-flex">Oggi</span>
 
-                    <v-card class="pa-3" elevation="0" variant="tonal">
-                        <div class="d-flex align-center justify-space-between">
-                            <div class="text-body-2">
-                                <strong>Stato attuale</strong>
-                                <div class="mt-1">{{ statusDescription(currentStatus || '') }}</div>
+                                            <!-- PIN della timeline (passato/presente/futuro) -->
+                                            <h3 class="it-pin-wrapper" :class="pinClass(ev, idx)">
+                                                <div class="pin-icon">
+                                                    <svg class="icon" role="img">
+                                                        <title>{{ pinTitle(ev.status) }}</title>
+                                                        <use :href="iconHref(ev.status)"></use></svg></div>
+                               <div class="pin-text">
+                <span>{{ formatMonthYear(ev.date) }}</span>
+              </div>
+                                            </h3>
+
+                                            <!-- CARD contenuto dell'evento (nuovo componente .it-card) -->
+                                            <article class="it-card rounded shadow-sm border">
+                                                <!-- Titolo / azione -->
+                                                <h4 class="it-card-title">
+                                                    <a :href="titleFor(ev)">{{ titleFor(ev) }}</a>
+                                                </h4>
+
+                                                <!-- Body con avatar, metadati e commento -->
+                                                <div class="it-card-body">
+                                                    <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
+                                                        <!-- Avatar + anagrafica -->
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <!-- Avatar (BI) -->
+                                                            <div class="avatar size-sm" v-if="ev.actor.avatar">
+                                                                AVATER
+                                                            </div>
+                                                            <div class="avatar size-sm" v-else aria-hidden="true">
+                                                                <!-- fallback icona utente -->
+                                                                <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
+
+                                                                <span class="visually-hidden">{{ ev.actor.name }}</span>
+                                                            </div>
+
+                                                            <div class="d-flex flex-column">
+                                                                <strong>{{ ev.actor.name }}</strong>
+                                                                <small class="text-secondary">{{ ev.actor.role }}</small>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Stato -->
+                                                        <span class="badge" :class="statusBadgeClass(ev.status)">
+                                                            {{ statusLabel(ev.status) }}
+
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- Commento (se presente) -->
+                                                    <p v-if="ev.comment" class="it-card-text mb-0">{{ ev.comment }}</p>
+                                                </div>
+
+                                                <!-- Footer: data/ora -->
+                                                <footer class="it-card-related it-card-footer">
+                                                    <time class="it-card-date" :datetime="ev.date">
+                                                        {{ formatDateTime(ev.date) }}
+                                                    </time>
+                                                </footer>
+                                            </article>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
 
-                            <v-chip :color="statusColorComputed" variant="tonal" label>
-                                {{ (currentStatus || '').trim() || 'ó' }}
-                            </v-chip>
-                        </div>
-                    </v-card>
-                </v-timeline-item>
-            </v-timeline>
 
-            <!-- Messaggio vuoto (se non ci sono eventi) -->
-            <div v-if="sortedEvents.length === 0" class="text-center py-4 text-medium-emphasis">
-                Nessun evento da mostrare.
+
+
+
+
+
+
+
+
+
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Chiudi</button>
+                        <button class="btn btn-primary">Azione</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </v-card>
+    </Teleport>
 </template>
 
-<script setup lang="ts">
-    import { computed } from 'vue'
+<script setup>
+    import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
+    const spritesHref = spritesUrl
+
+
+import { computed, reactive, ref } from 'vue'
 
     /**
-     * Tipi dati evento timeline
+     * MOCK DATI: cronologia eventi (pi√π recente per primo).
+     * Adatta le propriet√† alle tue API.
      */
-    type TimelineEventType = 'created' | 'edited' | 'approved' | 'rejected' | 'submitted'
-    type TimelineEvent = {
-        id?: string | number
-        author: string
-        date: string | Date            // ISO 'YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss' o Date
-        comment: string
-        type: TimelineEventType
-    }
+    const events = reactive([
+        {
+            id: 5,
+            status: 'approvato',
+            date: new Date().toISOString(),
+            actor: { name: 'Giulia Neri', role: 'Responsabile approvazioni', avatar: 'https://i.pravatar.cc/64?img=5' },
+            comment: 'Approvazione finale del componente.'
+        },
+        {
+            id: 4,
+            status: 'in_revisione',
+            date: '2025-12-17T09:30:00+01:00',
+            actor: { name: 'Luca Bianchi', role: 'Revisore tecnico', avatar: 'https://i.pravatar.cc/64?img=12' },
+            comment: 'Revisionati test e documentazione.'
+        },
+        {
+            id: 3,
+            status: 'in_revisione',
+            date: '2025-12-16T16:00:00+01:00',
+            actor: { name: 'Luca Bianchi', role: 'Revisore tecnico', avatar: 'https://i.pravatar.cc/64?img=12' },
+            comment: 'Richieste piccole modifiche di stile.'
+        },
+        {
+            id: 2,
+            status: 'inviato',
+            date: '2025-12-16T10:12:00+01:00',
+            actor: { name: 'Mario Rossi', role: 'Richiedente', avatar: 'https://i.pravatar.cc/64?img=3' },
+            comment: 'Inviata richiesta di approvazione del componente.'
+        },
+        {
+            id: 1,
+            status: 'inviato',
+            date: '2025-12-15T18:45:00+01:00',
+            actor: { name: 'Mario Rossi', role: 'Richiedente', avatar: 'https://i.pravatar.cc/64?img=3' },
+            comment: 'Bozza salvata e validata.'
+        }
+    ])
 
-    /**
-     * Props:
-     * - events: lista eventi storici (non serve gi‡ ordinata; li ordiniamo noi per data asc)
-     * - currentStatus: stato finale ("pending", "approvato", "respinto", "bozza", ...)
-     * - currentStatusDate: data dello stato attuale
-     * - height: altezza massima area scorrevole (default: '360px')
-     */
-    const props = withDefaults(defineProps<{
-        events: TimelineEvent[] | null | undefined
-        currentStatus: string
-        currentStatusDate: string | Date
-        height?: string
-    }>(), {
-        height: '360px'
-    })
-
-    /* -------- Guardia: events sempre array -------- */
-    const eventsList = computed<TimelineEvent[]>(() =>
-        Array.isArray(props.events) ? props.events : []
+    /* Filtri */
+    const filterStatus = ref('') // '', 'inviato', 'in_revisione', 'approvato', 'respinto'
+    const filteredEvents = computed(() =>
+        filterStatus.value ? events.filter(e => e.status === filterStatus.value) : events
     )
 
-    /* -------- Helpers data -------- */
-    function toDate(val: string | Date): Date {
-        if (val instanceof Date) return val
-        // prova parse standard, fallback a mezzanotte locale
-        const d = new Date(val)
-        if (!isNaN(d.getTime())) return d
-        return new Date(`${val}T00:00:00`)
-    }
-    function formatDate(val: string | Date): string {
-        try {
-            const d = toDate(val)
-            const dd = String(d.getDate()).padStart(2, '0')
-            const mm = String(d.getMonth() + 1).padStart(2, '0')
-            const yyyy = d.getFullYear()
-            return `${dd}/${mm}/${yyyy}`
-        } catch {
-            return 'ó'
-        }
+    /* Stepper: calcolo dello step corrente (0: Invio, 1: Revisione, 2: Decisione) */
+    const currentStepIndex = computed(() => {
+        const hasDecision = filteredEvents.value.some(e => ['approvato', 'respinto'].includes(e.status))
+        if (hasDecision) return 2
+        const inReview = filteredEvents.value.some(e => e.status === 'in_revisione')
+        if (inReview) return 1
+        return 0
+    })
+    const stepperIndexLabel = computed(() => {
+        // etichetta tipo "2/3" dove 3 = numero totale step
+        const total = 3
+        return `${Math.min(currentStepIndex.value + 1, total)}/${total}`
+    })
+
+    /* Helpers UI */
+    const isToday = (iso) => {
+        const d = new Date(iso)
+        const today = new Date()
+        return (
+            d.getFullYear() === today.getFullYear() &&
+            d.getMonth() === today.getMonth() &&
+            d.getDate() === today.getDate()
+        )
     }
 
-    /* -------- Ordinamento eventi per data ASC -------- */
-    const sortedEvents = computed<TimelineEvent[]>(() =>
-        [...eventsList.value].sort((a, b) => {
-            const ta = toDate(a.date).getTime()
-            const tb = toDate(b.date).getTime()
-            return ta - tb
+    const formatDateTime = (iso) =>
+        new Date(iso).toLocaleString('it-IT', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         })
-    )
 
-    /* -------- Icone, colori e label per tipo evento -------- */
-    function eventIcon(type: TimelineEventType | undefined) {
-        switch (type) {
-            case 'created': return 'mdi-file-plus'
-            case 'submitted': return 'mdi-send'
-            case 'edited': return 'mdi-pencil'
-            case 'approved': return 'mdi-check-circle'
-            case 'rejected': return 'mdi-close-circle'
-            default: return 'mdi-information'
-        }
-    }
-    function eventColor(type: TimelineEventType | undefined) {
-        switch (type) {
-            case 'created': return 'primary'
-            case 'submitted': return 'indigo'
-            case 'edited': return 'orange'
-            case 'approved': return 'green'
-            case 'rejected': return 'red'
-            default: return 'grey'
-        }
-    }
-    function typeLabel(type: TimelineEventType | undefined) {
-        switch (type) {
-            case 'created': return 'Creato'
-            case 'submitted': return 'Inviato'
-            case 'edited': return 'Modificato'
-            case 'approved': return 'Approvato'
-            case 'rejected': return 'Respinto'
-            default: return 'Evento'
+    const formatMonthYear = (iso) =>
+        new Date(iso).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })
+
+    const statusLabel = (s) =>
+    ({
+        inviato: 'Inviato',
+        in_revisione: 'In revisione',
+        approvato: 'Approvato',
+        respinto: 'Respinto'
+    }[s] || s)
+
+    const statusBadgeClass = (s) =>
+    ({
+        inviato: 'bg-secondary',
+        in_revisione: 'bg-warning text-dark',
+        approvato: 'bg-success',
+        respinto: 'bg-danger'
+    }[s] || 'bg-secondary')
+
+    const pinTitle = (s) =>
+    ({
+        inviato: 'Invio',
+        in_revisione: 'Revisione',
+        approvato: 'Approvazione',
+        respinto: 'Rifiuto'
+    }[s] || 'Evento')
+
+    /* Selettori icone (sprite SVG di Bootstrap Italia) */
+    const iconHref = (s) => {
+        const base = '/bootstrap-italia/dist/svg/sprites.svg#'
+        switch (s) {
+            case 'approvato':
+                return base + 'it-check'
+            case 'respinto':
+                return base + 'it-close'
+            case 'in_revisione':
+                return base + 'it-search'
+            case 'inviato':
+                return base + 'it-mail'
+            default:
+                return base + 'it-flag'
         }
     }
 
-    /* -------- Stato attuale: colore e descrizione -------- */
-    const statusColorComputed = computed(() => {
-        const s = (props.currentStatus || '').toLowerCase()
-        if (s.includes('pending') || s.includes('attesa')) return 'warning'
-        if (s.includes('approv')) return 'green'
-        if (s.includes('respint') || s.includes('reject')) return 'red'
-        if (s.includes('bozza') || s.includes('draft')) return 'grey'
-        return 'primary'
-    })
-    function statusDescription(status: string) {
-        const s = (status || '').toLowerCase()
-        if (s.includes('pending') || s.includes('attesa')) return 'La pratica Ë in attesa di approvazione.'
-        if (s.includes('approv')) return 'La pratica Ë stata approvata.'
-        if (s.includes('respint') || s.includes('reject')) return 'La pratica Ë stata respinta.'
-        if (s.includes('bozza') || s.includes('draft')) return 'La pratica Ë in stato di bozza.'
-        return 'Stato corrente.'
+    /* Varianti PIN (passato/presente/futuro) */
+    const pinClass = (ev, index) => {
+        // L'evento pi√π recente √® "presente" (it-now); gli altri passati (it-evidence)
+        if (index === 0) return 'it-now'
+        return 'it-evidence'
     }
+
+    /* Titolo card per evento */
+    const titleFor = (ev) => {
+        switch (ev.status) {
+            case 'approvato':
+                return 'Componente approvato'
+            case 'respinto':
+                return 'Componente respinto'
+            case 'in_revisione':
+                return 'In revisione'
+            case 'inviato':
+                return 'Richiesta inviata'
+            default:
+                return 'Aggiornamento'
+        }
+    }
+
+``
+
+    // Nessun JS necessario: tutto √® gestito da Bootstrap Italia via data-attributes
 </script>
 
 <style scoped>
-    .timeline-scroll {
-        border-radius: 8px;
+    /* Opzionale: se qualche stile locale interferisce con le animazioni */
+    .modal.show {
+        display: block; /* garantisce la visibilit√† quando show √®  display: block; /* garantisce la visibilit√† quando show √® presente */
     }
 </style>
