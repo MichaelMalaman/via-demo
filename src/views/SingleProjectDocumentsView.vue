@@ -79,17 +79,62 @@
                 <div class="col-12">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
+
                             <thead class="table-dark">
                                 <tr>
-                                    <th scope="col">NOME FILE</th>
-                                    <th scope="col">DATA ULTIMA MODIFICA</th>
-                                    <th scope="col">STATO PRATICA</th>
-                                    <th scope="col">SIZE</th>
-                                    <th scope="col">FUNZIONI</th>
+                                    <th scope="col"
+                                        role="button"
+                                        tabindex="0"
+                                        :aria-sort="sortKey === 'nomeFile' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'"
+                                        @click="setSort('nomeFile')"
+                                        @keyup.enter="setSort('nomeFile')"
+                                        @keyup.space.prevent="setSort('nomeFile')">
+                                        NOME FILE
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#${sortDir}`"></use></svg>
+                                        
+                                    </th>
+
+                                    <th scope="col"
+                                        role="button"
+                                        tabindex="0"
+                                        :aria-sort="sortKey === 'dataUltimaModifica' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'"
+                                        @click="setSort('dataUltimaModifica')"
+                                        @keyup.enter="setSort('dataUltimaModifica')"
+                                        @keyup.space.prevent="setSort('dataUltimaModifica')">
+                                        DATA ULTIMA MODIFICA
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#${sortDir}`"></use></svg>
+
+
+                                    </th>
+
+                                    <th scope="col"
+                                        role="button"
+                                        tabindex="0"
+                                        :aria-sort="sortKey === 'statoPratica' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'"
+                                        @click="setSort('statoPratica')"
+                                        @keyup.enter="setSort('statoPratica')"
+                                        @keyup.space.prevent="setSort('statoPratica')">
+                                        STATO PRATICA
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#${sortDir}`"></use></svg>
+
+                                    </th>
+
+                                    <th scope="col"
+                                        role="button"
+                                        tabindex="0"
+                                        :aria-sort="sortKey === 'size' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'"
+                                        @click="setSort('size')"
+                                        @keyup.enter="setSort('size')"
+                                        @keyup.space.prevent="setSort('size')">
+                                        SIZE
+                                            <svg class="icon" style="color:white"><use :href="`${spritesHref}#${sortDir}`"></use></svg>
+                                        </th>
+<th scope="col">FUNZIONI</th>
                                 </tr>
                             </thead>
+
                             <tbody>
-                                <tr v-for="(item, index) in filteredItems"
+                                <tr v-for="(item, index) in sortedItems"
                                     :key="item.id || (item.nomeFile + '_' + index)"
                                     :class="index % 2 === 0 ? 'bg-light' : 'bg-light2'">
                                     <td>
@@ -266,6 +311,78 @@
 - Sezione A
 - Sezione B
 © 2025`
+
+
+    //ordinamento tabella
+
+
+    import { computed, onMounted, nextTick, ref } from 'vue'
+
+    type SortKey = 'nomeFile' | 'dataUltimaModifica' | 'statoPratica' | 'size'
+    type SortDir = 'asc' | 'desc'
+
+    const sortKey = ref<SortKey>('dataUltimaModifica') // default: ordina per data
+    const sortDir = ref<SortDir>('desc')               // default: più recenti prima
+
+    function setSort(key: SortKey) {
+        if (sortKey.value === key) {
+            sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+        } else {
+            sortKey.value = key
+            sortDir.value = 'asc'
+        }
+    }
+
+
+
+    function safeLower(s: string | null | undefined): string {
+        return (s ?? '').toString().trim().toLowerCase()
+    }
+
+    function parseSize(val: string | number | null | undefined): number {
+        // Se val è "1.2 MB" o "850 KB" normalizza in byte, altrimenti tenta Number
+        if (typeof val === 'number') return val
+        if (typeof val !== 'string') return 0
+        const trimmed = val.trim()
+        const m = trimmed.match(/^([\d.,]+)\s*(kb|mb|gb|b)?$/i)
+        if (!m) {
+            const n = Number(trimmed.replace(/[^\d.-]/g, ''))
+            return isNaN(n) ? 0 : n
+        }
+        const num = Number(m[1].replace(',', '.'))
+        const unit = (m[2] || 'b').toLowerCase()
+        const factor = unit === 'gb' ? 1024 ** 3 : unit === 'mb' ? 1024 ** 2 : unit === 'kb' ? 1024 : 1
+        const n = num * factor
+        return isNaN(n) ? 0 : n
+    }
+
+    function compareByKey(a: Item, b: Item, key: SortKey): number {
+        switch (key) {
+            case 'nomeFile': {
+                return safeLower(a.nomeFile).localeCompare(safeLower(b.nomeFile))
+            }
+            case 'statoPratica': {
+                return safeLower(a.statoPratica || '').localeCompare(safeLower(b.statoPratica || ''))
+            }
+            case 'dataUltimaModifica': {
+                const dA = parseDDMMYYYY(a.dataUltimaModifica) ?? new Date(0)
+                const dB = parseDDMMYYYY(b.dataUltimaModifica) ?? new Date(0)
+                return dA.getTime() - dB.getTime()
+            }
+            case 'size': {
+                return parseSize(a.size) - parseSize(b.size)
+            }
+        }
+    }
+
+    const sortedItems = computed<Item[]>(() => {
+        const items = filteredItems.value.slice()
+        const dir = sortDir.value === 'asc' ? 1 : -1
+        const key = sortKey.value
+        return items.sort((a, b) => compareByKey(a, b, key) * dir)
+    })
+
+
 </script>
 
 <style scoped>
@@ -291,4 +408,11 @@
     .table tbody tr.bg-light2 {
         background-color: #a5a5a5 !important;
     }
+
+
+    th[role="button"] {
+        cursor: pointer;
+        user-select: none;
+    }
+
 </style>
