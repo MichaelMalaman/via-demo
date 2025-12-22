@@ -26,14 +26,6 @@
                     </div>
 
                     <div class="modal-body">
-
-
-
-
-
-
-
-
                             <!-- Header + Stepper di sintesi stato corrente -->
                             <header class="mb-3">
                                 <h2 class="h5 mb-2">Cronologia approvazione</h2>

@@ -1,171 +1,297 @@
-﻿import { createStore } from 'vuex'
+﻿
+<template>
+    <div class="container-fluid px-4">
+        <!-- Barra azioni -->
+        <div class="row align-items-center mt-4 mb-4">
+            <div class="col-6 d-flex justify-content-start">
+                <button class="btn btn-outline-primary bg-white" @click="goToDashboard" style="height: 50px;">
+                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
+                </button>
+            </div>
 
-/* --------- Helpers (solo interni allo store) --------- */
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 B'
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(1024))
-  const value = bytes / Math.pow(1024, i)
-  return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${sizes[i]}`
-}
-function getExtension(name) {
-  const ext = name.split('.').pop() || ''
-  return ext.toUpperCase()
-}
-function todayDDMMYYYY() {
-  const d = new Date()
-  const dd = String(d.getDate()).padStart(2, '0')
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const yyyy = d.getFullYear()
-  return `${dd}/${mm}/${yyyy}`
-}
+            <div class="col-6 d-flex justify-content-end">
+                <UploadDocument />
+            </div>
+        </div>
 
-export default createStore({
-  state: {
-    // stato generico esistente
-    message: '',//scritta generica
-    username: '',
-    password: '',
+        <!-- FILTRI IN UNICA RIGA -->
+        <div class="filters-toolbar px-3 py-2 d-flex gap-3 align-items-end flex-nowrap overflow-auto">
+            <!-- Nome file -->
+            <div class="filter-item" style="min-width: 260px; max-width: 320px;">
+                <label for="f-nome" class="form-label mb-1">Nome file</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-search`"></use></svg>
+                    </span>
+                    <input id="f-nome"
+                           type="text"
+                           class="form-control"
+                           v-model="filters.nomeFile"
+                           placeholder="Digita per cercare (es. impianto)" />
+                    <button class="btn btn-outline-secondary bg-white" type="button" @click="filters.nomeFile = null">
+                        Pulisci
+                    </button>
+                </div>
+            </div>
 
-    // -------- Stato documenti & filtri (globale) --------
-    items: [
-      { nomeFile: 'VALUTAZIONE TERRENO', dataUltimaModifica: '15/02/2022', statoPratica: 'chiusa', tipoFile: 'PDF', size: '110 KB', funzioni: '' },
-      { nomeFile: 'MATERIALI COSTRUZIONE', dataUltimaModifica: '28/07/2023', statoPratica: 'in attesa di approvazione', tipoFile: 'PDF', size: '342 KB', funzioni: '' },
-      { nomeFile: 'IMPIANTO ELETTRICO', dataUltimaModifica: '09/11/2024', statoPratica: 'respinta', tipoFile: 'CAD', size: '342 KB', funzioni: '' },
-      { nomeFile: 'MODELLO 3D PROGETTO', dataUltimaModifica: '21/03/2025', statoPratica: 'chiusa', tipoFile: 'PDF', size: '110 KB', funzioni: '' },
-      { nomeFile: 'MAPPE ZONA SCAVI', dataUltimaModifica: '04/08/2022', statoPratica: 'chiusa', tipoFile: 'PDF', size: '342 KB', funzioni: '' },
-      { nomeFile: 'VALUTAZIONE TERRENO', dataUltimaModifica: '17/01/2024', statoPratica: 'chiusa', tipoFile: 'PDF', size: '342 KB', funzioni: '' },
-      { nomeFile: 'MATERIALI COSTRUZIONE', dataUltimaModifica: '30/09/2023', statoPratica: 'chiusa', tipoFile: 'PDF', size: '110 KB', funzioni: '' },
-      { nomeFile: 'IMPIANTO ELETTRICO', dataUltimaModifica: '12/06/2022', statoPratica: 'chiusa', tipoFile: 'CAD', size: '342 KB', funzioni: '' },
-      { nomeFile: 'MODELLO 3D PROGETTO', dataUltimaModifica: '08/05/2025', statoPratica: 'chiusa', tipoFile: 'CAD', size: '342 KB', funzioni: '' },
-      { nomeFile: 'PARCO MONTALE', dataUltimaModifica: '19/10/2024', statoPratica: 'chiusa', tipoFile: 'PDF', size: '110 KB', funzioni: '' },
-      { nomeFile: 'MATERIALI COSTRUZIONE', dataUltimaModifica: '03/03/2023', statoPratica: 'chiusa', tipoFile: 'PDF', size: '342 KB', funzioni: '' },
-      { nomeFile: 'IMPIANTO ELETTRICO', dataUltimaModifica: '27/07/2022', statoPratica: 'chiusa', tipoFile: 'PDF', size: '342 KB', funzioni: '' },
-      { nomeFile: 'IMPIANTO EOLICO', dataUltimaModifica: '14/02/2025', statoPratica: 'chiusa', tipoFile: 'PDF', size: '110 KB', funzioni: '' },
-      { nomeFile: 'IMPIANTO ELETTRICO', dataUltimaModifica: '06/11/2023', statoPratica: 'chiusa', tipoFile: 'JPEG', size: '342 KB', funzioni: '' }
-    ],
-    filters: {
-      nomeFile: null,
-      dataDal: null, // ISO 'YYYY-MM-DD'
-      dataAl: null,
-      statoPratica: null
+
+
+            <!-- Data Dal -->
+            <div class="filter-item" style="min-width: 220px; max-width: 260px;">
+                <VueDatePickerDal :model-value="filters.dataDal"
+                                  @update:modelValue="v => filters.dataDal = v" />
+            </div>
+
+            <!-- Data Al -->
+            <div class="filter-item" style="min-width: 220px; max-width: 260px;">
+                <VueDatePickerAl :model-value="filters.dataAl"
+                                 @update:modelValue="v => filters.dataAl = v" />
+            </div>
+
+            <!-- Stato pratica -->
+            <div class="filter-item" style="min-width: 220px; max-width: 260px;">
+                <label for="f-stato" class="form-label mb-1">Stato pratica</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-right`"></use></svg>
+                    </span>
+                    <select id="f-stato" class="form-select" v-model="filters.statoPratica">
+                        <option :value="null">Tutti</option>
+                        <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
+                    </select>
+                    <button class="btn btn-outline-secondary bg-white" type="button" @click="filters.statoPratica = null">
+                        Pulisci
+                    </button>
+                </div>
+            </div>
+
+            <!-- Badge conteggio + reset -->
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="badge rounded-pill">
+                    Mostrati {{ filteredItems.length }} di {{ currentItems.length }}
+                </span>
+                <button class="btn btn-link text-decoration-none bg-white" @click="resetFilters">Reset filtri</button>
+            </div>
+        </div>
+
+        <!-- Tabella -->
+        <div class="row mt-4 mb-4">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">NOME FILE</th>
+                                <th scope="col">DATA ULTIMA MODIFICA</th>
+                                <th scope="col">STATO PRATICA</th>
+                                <th scope="col">SIZE</th>
+                                <th scope="col">FUNZIONI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, index) in filteredItems"
+                                :key="item.id || (item.nomeFile + '_' + index)"
+                                :class="index % 2 === 0 ? 'bg-light' : 'bg-light2'">
+                                <td>
+                                    <DownloadSimulator :filename="item.nomeFile" :content="testo" :mime-type="item.tipoFile" />
+                                </td>
+
+                                <td>
+                                    {{ item.dataUltimaModifica }}
+                                    <WorkflowTimeline />
+                                </td>
+
+                                <td>
+                                    <span v-if="item.statoPratica === 'chiusa'" class="badge rounded-pill bg-success">
+                                        {{ item.statoPratica }}
+                                    </span>
+                                    <span v-else-if="item.statoPratica === 'respinta'" class="badge rounded-pill bg-danger">
+                                        {{ item.statoPratica }}
+                                    </span>
+                                    <span v-else-if="['in attesa di approvazione','in stato di approvazione'].includes(item.statoPratica || '')"
+                                          class="badge rounded-pill bg-warning text-dark">
+                                        {{ item.statoPratica }}
+                                    </span>
+                                    <span v-else>-</span>
+                                </td>
+
+                                <td>{{ item.size }}</td>
+                                <td class="text-end">
+                                    <DeleteItemButton :id="item.id"
+                                                      variant="outline-danger"
+                                                      size="sm"
+                                                      :confirm="true"
+                                                      @deleted="onDeleted">
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
+                                        Elimina
+                                    </DeleteItemButton>
+                                </td>
+                            </tr>
+
+                            <tr v-if="!filteredItems.length">
+                                <td colspan="5" class="text-center text-secondary py-4">Nessun risultato</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+
+<script setup lang="ts">
+    import { useRouter } from 'vue-router'
+    import { useStore } from 'vuex'
+    import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+    import VueDatePickerAl from '../components/VueDatePickerAl.vue'
+    import VueDatePickerDal from '../components/VueDatePickerDal.vue'
+    import DownloadSimulator from '../components/DownloadSimulator.vue'
+    import WorkflowTimeline from '../components/WorkflowTimeline.vue'
+    import UploadDocument from '../components/UploadDocument.vue'
+    import DeleteItemButton from '../components/DeleteItemButton.vue' // usa path relativo se @ non configurato
+    import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
+
+    declare global { interface Window { bootstrap: any } }
+
+    const router = useRouter()
+    const store = useStore()
+    const spritesHref = spritesUrl
+
+    /* ---------- Tipi ---------- */
+    type Item = {
+        id?: string
+        nomeFile: string
+        dataUltimaModifica: string   // 'DD/MM/YYYY'
+        statoPratica?: string
+        tipoFile: string
+        size: string
+        funzioni?: string
     }
-  },
 
-  mutations: {
-    // --- esistenti ---
-    setMessage(state, newMessage) {
-      state.message = newMessage
-    },
-    setUsername(state, payload) {
-      state.username = payload
-    },
-    setPassword(state, newPassword) {
-      state.password = newPassword
-    },
-    clearPassword(state) {
-      state.password = ''
-    },
+    /* ---------- Dati (da Vuex) ---------- */
+    const currentItems = computed<Item[]>(() => store.state.items)
 
-    // --- items ---
-    setItems(state, newItems) {
-      state.items = Array.isArray(newItems) ? [...newItems] : []
-    },
-    unshiftItem(state, newItem) {
-      state.items.unshift(newItem)
-    },
-    deleteItem(state, payload) {
-      // payload può essere index o l'oggetto item stesso
-      if (typeof payload === 'number') {
-        if (payload >= 0 && payload < state.items.length) state.items.splice(payload, 1)
-        return
-      }
-      if (payload && typeof payload === 'object') {
-        const idx = state.items.indexOf(payload)
-        if (idx !== -1) {
-          state.items.splice(idx, 1)
-          return
+    /* ---------- FILTRI (UI locale + sync con Vuex) ---------- */
+    const filters = ref<{
+        nomeFile: string | null
+        dataDal: string | null   // ISO 'YYYY-MM-DD'
+        dataAl: string | null
+        statoPratica: string | null
+    }>({
+        nomeFile: store.state.filters.nomeFile ?? null,
+        dataDal: store.state.filters.dataDal ?? null,
+        dataAl: store.state.filters.dataAl ?? null,
+        statoPratica: store.state.filters.statoPratica ?? null
+    })
+
+    watch(filters, (f) => { if (f.dataDal === '') f.dataDal = null; if (f.dataAl === '') f.dataAl = null }, { deep: true })
+    watch(filters, (f) => { store.commit('setFilters', { ...f }) }, { deep: true })
+    watch(() => store.state.filters, (f) => { filters.value = { ...f } }, { deep: true })
+
+    function resetFilters() { store.dispatch('resetFilters') }
+
+    const statusOptions = computed<string[]>(() => store.getters.statusOptions)
+
+    /* ---------- Utilità date ---------- */
+    function parseDDMMYYYY(s: string): Date | null {
+        const parts = s.split('/')
+        if (parts.length !== 3) return null
+        const [dd, mm, yyyy] = parts.map(Number)
+        const d = new Date(yyyy, mm - 1, dd)
+        return isNaN(d.getTime()) ? null : d
+    }
+    function parseISODate(s: string | null): Date | null {
+        if (!s || s.trim() === '') return null
+        const d = new Date(s + 'T00:00:00')
+        return isNaN(d.getTime()) ? null : d
+    }
+
+    /* Mantieni il range coerente */
+    watch(() => filters.value.dataDal, (newDal) => {
+        const dal = parseISODate(newDal)
+        const al = parseISODate(filters.value.dataAl)
+        if (dal && al && dal > al) filters.value.dataAl = newDal
+    })
+    watch(() => filters.value.dataAl, (newAl) => {
+        const dal = parseISODate(filters.value.dataDal)
+        const al = parseISODate(newAl)
+        if (dal && al && dal > al) filters.value.dataDal = newAl
+    })
+
+    /* ---------- Computed: filtraggio ---------- */
+    const filteredItems = computed<Item[]>(() => {
+        const nome = (filters.value.nomeFile || '').trim().toLowerCase()
+        const stato = (filters.value.statoPratica || '').trim().toLowerCase()
+        const tokens = nome ? nome.split(/\s+/).filter(Boolean) : []
+
+        const dal = parseISODate(filters.value.dataDal)
+        const al = parseISODate(filters.value.dataAl)
+
+        return currentItems.value.filter(it => {
+            const nomeLC = it.nomeFile.toLowerCase()
+            const nomeOk = tokens.length ? tokens.every(t => nomeLC.includes(t)) : true
+
+            const dItem = parseDDMMYYYY(it.dataUltimaModifica)
+            const dalOk = dal ? (dItem ? dItem >= dal : false) : true
+            const alOk = al ? (dItem ? dItem <= al : false) : true
+
+            const statoOk = stato ? (it.statoPratica || '').toLowerCase() === stato : true
+
+            return nomeOk && dalOk && alOk && statoOk
+        })
+    })
+
+    /* ---------- Bootstrap init (Tooltip) ---------- */
+    onMounted(async () => {
+        if (window.bootstrap) {
+            await nextTick()
+            document
+                .querySelectorAll<HTMLElement>('[data-bs-toggle="tooltip"]')
+                .forEach(el => new window.bootstrap.Tooltip(el))
+        } else {
+            console.warn('Bootstrap Italia bundle non caricato: window.bootstrap è undefined.')
         }
-        // fallback match per campo chiave
-        const idx2 = state.items.findIndex(i =>
-          i.nomeFile === payload.nomeFile &&
-          i.dataUltimaModifica === payload.dataUltimaModifica &&
-          i.tipoFile === payload.tipoFile &&
-          i.size === payload.size
-        )
-        if (idx2 !== -1) state.items.splice(idx2, 1)
-      }
-    },
+    })
 
-    // --- filtri ---
-    setFilters(state, newFilters) {
-      state.filters = { ...state.filters, ...newFilters }
-    },
-    setFilterField(state, { key, value }) {
-      if (key in state.filters) state.filters[key] = value
-    },
-    resetFilters(state) {
-      state.filters = { nomeFile: null, dataDal: null, dataAl: null, statoPratica: null }
+    onBeforeUnmount(() => {
+        // no-op
+    })
+
+    /* ---------- Router ---------- */
+    function goToDashboard() { router.push({ name: 'dashboard' }) }
+
+    /* ---------- Callback eliminazione ---------- */
+    function onDeleted(id: string) { console.log('Eliminato:', id) }
+
+    /* Contenuto per DownloadSimulator */
+    const testo = `Relazione finale progetto
+- Sezione A
+- Sezione B
+© 2025`
+</script>
+
+<style scoped>
+    /* Toolbar filtri in singola riga con scroll se necessario */
+    .filters-toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
     }
-  },
 
-  actions: {
-    // --- esistenti (fix email -> username) ---
-    updateMessage({ commit }, newMessage) {
-      commit('setMessage', newMessage)
-    },
-    updateUsername({ commit }, newUsername) {
-      commit('setUsername', newUsername)
-    },
-    updatePassword({ commit }, newPassword) {
-      commit('setPassword', newPassword)
-    },
-    // esempio: login + pulizia password
-    async doLogin({ state, commit }) {
-      // qui chiameresti la tua API di autenticazione
-      // await api.login({ username: state.username, password: state.password })
-      // se ok: salva token (non la password) in un altro modulo/chiave
-      commit('clearPassword')
-    },
+        .filters-toolbar .filter-item {
+            flex: 0 0 auto;
+        }
 
-    // --- items ---
-    addFileAsFirstItem({ commit }, file) {
-      const nuovo = {
-        nomeFile: file.name,
-        dataUltimaModifica: todayDDMMYYYY(),
-        tipoFile: getExtension(file.name) || 'FILE',
-        size: formatBytes(file.size) || '',
-          statoPratica: 'in attesa di approvazione',
-        funzioni: ''
-      }
-      commit('unshiftItem', nuovo)
-    },
-    deleteItem({ commit }, payload) {
-      commit('deleteItem', payload)
-    },
-
-    // --- filtri ---
-    resetFilters({ commit }) {
-      commit('resetFilters')
+    /* Tabella a righe alterne */
+    .table tbody tr.bg-light {
+        background-color: #f9f9f9 !important;
     }
-  },
 
-  getters: {
-    // --- esistenti ---
-    message: state => state.message,
-    username: state => state.username,
-    hasUsername: state => !!state.username,
-
-    // --- items/filtri ---
-    statusOptions: state => {
-      const set = new Set()
-      for (const i of state.items) {
-        const s = (i.statoPratica || '').trim()
-        if (s) set.add(s)
-      }
-      return Array.from(set).sort()
+    .table tbody tr.bg-light2 {
+        background-color: #a5a5a5 !important;
     }
-    // (se vuoi il filtraggio direttamente nello store, possiamo aggiungere
-    //  un getter filteredItems che prende state.items + state.filters)
-  }
-})
+</style>

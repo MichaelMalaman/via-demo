@@ -65,9 +65,8 @@
                                     <!-- Parte sinistra: icona in cerchio -->
                                     <div class="d-flex align-items-center justify-content-center bg-white"
                                          style="width: 56px; height: 56px; border-radius: 50%;">
-                                        <svg class="icon" style="width: 32px; height: 32px;">
-                                            {{spritesUrl}}#it-user
-                                        </svg>
+                                        <svg class="icon"><use :href="`${spritesHref}#it-user`"></use></svg>
+
                                     </div>
                                     <!-- Linea di separazione -->
                                     <div style="width: 1px; background-color: white; margin: 0 12px;"></div>
@@ -195,6 +194,7 @@
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
+    const spritesHref = spritesUrl
 
     // Tipi bootstrap in window (per TS)
     declare global {

@@ -6,9 +6,8 @@
             <!-- Pulsante sinistro -->
             <div class="col-auto p-0">
                 <button class="btn btn-light text-primary d-inline-flex align-items-center" @click="goToHome">
-                    <svg class="icon me-2" style="width:20px;height:20px;">
-                        <use>spritesUrl</use>
-                    </svg>
+                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
+
                     Indietro
                 </button>
             </div>
@@ -18,9 +17,8 @@
                 <button v-if="store.state.username === 'pippo'"
                         class="btn btn-light text-primary d-inline-flex align-items-center"
                         @click="creaNuovaPratica">
-                    <svg class="icon me-2" style="width:20px;height:20px;">
-                        <use>spritesUrl </use>
-                    </svg>
+                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-plus`"></use></svg>
+
                     Crea nuova pratica
                 </button>
             </div>
@@ -85,18 +83,16 @@
                                             @click="openDeleteDialog(item)"
                                             aria-label="Elimina"
                                             title="Elimina">
-                                        <svg class="icon" style="width:16px;height:16px;">
-                                            <use :href="spritesUrl"></use>
-                                        </svg>
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
+
                                     </button>
                                     <button type="button"
                                             class="btn btn-outline-primary btn-sm"
                                             @click="openEditDialog(item)"
                                             aria-label="Modifica"
                                             title="Modifica">
-                                        <svg class="icon" style="width:16px;height:16px;">
-                                            <use :href="spritesUrl"></use>
-                                        </svg>
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-pencil`"></use></svg>
+
                                     </button>
                                 </td>
                             </tr>
@@ -151,18 +147,16 @@
                                             @click="openDeleteDialog(item)"
                                             aria-label="Elimina"
                                             title="Elimina">
-                                        <svg class="icon" style="width:16px;height:16px;">
-                                            <use :href="spritesUrl"></use>
-                                        </svg>
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
+
                                     </button>
                                     <button type="button"
                                             class="btn btn-outline-primary btn-sm"
                                             @click="openEditDialog(item)"
                                             aria-label="Modifica"
                                             title="Modifica">
-                                        <svg class="icon" style="width:16px;height:16px;">
-                                            <use :href="spritesUrl"></use>
-                                        </svg>
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-edit`"></use></svg>
+
                                     </button>
                                 </td>
                             </tr>
@@ -272,7 +266,7 @@
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
-
+    const spritesHref = spritesUrl
     // Bootstrap (JS bundle disponibile grazie all'import nel main.ts)
     declare global { interface Window { bootstrap: any } }
 
