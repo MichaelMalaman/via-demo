@@ -26,149 +26,100 @@
                     </div>
 
                     <div class="modal-body">
-                            <!-- Header + Stepper di sintesi stato corrente -->
-                            <header class="mb-3">
-                                <h2 class="h5 mb-2">Cronologia approvazione</h2>
 
-                                <!-- Stepper solo-intestazione (sintesi fasi) -->
-                                <div class="steppers">
-                                    <div class="steppers-header">
-                                        <ul>
-                                            <li :class="{ confirmed: currentStepIndex > 0 }">
-                                                Invio
-                                                <svg class="icon"><use :href="`${spritesHref}#it-arrow-right`"></use></svg>
+                        <div class="timeline-wrapper">
 
-                                            </li>
 
-                                            <li :class="{ confirmed: currentStepIndex > 1, active: currentStepIndex === 1 }">
-                                                Revisione
-                                                <svg class="icon"><use :href="`${spritesHref}#it-arrow`"></use></svg>
-                                            </li>
+                            <div class="timeline-track">
 
-                                            <li :class="{ active: currentStepIndex >= 2 }">
-                                                Decisione
-                                                <span v-if="currentStepIndex >= 2" class="visually-hidden">Attivo</span>
-                                            </li>
-                                        </ul>
-                                        <span class="steppers-index" aria-hidden="true">{{ stepperIndexLabel }}</span>
-                                    </div>
+
+                                <!--  ICONA INIZIO LINEA (centrata sulla traccia) -->
+                                <div class="timeline-cap timeline-cap-start d-none d-md-flex">
+                                    <!-- TODO: icona inizio -->
+                                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-star-outline`"></use></svg>
+
                                 </div>
-                            </header>
 
-                            <!-- FILTRI (opzionali) -->
-                            <div class="d-flex gap-2 align-items-center flex-wrap mb-3">
-                                <button class="btn btn-sm"
-                                        :class="filterStatus ? 'btn-outline-primary' : 'btn-primary'"
-                                        @click="filterStatus = ''">
-                                    Tutti
-                                </button>
 
-                                <button class="btn btn-sm btn-outline-secondary" @click="filterStatus = 'inviato'">
-                                    <span class="badge bg-secondary me-1" aria-hidden="true">●</span> Inviato
-                                </button>
+                                <div class="row gx-0">
+                                    <div class="col-12" v-for="ev in events" :key="ev.id">
+                                        <!-- Ogni evento: griglia a tre colonne da md in su -->
+                                        <div class="timeline-item tl-grid">
 
-                                <button class="btn btn-sm btn-outline-warning" @click="filterStatus = 'in_revisione'">
-                                    <span class="badge bg-warning text-dark me-1" aria-hidden="true">●</span> In revisione
-                                </button>
+                                            <!-- Etichetta 'Oggi' se la data è odierna -->
+                                            <span v-if="isToday(ev.date)" class="tl-today-label d-none d-lg-inline">Oggi</span>
 
-                                <button class="btn btn-sm btn-outline-success" @click="filterStatus = 'approvato'">
-                                    <span class="badge bg-success me-1" aria-hidden="true">●</span> Approvato
-                                </button>
-
-                                <button class="btn btn-sm btn-outline-danger" @click="filterStatus = 'respinto'">
-                                    <span class="badge bg-danger me-1" aria-hidden="true">●</span> Respinto
-                                </button>
-                            </div>
-
-                            <!-- TIMELINE -->
-                            <div class="it-timeline-wrapper">
-                                <div class="row">
-                                    <div class="col-12" v-for="(ev, idx) in filteredEvents" :key="ev.id">
-
-                                        <div class="timeline-element">
-                                            <!-- Etichetta 'Oggi' quando l'evento è il più recente -->
-                                            <span v-if="idx === 0 && isToday(ev.date)" class="it-now-label d-none d-lg-flex">Oggi</span>
-
-                                            <!-- PIN della timeline (passato/presente/futuro) -->
-                                            <h3 class="it-pin-wrapper" :class="pinClass(ev, idx)">
-                                                <div class="pin-icon">
-                                                    <svg class="icon" role="img">
-                                                        <title>{{ pinTitle(ev.status) }}</title>
-                                                        <use :href="iconHref(ev.status)"></use></svg></div>
-                               <div class="pin-text">
-                <span>{{ formatMonthYear(ev.date) }}</span>
-              </div>
-                                            </h3>
-
-                                            <!-- CARD contenuto dell'evento (nuovo componente .it-card) -->
-                                            <article class="it-card rounded shadow-sm border">
-                                                <!-- Titolo / azione -->
-                                                <h4 class="it-card-title">
-                                                    <a :href="titleFor(ev)">{{ titleFor(ev) }}</a>
-                                                </h4>
-
-                                                <!-- Body con avatar, metadati e commento -->
-                                                <div class="it-card-body">
-                                                    <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
-                                                        <!-- Avatar + anagrafica -->
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <!-- Avatar (BI) -->
-                                                            <div class="avatar size-sm" v-if="ev.actor.avatar">
-                                                                AVATER
-                                                            </div>
-                                                            <div class="avatar size-sm" v-else aria-hidden="true">
-                                                                <!-- fallback icona utente -->
-                                                                <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
-
-                                                                <span class="visually-hidden">{{ ev.actor.name }}</span>
-                                                            </div>
-
-                                                            <div class="d-flex flex-column">
-                                                                <strong>{{ ev.actor.name }}</strong>
-                                                                <small class="text-secondary">{{ ev.actor.role }}</small>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Stato -->
-                                                        <span class="badge" :class="statusBadgeClass(ev.status)">
-                                                            {{ statusLabel(ev.status) }}
-
-                                                        </span>
+                                            <!-- SINISTRA: card se alignLeft === true -->
+                                            <div class="tl-left d-none d-md-block">
+                                                <article v-if="ev.alignLeft" class="card shadow-sm border-0 tl-card">
+                                                    <div class="card-body">
+                                                        <!-- TODO: icona/avatar (aggiungerai tu, es. <svg class="icon">...</svg>) -->
+                                                        <h4 class="h6 mb-1">{{ ev.title ?? 'Aggiornamento' }}</h4>
+                                                        <p v-if="ev.comment" class="mb-2">{{ ev.comment }}</p>
+                                                        <small class="text-secondary">
+                                                            <time :datetime="ev.date">{{ formatDateTime(ev.date) }}</time>
+                                                        </small>
                                                     </div>
+                                                </article>
+                                            </div>
 
-                                                    <!-- Commento (se presente) -->
-                                                    <p v-if="ev.comment" class="it-card-text mb-0">{{ ev.comment }}</p>
+                                            <!-- PIN centrale (semplice) -->
+                                            <div class="tl-pin">
+                                                <div class="pin">
+                                                    <!-- TODO: icona del PIN (aggiungerai tu, es. <svg class="icon">...</svg>) -->
+                                                    <span class="pin-text">{{ formatMonthYear(ev.date) }}</span>
                                                 </div>
+                                            </div>
 
-                                                <!-- Footer: data/ora -->
-                                                <footer class="it-card-related it-card-footer">
-                                                    <time class="it-card-date" :datetime="ev.date">
-                                                        {{ formatDateTime(ev.date) }}
-                                                    </time>
-                                                </footer>
-                                            </article>
+                                            <!-- DESTRA: card se alignLeft === false -->
+                                            <div class="tl-right d-none d-md-block">
+                                                <article v-if="!ev.alignLeft" class="card shadow-sm border-0 tl-card">
+                                                    <div class="card-body">
+                                                        <!-- TODO: icona/avatar (aggiungerai tu, es. <svg class="icon">...</svg>) -->
+                                                        <h4 class="h6 mb-1">{{ ev.title ?? 'Aggiornamento' }}</h4>
+                                                        <p v-if="ev.comment" class="mb-2">{{ ev.comment }}</p>
+                                                        <small class="text-secondary">
+                                                            <time :datetime="ev.date">{{ formatDateTime(ev.date) }}</time>
+                                                        </small>
+                                                    </div>
+                                                </article>
+                                            </div>
+
+                                            <!-- MOBILE: card sotto il PIN (ignora alignLeft per leggibilità) -->
+                                            <div class="tl-mobile d-block d-md-none">
+                                                <article class="card shadow-sm border-0 tl-card mt-2">
+                                                    <div class="card-body">
+                                                        <!-- TODO: icona/avatar (aggiungerai tu) -->
+                                                        <h4 class="h6 mb-1">{{ ev.title ?? 'Aggiornamento' }}</h4>
+                                                        <p v-if="ev.comment" class="mb-2">{{ ev.comment }}</p>
+                                                        <small class="text-secondary">
+                                                            <time :datetime="ev.date">{{ formatDateTime(ev.date) }}</time>
+                                                        </small>
+                                                    </div>
+                                                </article>
+                                            </div>
+
                                         </div>
-
                                     </div>
                                 </div>
+
+                                <!-- ICONA FINE LINEA (centrata sulla traccia) -->
+                                <div class="timeline-cap timeline-cap-end d-none d-md-flex">
+                                    <!-- TODO: icona fine -->
+                                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-star-full`"></use></svg>
+
+                                </div>
+
                             </div>
 
+                            </div>
 
+                        </div>
 
-
-
-
-
-
-
-
-
-
-
-                    </div>
 
                     <div class="modal-footer">
                         <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Chiudi</button>
+                        <button class="btn btn-primary">Azione</button>
                     </div>
                 </div>
             </div>
@@ -176,170 +127,432 @@
     </Teleport>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
     const spritesHref = spritesUrl
 
+    type TimelineEvent = {
+        id: number | string;
+        date: string;
+        title?: string;
+        comment?: string;
+        alignLeft: boolean;
+    }
 
-import { computed, reactive, ref } from 'vue'
 
-    /**
-     * MOCK DATI: cronologia eventi (più recente per primo).
-     * Adatta le proprietà alle tue API.
-     */
-    const events = reactive([
+    // ⭐️ Qui dichiari il tuo JSON (mock) direttamente nel componente
+
+    const events = [
+        {
+            id: 13,
+            date: '2024-12-21T09:00:00+01:00',
+            title: 'Inviato',
+            comment: 'test',
+            alignLeft: true
+        },
+        {
+            id: 12,
+            date: '2024-12-21T09:00:00+01:00',
+            title: 'Inviato',
+            comment: 'Il proponente ha caricato la Relazione tecnica principale e la Sintesi non tecnica per avvio iter VIA.',
+            alignLeft: true
+        },
+        {
+            id: 11,
+            date: '2025-01-21T15:20:00+01:00',
+            title: 'In revisione',
+            comment: 'Verifica formale dei file: estensioni, integrità e leggibilità. Richiesto indice dei capitoli nella Relazione.',
+            alignLeft: false
+        },
+        {
+            id: 10,
+            date: '2025-02-22T10:30:00+01:00',
+            title: 'In revisione',
+            comment: 'Controllo Quadro normativo: presenza riferimenti a D.Lgs. 152/2006 e Direttiva 2014/52/UE, PAI/PPTR.',
+            alignLeft: true
+        },
+        {
+            id: 9,
+            date: '2025-03-22T16:45:00+01:00',
+            title: 'In revisione',
+            comment: 'Analisi ambientale: coerenza dei dati su suolo, aria, acqua, flora/fauna; richiesta fonti e anni di rilievo.',
+            alignLeft: false
+        },
+        {
+            id: 8,
+            date: '2025-04-23T09:15:00+01:00',
+            title: 'In revisione',
+            comment: 'Cartografie e mappe GIS: verificate proiezioni e layer; richiesto shapefile dei vincoli Natura 2000.',
+            alignLeft: true
+        },
+        {
+            id: 7,
+            date: '2025-05-23T12:00:00+01:00',
+            title: 'In revisione',
+            comment: 'Planimetrie e sezioni: controllo layout impianto, opere accessorie; richiesta scale e nord grafico.',
+            alignLeft: false
+        },
+        {
+            id: 6,
+            date: '2025-06-23T15:30:00+01:00',
+            title: 'In revisione',
+            comment: 'Analisi degli impatti: verificati impatti per fase (cantiere/esercizio/dismissione) e indicatori misurabili.',
+            alignLeft: true
+        },
         {
             id: 5,
-            status: 'approvato',
-            date: new Date().toISOString(),
-            actor: { name: 'Giulia Neri', role: 'Responsabile approvazioni', avatar: 'https://i.pravatar.cc/64?img=5' },
-            comment: 'Approvazione finale del componente.'
+            date: '2025-07-24T09:00:00+01:00',
+            title: 'In revisione',
+            comment: 'Misure di mitigazione/compensazione: controllata adeguatezza; richiesto piano di monitoraggio dettagliato.',
+            alignLeft: false
         },
         {
             id: 4,
-            status: 'in_revisione',
-            date: '2025-12-17T09:30:00+01:00',
-            actor: { name: 'Luca Bianchi', role: 'Revisore tecnico', avatar: 'https://i.pravatar.cc/64?img=12' },
-            comment: 'Revisionati test e documentazione.'
+            date: '2025-08-24T11:20:00+01:00',
+            title: 'In revisione',
+            comment: 'Tabelle e calcoli: verifica unità di misura, rumore/emissioni; richiesta allegare fogli di calcolo editabili.',
+            alignLeft: true
         },
         {
             id: 3,
-            status: 'in_revisione',
-            date: '2025-12-16T16:00:00+01:00',
-            actor: { name: 'Luca Bianchi', role: 'Revisore tecnico', avatar: 'https://i.pravatar.cc/64?img=12' },
-            comment: 'Richieste piccole modifiche di stile.'
+            date: '2025-09-24T14:40:00+01:00',
+            title: 'In revisione',
+            comment: 'Relazioni specialistiche: controllata presenza VINCA (se pertinente) e studi idrogeologici/geologici.',
+            alignLeft: false
         },
         {
             id: 2,
-            status: 'inviato',
-            date: '2025-12-16T10:12:00+01:00',
-            actor: { name: 'Mario Rossi', role: 'Richiedente', avatar: 'https://i.pravatar.cc/64?img=3' },
-            comment: 'Inviata richiesta di approvazione del componente.'
+            date: '2025-10-24T17:30:00+01:00',
+            title: 'Respinto',
+            comment: 'Iter sospeso: mancano allegati GIS dei vincoli e il piano di monitoraggio; richiesto invio integrazioni.',
+            alignLeft: true
         },
         {
             id: 1,
-            status: 'inviato',
-            date: '2025-12-15T18:45:00+01:00',
-            actor: { name: 'Mario Rossi', role: 'Richiedente', avatar: 'https://i.pravatar.cc/64?img=3' },
-            comment: 'Bozza salvata e validata.'
+            date: '2025-11-25T10:00:00+01:00',
+            title: 'Approvato',
+            comment: 'Pratica validata: documentazione completa e coerente; pubblicare avviso e avviare monitoraggi previsti.',
+            alignLeft: false
         }
-    ])
+    ]
 
-    /* Filtri */
-    const filterStatus = ref('') // '', 'inviato', 'in_revisione', 'approvato', 'respinto'
-    const filteredEvents = computed(() =>
-        filterStatus.value ? events.filter(e => e.status === filterStatus.value) : events
-    )
 
-    /* Stepper: calcolo dello step corrente (0: Invio, 1: Revisione, 2: Decisione) */
-    const currentStepIndex = computed(() => {
-        const hasDecision = filteredEvents.value.some(e => ['approvato', 'respinto'].includes(e.status))
-        if (hasDecision) return 2
-        const inReview = filteredEvents.value.some(e => e.status === 'in_revisione')
-        if (inReview) return 1
-        return 0
-    })
-    const stepperIndexLabel = computed(() => {
-        // etichetta tipo "2/3" dove 3 = numero totale step
-        const total = 3
-        return `${Math.min(currentStepIndex.value + 1, total)}/${total}`
-    })
-
-    /* Helpers UI */
-    const isToday = (iso) => {
-        const d = new Date(iso)
-        const today = new Date()
-        return (
-            d.getFullYear() === today.getFullYear() &&
-            d.getMonth() === today.getMonth() &&
-            d.getDate() === today.getDate()
-        )
+    /** Helpers di formattazione */
+    function isToday(iso: string) {
+        const d = new Date(iso); const t = new Date()
+        return d.getFullYear() === t.getFullYear() &&
+            d.getMonth() === t.getMonth() &&
+            d.getDate() === t.getDate()
     }
-
-    const formatDateTime = (iso) =>
-        new Date(iso).toLocaleString('it-IT', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+    function formatDateTime(iso: string) {
+        return new Date(iso).toLocaleString('it-IT', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
         })
-
-    const formatMonthYear = (iso) =>
-        new Date(iso).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })
-
-    const statusLabel = (s) =>
-    ({
-        inviato: 'Inviato',
-        in_revisione: 'In revisione',
-        approvato: 'Approvato',
-        respinto: 'Respinto'
-    }[s] || s)
-
-    const statusBadgeClass = (s) =>
-    ({
-        inviato: 'bg-secondary',
-        in_revisione: 'bg-warning text-dark',
-        approvato: 'bg-success',
-        respinto: 'bg-danger'
-    }[s] || 'bg-secondary')
-
-    const pinTitle = (s) =>
-    ({
-        inviato: 'Invio',
-        in_revisione: 'Revisione',
-        approvato: 'Approvazione',
-        respinto: 'Rifiuto'
-    }[s] || 'Evento')
-
-    /* Selettori icone (sprite SVG di Bootstrap Italia) */
-    const iconHref = (s) => {
-        const base = '/bootstrap-italia/dist/svg/sprites.svg#'
-        switch (s) {
-            case 'approvato':
-                return base + 'it-check'
-            case 'respinto':
-                return base + 'it-close'
-            case 'in_revisione':
-                return base + 'it-search'
-            case 'inviato':
-                return base + 'it-mail'
-            default:
-                return base + 'it-flag'
-        }
+    }
+    function formatMonthYear(iso: string) {
+        return new Date(iso).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })
     }
 
-    /* Varianti PIN (passato/presente/futuro) */
-    const pinClass = (ev, index) => {
-        // L'evento più recente è "presente" (it-now); gli altri passati (it-evidence)
-        if (index === 0) return 'it-now'
-        return 'it-evidence'
-    }
 
-    /* Titolo card per evento */
-    const titleFor = (ev) => {
-        switch (ev.status) {
-            case 'approvato':
-                return 'Componente approvato'
-            case 'respinto':
-                return 'Componente respinto'
-            case 'in_revisione':
-                return 'In revisione'
-            case 'inviato':
-                return 'Richiesta inviata'
-            default:
-                return 'Aggiornamento'
-        }
-    }
-
-``
-
-    // Nessun JS necessario: tutto è gestito da Bootstrap Italia via data-attributes
 </script>
 
+
 <style scoped>
-    /* Opzionale: se qualche stile locale interferisce con le animazioni */
-    .modal.show {
-        display: block; /* garantisce la visibilità quando show è  display: block; /* garantisce la visibilità quando show è presente */
+
+    
+/* Wrapper base: già presente */
+.timeline-wrapper { position: relative; }
+
+/* 🔧 Nuova "rotaia" verticale continua */
+@media (min-width: 768px) {
+  .timeline-track {
+    position: relative;
+    /* opzionale: dare un po' di spazio sopra/sotto
+       così la linea esce leggermente dai pin */
+    padding: 0.75rem 0;
+  }
+
+  .timeline-track::before {
+    content: '';
+    position: absolute;
+    top: 0;             /* parte dall'inizio del contenitore */
+    bottom: 0;          /* arriva fino alla fine */
+    left: 50%;          /* centrata */
+    width: 2px;
+    transform: translateX(-50%);
+    background: var(--bs-gray-300, #dee2e6);
+    z-index: 0;         /* sotto ai pin */
+  }
+
+  /* La tua grid: invariata */
+  .tl-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    column-gap: 1rem;
+    align-items: start;
+    position: relative;
+  }
+  .tl-left  { grid-column: 1; }
+  .tl-pin   { grid-column: 2; display: flex; justify-content: center; position: relative; z-index: 1; }
+  .tl-right { grid-column: 3; }
+
+  /* ❌ Disattiva la vecchia linea "a pezzi" su ogni item */
+  .tl-pin::before {
+    content: none !important;
+  }
+}
+
+/* Pin e card: come già avevi */
+.pin {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .25rem .5rem;
+  border-radius: .5rem;
+  background: var(--bs-light, #f8f9fa);
+  border: 1px solid var(--bs-gray-300, #dee2e6);
+  position: relative;
+  z-index: 1; /* sopra la linea continua */
+}
+.pin-text { font-size: .875rem; color: var(--bs-secondary-color, #6c757d); }
+.tl-card  { max-width: 520px; }
+
+/* Etichetta 'Oggi' (se usi quella) */
+.tl-today-label {
+  position: absolute;
+  right: 50%;
+  transform: translateX(50%);
+  top: -1.25rem;
+  font-weight: 600;
+  color: var(--bs-primary, #0d6efd);
+}
+
+        /* Wrapper base */
+        .timeline-wrapper {
+            position: relative;
+        }
+
+        /* Da md in su: grid 3 colonne [sx | pin | dx] */
+        @media (min-width: 768px) {
+            .tl-grid {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr; /* sinistra | pin | destra */
+                column-gap: 1rem;
+                align-items: start;
+                position: relative;
+            }
+
+            .tl-left {
+                grid-column: 1;
+            }
+
+            .tl-pin {
+                grid-column: 2;
+                display: flex;
+                justify-content: center;
+                position: relative;
+            }
+
+            .tl-right {
+                grid-column: 3;
+            }
+
+            /* Linea verticale centrale (decorativa) dietro ai pin */
+            .tl-pin::before {
+                content: '';
+                position: absolute;
+                top: -0.75rem;
+                bottom: -0.75rem;
+                left: 50%;
+                width: 2px;
+                transform: translateX(-50%);
+                background: var(--bs-gray-300, #dee2e6);
+                z-index: 0;
+            }
+        }
+
+        /* Pin semplice */
+        .pin {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .25rem .5rem;
+            border-radius: .5rem;
+            background: var(--bs-light, #f8f9fa);
+            border: 1px solid var(--bs-gray-300, #dee2e6);
+            position: relative;
+            z-index: 1; /* sopra la linea */
+        }
+
+        .pin-text {
+            font-size: .875rem;
+            color: var(--bs-secondary-color, #6c757d);
+        }
+
+        /* Card laterali */
+        .tl-card {
+            max-width: 520px;
+        }
+
+        /* Etichetta 'Oggi' (desktop) */
+        .tl-today-label {
+            position: absolute;
+            right: 50%;
+            transform: translateX(50%);
+            top: -1.25rem;
+            font-weight: 600;
+            color: var(--bs-primary, #0d6efd);
+        }
+
+
+    /* Wrapper base: già presente */
+    .timeline-wrapper {
+        position: relative;
     }
+
+    /* 🔧 Nuova "rotaia" verticale continua */
+    @media (min-width: 768px) {
+        .timeline-track {
+            position: relative;
+            /* opzionale: dare un po' di spazio sopra/sotto
+       così la linea esce leggermente dai pin */
+            padding: 0.75rem 0;
+        }
+
+            .timeline-track::before {
+                content: '';
+                position: absolute;
+                top: 0; /* parte dall'inizio del contenitore */
+                bottom: 0; /* arriva fino alla fine */
+                left: 50%; /* centrata */
+                width: 2px;
+                transform: translateX(-50%);
+                background: var(--bs-gray-300, #dee2e6);
+                z-index: 0; /* sotto ai pin */
+            }
+
+        /* La tua grid: invariata */
+        .tl-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            column-gap: 1rem;
+            align-items: start;
+            position: relative;
+        }
+
+        .tl-left {
+            grid-column: 1;
+        }
+
+        .tl-pin {
+            grid-column: 2;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tl-right {
+            grid-column: 3;
+        }
+
+        /* ❌ Disattiva la vecchia linea "a pezzi" su ogni item */
+        .tl-pin::before {
+            content: none !important;
+        }
+    }
+
+    /* Pin e card: come già avevi */
+    .pin {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .25rem .5rem;
+        border-radius: .5rem;
+        background: var(--bs-light, #f8f9fa);
+        border: 1px solid var(--bs-gray-300, #dee2e6);
+        position: relative;
+        z-index: 1; /* sopra la linea continua */
+    }
+
+    .pin-text {
+        font-size: .875rem;
+        color: var(--bs-secondary-color, #6c757d);
+    }
+
+    .tl-card {
+        max-width: 520px;
+    }
+
+    /* Etichetta 'Oggi' (se usi quella) */
+    .tl-today-label {
+        position: absolute;
+        right: 50%;
+        transform: translateX(50%);
+        top: -1.25rem;
+        font-weight: 600;
+        color: var(--bs-primary, #0d6efd);
+    }
+
+
+
+    @media (min-width: 768px) {
+        /* wrapper della linea continua: già presente nel tuo file */
+        .timeline-track {
+            position: relative;
+            padding: 0.75rem 0; /* dà spazio per le cap sopra/sotto */
+        }
+
+            .timeline-track::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 50%;
+                width: 2px;
+                transform: translateX(-50%);
+                background: var(--bs-gray-300, #dee2e6);
+                z-index: 0;
+            }
+
+        /* --- CAPs (icone di inizio/fine) --- */
+        .timeline-cap {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2; /* sopra la linea */
+            /* “pill” di sfondo per rendere leggibile l’icona */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            background: var(--bs-light, #f8f9fa);
+            border: 1px solid var(--bs-gray-300, #dee2e6);
+            box-shadow: 0 1px 2px rgba(0,0,0,.06);
+        }
+
+        .timeline-cap-start {
+            top: -0.5rem;
+        }
+        /* appena sopra l’inizio linea */
+        .timeline-cap-end {
+            bottom: -0.5rem;
+        }
+        /* appena sotto la fine linea */
+
+        /* dimensiona l’icona */
+        .timeline-cap .icon {
+            width: 18px;
+            height: 18px;
+        }
+    }
+
+    /* Mobile: se vuoi mostrarle anche su mobile, rimuovi d-none d-md-flex nel template
+   e puoi aggiungere un leggero offset diverso per XS/SM se serve. */
+
+
+
 </style>

@@ -32,7 +32,7 @@
                                     <h2 class="mb-2">STUDIO PRELIMINARE AMBIENTALE</h2>
                                     <p><strong>Progetto:</strong> Realizzazione di un impianto fotovoltaico su area industriale dismessa</p>
                                     <p><strong>Proponente:</strong> [Nome Azienda]</p>
-                                    <p><strong>Localizzazione:</strong> Comune di [Località], Provincia di [Provincia]</p>
+                                    <p><strong>Localizzazione:</strong> Comune di [Localit &agrave], Provincia di [Provincia]</p>
                                     <p><strong>Data:</strong> Novembre 2025</p>
                                 </div>
                             </div>
@@ -45,7 +45,7 @@
                                     <h3>1. Introduzione e Obiettivi</h3>
                                     <p>
                                         Lo Studio Preliminare Ambientale è redatto ai sensi dell’art. 19 del D.Lgs. 152/2006 e successive modifiche,
-                                        con lo scopo di verificare l’assoggettabilità del progetto alla procedura di Valutazione di Impatto Ambientale (VIA).
+                                        con lo scopo di verificare l’assoggettabilit &agrave del progetto alla procedura di Valutazione di Impatto Ambientale (VIA).
                                         <br><strong>Obiettivo principale:</strong> fornire una descrizione sintetica ma completa del progetto e delle sue interazioni con l’ambiente,
                                         individuando rischi potenziali e misure di mitigazione.
                                     </p>
