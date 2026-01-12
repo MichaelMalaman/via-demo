@@ -142,7 +142,7 @@
                                 <span class="d-flex flex-column justify-content-center align-items-center"></span>
 
                                 <div class="d-flex justify-content-center my-4">
-                                    qrUrl
+                                    <img :v-if="qrUrl" :src="qrUrl"/>
                                 </div>
 
                                 <p>Apri l'App CieID ed inquadra il QR Code.</p>

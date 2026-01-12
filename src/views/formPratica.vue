@@ -2,6 +2,23 @@
 <template>
     <!-- container principale con sfondo -->
     <div class="container-fluid p-4" style="background-color:#e3f2fd;">
+        <!-- Barra azioni -->
+        <div class="row align-items-center mt-4 mb-4">
+            <!-- Pulsante sinistro -->
+            <div class="col-6 d-flex justify-content-start">
+                <button class="btn btn-outline-primary bg-white d-inline-flex align-items-center"
+                        @click="goToHome"
+                        style="height: 50px;">
+                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
+                    <span class="ms-2">Indietro</span>
+                </button>
+            </div>
+
+            <!-- Pulsante destro -->
+            <div class="col-6 d-flex justify-content-end">
+
+            </div>
+        </div>
         <div class="row">
             <!-- LEFT COLUMN -->
             <div class="col-12 col-lg-8 p-4">
@@ -227,10 +244,16 @@
     </div>
 </template>
 
-<script>
-    export default {
-        name: 'formPratica'
-    }
+<script setup lang="ts">
+    import { useRouter } from 'vue-router'
+
+    import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
+    const spritesHref = spritesUrl
+
+
+    function goToHome() {
+            router.push({ name: 'home' })
+        }
 </script>
 
 <style scoped>

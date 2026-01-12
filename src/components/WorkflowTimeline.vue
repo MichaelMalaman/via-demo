@@ -169,7 +169,6 @@
 
                     <div class="modal-footer">
                         <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Chiudi</button>
-                        <button class="btn btn-primary">Azione</button>
                     </div>
                 </div>
             </div>

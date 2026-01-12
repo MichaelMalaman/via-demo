@@ -7,7 +7,7 @@
             data-bs-target="#uploadFileModal">
         <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-upload`"></use></svg>
 
-        <span class="visually-hidden">Carica nuovo documento</span>
+        <span >Carica nuovo documento</span>
     </button>
 
     <!-- Teleport nel body per evitare problemi di stacking/z-index -->

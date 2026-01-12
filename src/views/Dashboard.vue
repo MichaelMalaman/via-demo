@@ -19,7 +19,7 @@
                         class="btn btn-outline-primary bg-white d-inline-flex align-items-center"
                         @click="creaNuovaPratica"
                         style="height: 50px;">
-                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
+                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-plus`"></use></svg>
                     <span class="ms-2">Crea nuova pratica</span>
                 </button>
             </div>
@@ -119,15 +119,7 @@
                                     <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
                                 </DeleteItemButton>
 
-                                <!-- Edit -->
-                                <EditItemButton :id="String(item.id)"
-                                                  :item="item"
-                                                  variant="outline-danger"
-                                                  size="sm"
-                                                  :confirm="true"
-                                                  @deleted="onDeleted">
-                                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-pencil`"></use></svg>
-                                </EditItemButton>
+
                             </td>
                         </tr>
                         <tr v-if="paginatedCurrent.length === 0">
@@ -219,7 +211,7 @@
                                     <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
                                 </DeleteItemButton>
 
-                                <!-- Edit -->
+                               
 
                             </td>
                         </tr>
@@ -257,7 +249,7 @@
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
     import DeleteItemButton from '../components/DeleteItemButton.vue'
-    import EditItemButton from '../components/EditItemButton.vue'
+
 
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
     const spritesHref = spritesUrl
@@ -394,14 +386,6 @@
         }
     }
 
-    // ---- Selezione + Edit modal ----
-    const editModalRef = ref<HTMLElement | null>(null)
-    let editModal: Modal | null = null
-
-    const selectedItem = ref<Item | null>(null)
-    const editItemData = ref<Item>({
-        id: 0, nomeProgetto: '', dataInizio: '', ente: '', scadenza: '',
-    })
 
 
     // Navigazione
@@ -435,41 +419,6 @@
         }
     }
 
-    // EDIT con modale ESM
-    function openEditDialog(item: Item) {
-        console.log("dentro edit log")
-        selectedItem.value = { ...item }
-        editItemData.value = { ...item }
-        editModal?.show()
-    }
-    function closeEditDialog() {
-        editModal?.hide()
-        selectedItem.value = null
-    }
-    function confirmEdit() {
-        const list = tab.value === 'one' ? items.value : items2.value
-        const index = list.findIndex(i => i.id === editItemData.value.id)
-        if (index !== -1) {
-            list[index] = { ...editItemData.value }
-            showSnack('Pratica aggiornata')
-        } else {
-            showSnack('Elemento non trovato', 'error')
-        }
-        closeEditDialog()
-    }
-
-    onMounted(async () => {
-        await nextTick()
-        if (editModalRef.value) {
-            editModal = Modal.getOrCreateInstance(editModalRef.value, { backdrop: 'static' })
-        }
-    })
-
-    onBeforeUnmount(() => {
-        editModal?.dispose?.()
-        editModal = null
-        selectedItem.value = null
-    })
 
 
     function showSnack(message: string, color: string = 'error') {
