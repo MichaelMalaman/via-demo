@@ -59,21 +59,18 @@
                             </div>
 
                             <div class="col">
-                                <button class="btn btn-primary d-flex align-items-center p-0"
+
+
+                                <button class="btn btn-primary d-flex align-items-center justify-content-center gap-3"
                                         style="height: 80px; width: 260px;"
                                         type="button">
-                                    <!-- Parte sinistra: icona in cerchio -->
                                     <div class="d-flex align-items-center justify-content-center bg-white"
                                          style="width: 56px; height: 56px; border-radius: 50%;">
                                         <svg class="icon"><use :href="`${spritesHref}#it-user`"></use></svg>
-
                                     </div>
-                                    <!-- Linea di separazione -->
-                                    <div style="width: 1px; background-color: white; margin: 0 12px;"></div>
-
-                                    <!-- Testo -->
                                     <span class="text-white fw-bold">Entra con SPID</span>
                                 </button>
+
                             </div>
                         </div>
                     </div>
@@ -142,7 +139,7 @@
                                 <span class="d-flex flex-column justify-content-center align-items-center"></span>
 
                                 <div class="d-flex justify-content-center my-4">
-                                    <img :v-if="qrUrl" :src="qrUrl"/>
+                                    <img v-if="qrUrl" :src="qrUrl"/>
                                 </div>
 
                                 <p>Apri l'App CieID ed inquadra il QR Code.</p>
@@ -291,4 +288,54 @@
         list-style: none;
         padding: 0;
     }
+
+    /* --- FRAME --- */
+    /* Occupare tutta la viewport in larghezza; permettere crescita in altezza */
+    .app-frame {
+        min-height: 100vh; /* invece di height: 100vh quando vuoi che la pagina cresca */
+        width: 100vw;
+        /* cambia il centraggio verticale: evita compressioni quando il contenuto è lungo */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* <-- prima era center */
+        padding: 2rem; /* già presente come px-5 in template, ok anche via CSS */
+        box-sizing: border-box;
+    }
+
+    /* --- CARD --- */
+    /* Card centrata, larghezza massima, altezza guidata dal contenuto */
+    .app-card {
+        max-width: 960px;
+        width: 100%;
+        /* RIMUOVI: height: 80vh;  <-- questa impone una finestra fissa e genera scrollbar interna */
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* La finestra dei tab riempie orizzontalmente, ma non impone altezza */
+    .tabs-window {
+        /* prima avevi: flex: 1 1 auto; min-height: 0; */
+        /* Puoi mantenere la flessibilità orizzontale, ma l'altezza la deciderà il contenuto */
+        flex: 1 1 auto;
+    }
+
+    /* Contenuto dei tab: NESSUNO scroll interno */
+    .tab-scroll {
+        /* RIMUOVI: height: 100%; overflow: auto; */
+        overflow: visible;
+        padding: 16px;
+    }
+
+    /* Lista senza pallini */
+    .no-bullets {
+        list-style: none;
+        padding: 0;
+    }
+
+    /* (facoltativo) Assicurati che html/body possano scorrere */
+    :root, html, body {
+        overflow-y: auto; /* di default è auto; imposta qui se altrove lo hai disabilitato */
+    }
+
 </style>
