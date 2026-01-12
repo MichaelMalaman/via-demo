@@ -4,8 +4,9 @@
         <!-- Barra azioni -->
         <div class="row align-items-center mt-4 mb-4">
             <div class="col-6 d-flex justify-content-start">
-                <button class="btn btn-outline-primary bg-white" @click="goToDashboard" style="height: 50px;">
+                <button class="btn btn-outline-primary bg-white d-inline-flex align-items-center" @click="goToDashboard" style="height: 50px;">
                     <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
+                    <span class="ms-2">Indietro</span>
                 </button>
             </div>
 
@@ -17,7 +18,7 @@
         <!-- FILTRI IN UNICA RIGA -->
         <div class="filters-toolbar px-3 py-2 d-flex gap-3 align-items-end flex-nowrap overflow-auto">
             <!-- Nome file -->
-            <div class="filter-item" style="min-width: 260px; max-width: 320px;">
+            <div class="filter-item">
                 <label for="f-nome" class="form-label mb-1">Nome file</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white">
@@ -28,167 +29,183 @@
                            class="form-control"
                            v-model="nomeFile"
                            placeholder="Digita per cercare (es. impianto)" />
-                    <button class="btn btn-outline-secondary bg-white" type="button" @click="nomeFile = null" >Pulisci</button>
+                    <button class="btn btn-outline-secondary bg-white" type="button" @click="nomeFile = null">Pulisci</button>
                 </div>
             </div>
 
-                <!-- Data Dal -->
-                <div class="filter-item" style="min-width: 220px; max-width: 260px;">
-                    <!-- v-model diretto sul proxy -->
-                    <label for="f-nome" class="form-label mb-1">Data dal</label>
+            <!-- Data Dal -->
+            <div class="filter-item">
+                <!-- v-model diretto sul proxy -->
+                <label for="f-nome" class="form-label mb-1">Data dal</label>
 
-                    <VueDatePickerDal v-model="dataDal" />
-                </div>
+                <VueDatePickerDal v-model="dataDall" />
+            </div>
 
-                <!-- Data Al -->
-                <div class="filter-item" style="min-width: 220px; max-width: 260px;">
-                    <!-- v-model diretto sul proxy -->
-                    <label for="f-nome" class="form-label mb-1">Data al</label>
+            <!-- Data Al -->
+            <div class="filter-item">
+                <!-- v-model diretto sul proxy -->
+                <label for="f-nome" class="form-label mb-1">Data al</label>
 
-                    <VueDatePickerAl v-model="dataAl" />
-                </div>
+                <VueDatePickerAl v-model="dataAl" />
+            </div>
 
-                <!-- Stato pratica -->
-                <div class="filter-item" style="min-width: 220px; max-width: 260px;">
-                    <label for="f-stato" class="form-label mb-1">Stato pratica</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white">
-                            <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-file`"></use></svg>
-                        </span>
-                        <select id="f-stato" class="form-select" v-model="statoPratica">
-                            <option :value="null">Tutti</option>
-                            <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
-                        </select>
-                        <button class="btn btn-outline-secondary bg-white" type="button" @click="statoPratica = null">
-                            Pulisci
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Badge conteggio + reset -->
-                <div class="ms-auto d-flex align-items-center gap-3">
-                    <span class="badge rounded-pill">
-                        Mostrati {{ filteredItems.length }} di {{ currentItems.length }}
+            <!-- Stato pratica -->
+            <div class="filter-item" style="min-width: 220px; max-width: 260px;">
+                <label for="f-stato" class="form-label mb-1">Stato pratica</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-file`"></use></svg>
                     </span>
-                    <!--button class="btn btn-link text-decoration-none bg-white" @click="resetFilters">Reset filtri</button-->
+                    <select id="f-stato" class="form-select" v-model="statoPratica">
+                        <option :value="null">Tutti</option>
+                        <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
+                    </select>
+                    <button class="btn btn-outline-secondary bg-white" type="button" @click="statoPratica = null">
+                        Pulisci
+                    </button>
                 </div>
             </div>
 
-            <!-- Tabella -->
-            <div class="row mt-4 mb-4">
-                <div class="col-12">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-
-                            <thead class="table-dark">
-                                <tr>
-                                    <th scope="col"
-                                        role="button"
-                                        tabindex="0"
-                                        :aria-sort="sortKey === 'nomeFile' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'"
-                                        @click="setSort('nomeFile')"
-                                        @keyup.enter="setSort('nomeFile')"
-                                        @keyup.space.prevent="setSort('nomeFile')">
-                                        NOME FILE
-                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#${sortDir}`"></use></svg>
-                                        
-                                    </th>
-
-                                    <th scope="col"
-                                        role="button"
-                                        tabindex="0"
-                                        :aria-sort="sortKey === 'dataUltimaModifica' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'"
-                                        @click="setSort('dataUltimaModifica')"
-                                        @keyup.enter="setSort('dataUltimaModifica')"
-                                        @keyup.space.prevent="setSort('dataUltimaModifica')">
-                                        DATA ULTIMA MODIFICA
-                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#${sortDir}`"></use></svg>
-
-
-                                    </th>
-
-                                    <th scope="col"
-                                        role="button"
-                                        tabindex="0"
-                                        :aria-sort="sortKey === 'statoPratica' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'"
-                                        @click="setSort('statoPratica')"
-                                        @keyup.enter="setSort('statoPratica')"
-                                        @keyup.space.prevent="setSort('statoPratica')">
-                                        STATO PRATICA
-                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#${sortDir}`"></use></svg>
-
-                                    </th>
-
-                                    <th scope="col"
-                                        role="button"
-                                        tabindex="0"
-                                        :aria-sort="sortKey === 'size' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'"
-                                        @click="setSort('size')"
-                                        @keyup.enter="setSort('size')"
-                                        @keyup.space.prevent="setSort('size')">
-                                        SIZE
-                                            <svg class="icon" style="color:white"><use :href="`${spritesHref}#${sortDir}`"></use></svg>
-                                        </th>
-<th scope="col">FUNZIONI</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr v-for="(item, index) in sortedItems"
-                                    :key="item.id || (item.nomeFile + '_' + index)"
-                                    :class="index % 2 === 0 ? 'bg-light' : 'bg-light2'">
-                                    <td>
-                                        <DownloadSimulator :filename="item.nomeFile" :content="testo" :mime-type="item.tipoFile" />
-                                    </td>
-
-                                    <td>
-                                        {{ item.dataUltimaModifica }}
-                                        <WorkflowTimeline />
-                                    </td>
-
-                                    <td>
-                                        <span v-if="item.statoPratica === 'chiusa'" class="badge rounded-pill bg-success">
-                                            {{ item.statoPratica }}
-                                        </span>
-                                        <span v-else-if="item.statoPratica === 'respinta'" class="badge rounded-pill bg-danger">
-                                            {{ item.statoPratica }}
-                                        </span>
-                                        <span v-else-if="['in attesa di approvazione','in stato di approvazione'].includes(item.statoPratica || '')"
-                                              class="badge rounded-pill bg-warning text-dark">
-                                            {{ item.statoPratica }}
-                                        </span>
-                                        <span v-else>-</span>
-                                    </td>
-
-                                    <td>{{ item.size }}</td>
-                                    <td class="text-end">
-                                        <DeleteItemButton :id="item.id"
-                                                          variant="outline-danger"
-                                                          size="sm"
-                                                          :confirm="true"
-                                                          @deleted="onDeleted">
-                                            <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
-                                            Elimina
-                                        </DeleteItemButton>
-                                    </td>
-                                </tr>
-
-                                <tr v-if="!filteredItems.length">
-                                    <td colspan="5" class="text-center text-secondary py-4">Nessun risultato</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <!-- Badge conteggio + reset -->
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="badge rounded-pill">
+                    Mostrati {{ filteredItems.length }} di {{ currentItems.length }}
+                </span>
+                <button class="btn btn-link text-decoration-none bg-white" @click="resetFilters">Reset filtri</button>
             </div>
-
         </div>
+
+        <!-- Tabella -->
+        <div class="row mt-4 mb-4">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col"
+                                    role="button"
+                                    tabindex="0"
+                                    :aria-sort="sortKey === 'nomeFile' ? (sortDir === 'up' ? 'up' : 'down') : 'none'"
+                                    @click="setSort('nomeFile')"
+                                    @keyup.enter="setSort('nomeFile')"
+                                    @keyup.space.prevent="setSort('nomeFile')">
+                                    NOME FILE
+                                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDir}`"></use></svg>
+
+                                </th>
+
+                                <th scope="col"
+                                    role="button"
+                                    tabindex="0"
+                                    :aria-sort="sortKey === 'dataUltimaModifica' ? (sortDir === 'up' ? 'up' : 'down') : 'none'"
+                                    @click="setSort('dataUltimaModifica')"
+                                    @keyup.enter="setSort('dataUltimaModifica')"
+                                    @keyup.space.prevent="setSort('dataUltimaModifica')">
+                                    DATA ULTIMA MODIFICA
+                                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDir}`"></use></svg>
+
+
+                                </th>
+
+                                <th scope="col"
+                                    role="button"
+                                    tabindex="0"
+                                    :aria-sort="sortKey === 'statoPratica' ? (sortDir === 'up' ? 'up' : 'down') : 'none'"
+                                    @click="setSort('statoPratica')"
+                                    @keyup.enter="setSort('statoPratica')"
+                                    @keyup.space.prevent="setSort('statoPratica')">
+                                    STATO PRATICA
+                                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDir}`"></use></svg>
+
+                                </th>
+
+                                <th scope="col"
+                                    role="button"
+                                    tabindex="0"
+                                    :aria-sort="sortKey === 'size' ? (sortDir === 'up' ? 'up' : 'down') : 'none'"
+                                    @click="setSort('size')"
+                                    @keyup.enter="setSort('size')"
+                                    @keyup.space.prevent="setSort('size')">
+                                    SIZE
+                                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDir}`"></use></svg>
+                                </th>
+                                <th scope="col">FUNZIONI</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr v-for="(item, index) in sortedItems"
+                                :key="item.id || (item.nomeFile + '_' + index)"
+                                :class="index % 2 === 0 ? 'bg-light' : 'bg-light2'">
+                                <td>
+                                    <DownloadSimulator :filename="item.nomeFile" :content="testo" :mime-type="item.tipoFile" />
+                                </td>
+
+                                <td>
+                                    {{ item.dataUltimaModifica }}
+                                    <WorkflowTimeline />
+                                </td>
+
+                                <td>
+                                    <span v-if="item.statoPratica === 'chiusa'" class="badge rounded-pill bg-success">
+                                        {{ item.statoPratica }}
+                                    </span>
+                                    <span v-else-if="item.statoPratica === 'respinta'" class="badge rounded-pill bg-danger">
+                                        {{ item.statoPratica }}
+                                    </span>
+                                    <span v-else-if="['in attesa di approvazione','in stato di approvazione'].includes(item.statoPratica || '')"
+                                          class="badge rounded-pill bg-warning text-dark">
+                                        {{ item.statoPratica }}
+                                    </span>
+                                    <span v-else>-</span>
+                                </td>
+
+                                <td>{{ item.size }}</td>
+                                <td class="text-end">
+                                    <DeleteItemButton :id="item.id"
+                                                      variant="outline-danger"
+                                                      size="sm"
+                                                      :confirm="true"
+                                                      @deleted="onDeleted">
+                                        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
+                                    </DeleteItemButton>
+                                </td>
+                            </tr>
+
+                            <tr v-if="!filteredItems.length">
+                                <td colspan="5" class="text-center text-secondary py-4">Nessun risultato</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Toast -->
+        <div class="toast position-fixed top-0 end-0 m-3"
+             role="alert"
+             aria-live="assertive"
+             aria-atomic="true"
+             ref="toastRef">
+            <div class="toast-header" :class="toastHeaderClass">
+                <strong class="me-auto">Notifica</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Chiudi" @click="snackbar.show = false"></button>
+            </div>
+            <div class="toast-body" :class="toastBodyClass">
+                {{ snackbar.message }}
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
     import { useRouter } from 'vue-router'
     import { useStore } from 'vuex'
-    import { computed, onMounted, nextTick } from 'vue'
+
+    import { ref, computed, watch, onMounted, nextTick } from 'vue'
+
+    import { Tooltip, Modal, Toast } from 'bootstrap-italia'
+
     import VueDatePickerAl from '../components/VueDatePickerAl.vue'
     import VueDatePickerDal from '../components/VueDatePickerDal.vue'
     import DownloadSimulator from '../components/DownloadSimulator.vue'
@@ -319,17 +336,17 @@
     import { computed, onMounted, nextTick, ref } from 'vue'
 
     type SortKey = 'nomeFile' | 'dataUltimaModifica' | 'statoPratica' | 'size'
-    type SortDir = 'asc' | 'desc'
+    type SortDir = 'up' | 'desc'
 
     const sortKey = ref<SortKey>('dataUltimaModifica') // default: ordina per data
     const sortDir = ref<SortDir>('desc')               // default: più recenti prima
 
     function setSort(key: SortKey) {
         if (sortKey.value === key) {
-            sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+            sortDir.value = sortDir.value === 'up' ? 'desc' : 'up'
         } else {
             sortKey.value = key
-            sortDir.value = 'asc'
+            sortDir.value = 'up'
         }
     }
 
@@ -377,10 +394,49 @@
 
     const sortedItems = computed<Item[]>(() => {
         const items = filteredItems.value.slice()
-        const dir = sortDir.value === 'asc' ? 1 : -1
+        const dir = sortDir.value === 'up' ? 1 : -1
         const key = sortKey.value
         return items.sort((a, b) => compareByKey(a, b, key) * dir)
     })
+
+
+
+    // ---- Toast ----
+    const toastRef = ref<HTMLElement | null>(null)
+    const snackbar = ref<{ show: boolean; message: string; color: string }>({
+        show: false,
+        message: '',
+        color: 'success',
+    })
+
+    function showSnack(message: string, color: string = 'success') {
+        snackbar.value = { show: true, message, color }
+    }
+
+    const toastHeaderClass = computed(() => {
+        switch (snackbar.value.color) {
+            case 'error': return 'bg-danger text-white'
+            case 'success': return 'bg-success text-white'
+            case 'warning': return 'bg-warning'
+            default: return 'bg-primary text-white'
+        }
+    })
+    const toastBodyClass = computed(() => {
+        switch (snackbar.value.color) {
+            case 'error': return 'bg-danger-subtle text-danger'
+            case 'success': return 'bg-success-subtle text-success'
+            case 'warning': return 'bg-warning-subtle text-warning'
+            default: return ''
+        }
+    })
+
+    // Toast show/hide
+    watch(() => snackbar.value.show, (show) => {
+        if (!toastRef.value) return
+        const toast = Toast.getOrCreateInstance(toastRef.value, { delay: 2500 })
+        show ? toast.show() : toast.hide()
+    })
+
 
 
 </script>
@@ -414,5 +470,14 @@
         cursor: pointer;
         user-select: none;
     }
+    .input-group .input-group-text {
+        border-bottom: 0px;
+    }
 
+    .it-header-center-wrapper.bg-primary-custom {
+        height: 4%;
+    }
+    .nav-tabs {
+        width: fit-content;
+    }
 </style>

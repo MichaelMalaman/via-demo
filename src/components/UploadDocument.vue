@@ -5,8 +5,8 @@
             class="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#uploadFileModal">
-            <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-upload`"></use></svg>
-    
+        <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-upload`"></use></svg>
+
         <span class="visually-hidden">Carica nuovo documento</span>
     </button>
 
@@ -31,16 +31,13 @@
 
                     <div class="modal-body">
                         <!-- Zona upload drag & drop + link per aprire file picker -->
-                        <div 
-  class="upload-zone border border-2 border-dashed rounded-3 p-5 text-center"
-  @dragover.prevent
-  @drop.prevent="onFileDrop"
-  :class="{ 'is-dragover': isDragOver }"
-  @dragenter.prevent="isDragOver = true"
-  @dragleave.prevent="isDragOver = false"
-  style="position: relative;"
-
-                             >
+                        <div class="upload-zone border border-2 border-dashed rounded-3 p-5 text-center"
+                             @dragover.prevent
+                             @drop.prevent="onFileDrop"
+                             :class="{ 'is-dragover': isDragOver }"
+                             @dragenter.prevent="isDragOver = true"
+                             @dragleave.prevent="isDragOver = false"
+                             style="position: relative;">
                             <p class="mb-3">
 
                                 <button class="btn btn-outline-primary" @click="onSelectFromPC">Sfoglia dal PC</button>

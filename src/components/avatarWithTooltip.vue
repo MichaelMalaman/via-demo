@@ -34,7 +34,7 @@
                 </li>
                 <li>
                     <button class="dropdown-item d-flex align-items-center gap-2" @click="goToMessages">
-                        <span>Messaggi</span>
+                        <span>Notifiche</span><span class="badge bg-secondary">2</span>
                     </button>
                 </li>
                 <li><hr class="dropdown-divider" /></li>
@@ -112,7 +112,7 @@
     })
 
     const goToAccount = () => router.push('/account')
-    const goToMessages = () => router.push('/messaggi')
+    const goToMessages = () => router.push('/Messages')
     const doLogout = async () => {
         try {
             await store.dispatch?.('logout')
