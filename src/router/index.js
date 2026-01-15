@@ -8,6 +8,7 @@ import formPratica from '../views/formPratica.vue'
 import singleFileOpen from '../views/SingleFileOpen.vue'
 import messages from '../views/Messages.vue'
 import newProject from '../views/newProject.vue'
+import Notifications from '../views/Notifications.vue'
 
 
 
@@ -19,7 +20,8 @@ const routes = [
     { path: '/formPratica', name: 'formPratica', component: formPratica, meta: { title: 'formPratica' } },
     { path: '/singleFileOpen', name: 'singleFileOpen', component: singleFileOpen, meta: { title: 'singleFileOpen' } },
     { path: '/messages', name: 'messages', component: messages, meta: { title: 'messages' } },
-    { path: '/newProject', name: 'newProject', component: newProject, meta: { title: 'newProject' } }
+    { path: '/newProject', name: 'newProject', component: newProject, meta: { title: 'newProject' } },
+    { path: '/Notifications', name: 'Notifications', component: Notifications, meta: { title: 'Notifications' } }
 
 ]
 

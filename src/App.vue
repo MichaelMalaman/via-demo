@@ -1,7 +1,7 @@
 ﻿
 
 <template>
-    <div id="app" class="bg-primary min-vh-100 d-flex flex-column">
+    <div class="bg-primary min-vh-100 d-flex flex-column">
         <topNavbar />
         <main class="flex-grow-1 p-1 mt-5">
             <router-view />
@@ -30,7 +30,5 @@
         }
 
 
-    .mt-6 {
-        margin-top: 4.5rem;
-    }
+
 </style>

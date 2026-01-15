@@ -7,7 +7,7 @@
             <!-- Pulsante sinistro -->
             <div class="col-6 d-flex justify-content-start">
                 <button class="btn btn-outline-primary bg-white d-inline-flex align-items-center"
-                        @click="goToHome"
+                        @click="goTo('/dashboard')"
                         style="height: 50px;">
                     <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
                     <span class="ms-2">Indietro</span>
@@ -246,14 +246,13 @@
 
 <script setup lang="ts">
     import { useRouter } from 'vue-router'
-
+    const router = useRouter()
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
     const spritesHref = spritesUrl
 
-
-    function goToHome() {
-            router.push({ name: 'home' })
-        }
+    function goTo(path: string) {
+        router.push(path)
+    }
 </script>
 
 <style scoped>

@@ -8,7 +8,7 @@
                 <button class="btn btn-outline-primary bg-white d-inline-flex align-items-center"
                         @click="goToHome"
                         style="height: 50px;">
-                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
+                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
                     <span class="ms-2">Indietro</span>
                 </button>
             </div>
@@ -19,7 +19,7 @@
                         class="btn btn-outline-primary bg-white d-inline-flex align-items-center"
                         @click="creaNuovaPratica"
                         style="height: 50px;">
-                    <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-plus`"></use></svg>
+                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
                     <span class="ms-2">Crea nuova pratica</span>
                 </button>
             </div>
@@ -47,13 +47,64 @@
             </li>
         </ul>
 
+        <!-- FILTRI 2×2 + Reset laterale -->
+        <div class="filters-wrapper mb-4">
+            <div class="filters-grid">
+                <!-- Filtro 1 -->
+                <div>
+                    <label class="form-label fw-semibold">Nome progetto</label>
+                    <input v-model="searchNome"
+                           type="text"
+                           class="form-control"
+                           placeholder="Digita per cercare (nome o ente)..." />
+                </div>
+
+                <!-- Filtro 2 -->
+                <div>
+                    <label class="form-label fw-semibold">Data dal</label>
+                    <input v-model="dataDal" type="date" class="form-control" />
+                </div>
+
+                <!-- Pulsante reset (centrato su 2 righe) -->
+                <div class="reset-col">
+                    <button class="btn btn-outline-secondary reset-btn" @click="resetFiltri">
+                        Reset filtri
+                    </button>
+                </div>
+
+                <!-- Filtro 3 -->
+                <div>
+                    <label class="form-label fw-semibold">Data al</label>
+                    <input v-model="dataAl" type="date" class="form-control" />
+                </div>
+
+                <!-- Filtro 4 -->
+                <div>
+                    <label class="form-label fw-semibold">Stato pratica</label>
+                    <select v-model="statoPratica" class="form-select">
+                        <option :value="null">Tutti</option>
+                        <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Badge risultato -->
+            <div class="filters-bottom mt-3">
+                <span class="badge rounded-pill bg-primary text-white px-3 py-2">
+                    Mostrati {{ shownCount }} di {{ totalCount }}
+                </span>
+            </div>
+        </div>
+
         <!-- Tab: Pratiche in corso -->
         <div v-show="tab === 'one'">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col" role="button" tabindex="0"
+                            <th scope="col"
+                                role="button"
+                                tabindex="0"
                                 :aria-sort="sortKeyOne === 'nomeProgetto' ? (sortDirOne === 'up' ? 'ascending' : 'descending') : 'none'"
                                 @click="setSortOne('nomeProgetto')"
                                 @keyup.enter="setSortOne('nomeProgetto')"
@@ -62,7 +113,9 @@
                                 <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDirOne}`"></use></svg>
                             </th>
 
-                            <th scope="col" role="button" tabindex="0"
+                            <th scope="col"
+                                role="button"
+                                tabindex="0"
                                 :aria-sort="sortKeyOne === 'dataInizio' ? (sortDirOne === 'up' ? 'ascending' : 'descending') : 'none'"
                                 @click="setSortOne('dataInizio')"
                                 @keyup.enter="setSortOne('dataInizio')"
@@ -71,7 +124,9 @@
                                 <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDirOne}`"></use></svg>
                             </th>
 
-                            <th scope="col" role="button" tabindex="0"
+                            <th scope="col"
+                                role="button"
+                                tabindex="0"
                                 :aria-sort="sortKeyOne === 'ente' ? (sortDirOne === 'up' ? 'ascending' : 'descending') : 'none'"
                                 @click="setSortOne('ente')"
                                 @keyup.enter="setSortOne('ente')"
@@ -80,7 +135,9 @@
                                 <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDirOne}`"></use></svg>
                             </th>
 
-                            <th scope="col" role="button" tabindex="0"
+                            <th scope="col"
+                                role="button"
+                                tabindex="0"
                                 :aria-sort="sortKeyOne === 'scadenza' ? (sortDirOne === 'up' ? 'ascending' : 'descending') : 'none'"
                                 @click="setSortOne('scadenza')"
                                 @keyup.enter="setSortOne('scadenza')"
@@ -92,8 +149,10 @@
                             <th class="text-end">AZIONI</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        <tr v-for="(item, index) in paginatedCurrent" :key="String(item.id)"
+                        <tr v-for="(item, index) in paginatedOne"
+                            :key="String(item.id)"
                             :class="index % 2 === 0 ? 'bg-light' : 'bg-light2'">
                             <td>
                                 <span v-if="item.nomeProgetto !== 'IMPIANTO FOTOVOLTAICO'">
@@ -110,7 +169,6 @@
                             <td>{{ item.ente }}</td>
                             <td>{{ item.scadenza }}</td>
                             <td class="text-end">
-                                <!-- Delete  -->
                                 <DeleteItemButton :id="String(item.id)"
                                                   variant="outline-danger"
                                                   size="sm"
@@ -118,11 +176,10 @@
                                                   @deleted="onDeleted">
                                     <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
                                 </DeleteItemButton>
-
-
                             </td>
                         </tr>
-                        <tr v-if="paginatedCurrent.length === 0">
+
+                        <tr v-if="paginatedOne.length === 0">
                             <td colspan="5" class="text-center text-secondary py-4">Nessuna pratica disponibile</td>
                         </tr>
                     </tbody>
@@ -133,7 +190,9 @@
             <nav aria-label="Pagine pratiche in corso" class="mt-3">
                 <ul class="pagination justify-content-end">
                     <li class="page-item" :class="{ disabled: currentPageOne === 1 }">
-                        <button class="page-link" @click="setPage('one', currentPageOne - 1)" aria-label="Precedente">&laquo;</button>
+                        <button class="page-link" @click="setPage('one', currentPageOne - 1)" aria-label="Precedente">
+                            &laquo;
+                        </button>
                     </li>
                     <li v-for="p in totalPagesOne"
                         :key="'p1-' + p"
@@ -142,7 +201,9 @@
                         <button class="page-link" @click="setPage('one', p)">{{ p }}</button>
                     </li>
                     <li class="page-item" :class="{ disabled: currentPageOne === totalPagesOne }">
-                        <button class="page-link" @click="setPage('one', currentPageOne + 1)" aria-label="Successivo">&raquo;</button>
+                        <button class="page-link" @click="setPage('one', currentPageOne + 1)" aria-label="Successivo">
+                            &raquo;
+                        </button>
                     </li>
                 </ul>
             </nav>
@@ -154,17 +215,20 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col" role="button" tabindex="0"
+                            <th scope="col"
+                                role="button"
+                                tabindex="0"
                                 :aria-sort="sortKeyTwo === 'nomeProgetto' ? (sortDirTwo === 'up' ? 'ascending' : 'descending') : 'none'"
                                 @click="setSortTwo('nomeProgetto')"
                                 @keyup.enter="setSortTwo('nomeProgetto')"
                                 @keyup.space.prevent="setSortTwo('nomeProgetto')">
                                 NOME PROGETTO
-                                <!-- usa sortDirTwo, non sortDirOne -->
                                 <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDirTwo}`"></use></svg>
                             </th>
 
-                            <th scope="col" role="button" tabindex="0"
+                            <th scope="col"
+                                role="button"
+                                tabindex="0"
                                 :aria-sort="sortKeyTwo === 'dataInizio' ? (sortDirTwo === 'up' ? 'ascending' : 'descending') : 'none'"
                                 @click="setSortTwo('dataInizio')"
                                 @keyup.enter="setSortTwo('dataInizio')"
@@ -173,7 +237,9 @@
                                 <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDirTwo}`"></use></svg>
                             </th>
 
-                            <th scope="col" role="button" tabindex="0"
+                            <th scope="col"
+                                role="button"
+                                tabindex="0"
                                 :aria-sort="sortKeyTwo === 'ente' ? (sortDirTwo === 'up' ? 'ascending' : 'descending') : 'none'"
                                 @click="setSortTwo('ente')"
                                 @keyup.enter="setSortTwo('ente')"
@@ -182,7 +248,9 @@
                                 <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-arrow-${sortDirTwo}`"></use></svg>
                             </th>
 
-                            <th scope="col" role="button" tabindex="0"
+                            <th scope="col"
+                                role="button"
+                                tabindex="0"
                                 :aria-sort="sortKeyTwo === 'scadenza' ? (sortDirTwo === 'up' ? 'ascending' : 'descending') : 'none'"
                                 @click="setSortTwo('scadenza')"
                                 @keyup.enter="setSortTwo('scadenza')"
@@ -194,15 +262,16 @@
                             <th class="text-end">AZIONI</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        <tr v-for="(item, index) in paginatedTwo" :key="String(item.id)"
+                        <tr v-for="(item, index) in paginatedTwo"
+                            :key="String(item.id)"
                             :class="index % 2 === 0 ? 'bg-light' : 'bg-light2'">
                             <td>{{ item.nomeProgetto }}</td>
                             <td>{{ item.dataInizio }}</td>
                             <td>{{ item.ente }}</td>
                             <td>{{ item.scadenza }}</td>
                             <td class="text-end">
-                                <!--  Delete  -->
                                 <DeleteItemButton :id="String(item.id)"
                                                   variant="outline-danger"
                                                   size="sm"
@@ -210,11 +279,9 @@
                                                   @deleted="onDeleted">
                                     <svg class="icon" style="color:white"><use :href="`${spritesHref}#it-delete`"></use></svg>
                                 </DeleteItemButton>
-
-                               
-
                             </td>
                         </tr>
+
                         <tr v-if="paginatedTwo.length === 0">
                             <td colspan="5" class="text-center text-secondary py-4">Nessuna pratica disponibile</td>
                         </tr>
@@ -226,7 +293,9 @@
             <nav aria-label="Pagine pratiche chiuse" class="mt-3">
                 <ul class="pagination justify-content-end">
                     <li class="page-item" :class="{ disabled: currentPageTwo === 1 }">
-                        <button class="page-link" @click="setPage('two', currentPageTwo - 1)" aria-label="Precedente">&laquo;</button>
+                        <button class="page-link" @click="setPage('two', currentPageTwo - 1)" aria-label="Precedente">
+                            &laquo;
+                        </button>
                     </li>
                     <li v-for="p in totalPagesTwo"
                         :key="'p2-' + p"
@@ -235,24 +304,43 @@
                         <button class="page-link" @click="setPage('two', p)">{{ p }}</button>
                     </li>
                     <li class="page-item" :class="{ disabled: currentPageTwo === totalPagesTwo }">
-                        <button class="page-link" @click="setPage('two', currentPageTwo + 1)" aria-label="Successivo">&raquo;</button>
+                        <button class="page-link" @click="setPage('two', currentPageTwo + 1)" aria-label="Successivo">
+                            &raquo;
+                        </button>
                     </li>
                 </ul>
             </nav>
         </div>
-    </div>
 
+        <!-- TOAST -->
+        <div class="toast position-fixed top-0 end-0 m-3"
+             role="alert"
+             aria-live="assertive"
+             aria-atomic="true"
+             ref="toastRef">
+            <div class="toast-header" :class="toastHeaderClass">
+                <strong class="me-auto">Notifica</strong>
+                <button type="button" class="btn-close" @click="snackbar.show = false"></button>
+            </div>
+            <div class="toast-body" :class="toastBodyClass">
+                {{ snackbar.message }}
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+    import { ref, computed, watch, nextTick, onMounted } from 'vue'
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
     import DeleteItemButton from '../components/DeleteItemButton.vue'
 
-
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
     const spritesHref = spritesUrl
+
+    declare global {
+        interface Window { bootstrap: any }
+    }
 
     const router = useRouter()
     const store = useStore()
@@ -260,15 +348,16 @@
     type Item = {
         id: number
         nomeProgetto: string
-        dataInizio: string
+        dataInizio: string   // 'DD/MM/YYYY'
         ente: string
-        scadenza: string
+        scadenza: string     // 'DD/MM/YYYY'
+        statoChiuso: boolean
     }
 
     const tab = ref<'one' | 'two'>('one')
 
     const items = ref<Item[]>([
-        { id: 1, nomeProgetto: 'IMPIANTO FOTOVOLTAICO', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022' ,statoChiuso:false},
+        { id: 1, nomeProgetto: 'IMPIANTO FOTOVOLTAICO', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022', statoChiuso: false },
         { id: 2, nomeProgetto: 'IMPIANTO EOLICO', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022', statoChiuso: false },
         { id: 3, nomeProgetto: 'IMPIANTO BIOESEL', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022', statoChiuso: false },
         { id: 4, nomeProgetto: 'NUOVO STADIO', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022', statoChiuso: false },
@@ -291,17 +380,48 @@
         { id: 110, nomeProgetto: 'IMPIANTO SOLARE TERMICO', dataInizio: '01/07/2023', ente: 'REGIONE SICILIA', scadenza: '15/09/2023', statoChiuso: true },
     ])
 
-    const currentItems = computed<Item[]>(() => (tab.value === 'one' ? items.value : items2.value))
+    /* ======================
+     * Filtri
+     * ====================== */
+    const searchNome = ref<string>('')                                // testo libero (nomeProgetto / ente)
+    const dataDal = ref<string | null>(null)                          // 'YYYY-MM-DD'
+    const dataAl = ref<string | null>(null)                           // 'YYYY-MM-DD'
+    const statoPratica = ref<'aperta' | 'chiusa' | null>(null)
+    const statusOptions = ['aperta', 'chiusa'] as const
 
-    // ---- SORT: helper e stato per ciascun tab ----
+    /* ======================
+     * Ordinamento (per tab)
+     * ====================== */
     type SortKeyPratiche = 'nomeProgetto' | 'dataInizio' | 'ente' | 'scadenza'
-    type SortDir = 'up' | 'down'  //
+    type SortDir = 'up' | 'down'
 
+    const sortKeyOne = ref<SortKeyPratiche>('dataInizio')
+    const sortDirOne = ref<SortDir>('down')
+    function setSortOne(key: SortKeyPratiche) {
+        if (sortKeyOne.value === key) sortDirOne.value = sortDirOne.value === 'up' ? 'down' : 'up'
+        else { sortKeyOne.value = key; sortDirOne.value = 'up' }
+    }
+
+    const sortKeyTwo = ref<SortKeyPratiche>('dataInizio')
+    const sortDirTwo = ref<SortDir>('down')
+    function setSortTwo(key: SortKeyPratiche) {
+        if (sortKeyTwo.value === key) sortDirTwo.value = sortDirTwo.value === 'up' ? 'down' : 'up'
+        else { sortKeyTwo.value = key; sortDirTwo.value = 'up' }
+    }
+
+    /* ======================
+     * Utilità
+     * ====================== */
     function parseDDMMYYYY(s: string): Date | null {
         const parts = s.split('/')
         if (parts.length !== 3) return null
         const [dd, mm, yyyy] = parts.map(Number)
         const d = new Date(yyyy, mm - 1, dd)
+        return isNaN(d.getTime()) ? null : d
+    }
+    function parseISODate(s: string | null | undefined): Date | null {
+        if (!s) return null
+        const d = new Date(`${s}T00:00:00`)
         return isNaN(d.getTime()) ? null : d
     }
     function safeLower(s: string | null | undefined): string {
@@ -311,70 +431,87 @@
         switch (key) {
             case 'nomeProgetto': return safeLower(a.nomeProgetto).localeCompare(safeLower(b.nomeProgetto))
             case 'ente': return safeLower(a.ente).localeCompare(safeLower(b.ente))
-            case 'dataInizio': {
-                const dA = parseDDMMYYYY(a.dataInizio) ?? new Date(0)
-                const dB = parseDDMMYYYY(b.dataInizio) ?? new Date(0)
-                return dA.getTime() - dB.getTime()
-            }
-            case 'scadenza': {
-                const dA = parseDDMMYYYY(a.scadenza) ?? new Date(0)
-                const dB = parseDDMMYYYY(b.scadenza) ?? new Date(0)
-                return dA.getTime() - dB.getTime()
-            }
+            case 'dataInizio': return (parseDDMMYYYY(a.dataInizio)?.getTime() ?? 0) - (parseDDMMYYYY(b.dataInizio)?.getTime() ?? 0)
+            case 'scadenza': return (parseDDMMYYYY(a.scadenza)?.getTime() ?? 0) - (parseDDMMYYYY(b.scadenza)?.getTime() ?? 0)
         }
     }
 
-    const sortKeyOne = ref<SortKeyPratiche>('dataInizio')
-    const sortDirOne = ref<SortDir>('down')
-    function setSortOne(key: SortKeyPratiche) {
-        if (sortKeyOne.value === key) {
-            sortDirOne.value = sortDirOne.value === 'up' ? 'down' : 'up'
-        } else {
-            sortKeyOne.value = key
-            sortDirOne.value = 'up'
-        }
-    }
+    /* ======================
+     * Filtrati per tab
+     * ====================== */
+    // Tab 1: aperte
+    const filteredOne = computed<Item[]>(() => {
+        const tokens = searchNome.value.trim().toLowerCase().split(/\s+/).filter(Boolean)
+        const dal = parseISODate(dataDal.value)
+        const al = parseISODate(dataAl.value)
 
-    const sortKeyTwo = ref<SortKeyPratiche>('dataInizio')
-    const sortDirTwo = ref<SortDir>('down')
-    function setSortTwo(key: SortKeyPratiche) {
-        if (sortKeyTwo.value === key) {
-            sortDirTwo.value = sortDirTwo.value === 'up' ? 'down' : 'up'
-        } else {
-            sortKeyTwo.value = key
-            sortDirTwo.value = 'up'
-        }
-    }
+        return items.value
+            .filter(i => !i.statoChiuso)
+            .filter(i => {
+                const nomeOk = tokens.length
+                    ? tokens.every(t => i.nomeProgetto.toLowerCase().includes(t) || i.ente.toLowerCase().includes(t))
+                    : true
 
-    // ---- Ordinati per tab (prima della paginazione) ----
-    const sortedOne = computed<Item[]>(() => {
-        const dir = sortDirOne.value === 'up' ? 1 : -1
-        const key = sortKeyOne.value
-        return items.value.slice().sort((a, b) => comparePratiche(a, b, key) * dir)
-    })
-    const sortedTwo = computed<Item[]>(() => {
-        const dir = sortDirTwo.value === 'up' ? 1 : -1
-        const key = sortKeyTwo.value
-        return items2.value.slice().sort((a, b) => comparePratiche(a, b, key) * dir)
+                const dItem = parseDDMMYYYY(i.dataInizio)
+                const dalOk = dal ? (dItem ? dItem >= dal : false) : true
+                const alOk = al ? (dItem ? dItem <= al : false) : true
+
+                const statoOk = !statoPratica.value ? true : (statoPratica.value === 'aperta')
+
+                return nomeOk && dalOk && alOk && statoOk
+            })
     })
 
-    // ---- Paginazione ----
+    // Tab 2: chiuse
+    const filteredTwo = computed<Item[]>(() => {
+        const tokens = searchNome.value.trim().toLowerCase().split(/\s+/).filter(Boolean)
+        const dal = parseISODate(dataDal.value)
+        const al = parseISODate(dataAl.value)
+
+        return items2.value
+            .filter(i => i.statoChiuso)
+            .filter(i => {
+                const nomeOk = tokens.length
+                    ? tokens.every(t => i.nomeProgetto.toLowerCase().includes(t) || i.ente.toLowerCase().includes(t))
+                    : true
+
+                const dItem = parseDDMMYYYY(i.dataInizio)
+                const dalOk = dal ? (dItem ? dItem >= dal : false) : true
+                const alOk = al ? (dItem ? dItem <= al : false) : true
+
+                const statoOk = !statoPratica.value ? true : (statoPratica.value === 'chiusa')
+
+                return nomeOk && dalOk && alOk && statoOk
+            })
+    })
+
+    /* ======================
+     * Ordinati + paginazione (post-filtri)
+     * ====================== */
     const pageSize = 10
     const currentPageOne = ref(1)
     const currentPageTwo = ref(1)
 
-    const totalPagesOne = computed(() => Math.max(1, Math.ceil(items.value.length / pageSize)))
-    const totalPagesTwo = computed(() => Math.max(1, Math.ceil(items2.value.length / pageSize)))
+    const sortedOne = computed<Item[]>(() => {
+        const dir = sortDirOne.value === 'up' ? 1 : -1
+        const key = sortKeyOne.value
+        return filteredOne.value.slice().sort((a, b) => comparePratiche(a, b, key) * dir)
+    })
+    const sortedTwo = computed<Item[]>(() => {
+        const dir = sortDirTwo.value === 'up' ? 1 : -1
+        const key = sortKeyTwo.value
+        return filteredTwo.value.slice().sort((a, b) => comparePratiche(a, b, key) * dir)
+    })
 
-    // Paginazione su array ordinati
-    const paginatedCurrent = computed(() => {
-        const page = currentPageOne.value
-        const start = (page - 1) * pageSize
+    const totalPagesOne = computed(() => Math.max(1, Math.ceil(filteredOne.value.length / pageSize)))
+    const totalPagesTwo = computed(() => Math.max(1, Math.ceil(filteredTwo.value.length / pageSize)))
+
+    const paginatedOne = computed<Item[]>(() => {
+        const start = (currentPageOne.value - 1) * pageSize
         return sortedOne.value.slice(start, start + pageSize)
     })
-    const paginatedTwo = computed(() => {
-        const page = currentPageTwo.value
-        const start = (page - 1) * pageSize
+    const paginatedTwo = computed<Item[]>(() => {
+        const start = (currentPageTwo.value - 1) * pageSize
         return sortedTwo.value.slice(start, start + pageSize)
     })
 
@@ -386,46 +523,44 @@
         }
     }
 
+    /* ======================
+     * Badge conteggi
+     * ====================== */
+    const shownCount = computed(() => (tab.value === 'one' ? filteredOne.value.length : filteredTwo.value.length))
+    const totalCount = computed(() =>
+        tab.value === 'one'
+            ? items.value.filter(i => !i.statoChiuso).length
+            : items2.value.filter(i => i.statoChiuso).length
+    )
 
-
-    // Navigazione
+    /* ======================
+     * Navigazione
+     * ====================== */
     function creaNuovaPratica() {
         router.push({ name: 'formPratica' })
     }
-    function goToSingleProjectDocument(item?: Item) {
-        router.push({ name: 'singleProjectDocumentsView' })
-    }
-    function goToHome() {
-        router.push({ name: 'home' })
-    }
 
-    // DELETE
+    /*function============
+ * Delete
+        * ====================== */
+
     function onDeleted(id: string | number) {
         const targetId = typeof id === 'string' ? Number(id) : id
         const list = tab.value === 'one' ? items.value : items2.value
         const index = list.findIndex(i => i.id === targetId)
         if (index !== -1) {
             list.splice(index, 1)
-            showSnack('Pratica eliminata')
-            // aggiorna paginazione se necessario
-            if (tab.value === 'one' && currentPageOne.value > totalPagesOne.value) {
-                currentPageOne.value = totalPagesOne.value
-            }
-            if (tab.value === 'two' && currentPageTwo.value > totalPagesTwo.value) {
-                currentPageTwo.value = totalPagesTwo.value
-            }
+            showSnack('Pratica eliminata', 'success')
+            if (currentPageOne.value > totalPagesOne.value) currentPageOne.value = totalPagesOne.value
+            if (currentPageTwo.value > totalPagesTwo.value) currentPageTwo.value = totalPagesTwo.value
         } else {
             showSnack('Elemento non trovato', 'error')
         }
     }
 
-
-
-    function showSnack(message: string, color: string = 'error') {
-        snackbar.value = { show: true, message, color }
-    }
-
-    // Toast ref + sync con stato snackbar
+    /* ======================
+     * Toast / Snackbar
+     * ====================== */
     const snackbar = ref<{ show: boolean; message: string; color: string }>({
         show: false,
         message: '',
@@ -433,14 +568,10 @@
     })
     const toastRef = ref<HTMLElement | null>(null)
 
-    watch(() => snackbar.value.show, (show) => {
-        if (!toastRef.value || !window.bootstrap) return
-        const toast = window.bootstrap.Toast.getOrCreateInstance(toastRef.value, { delay: 3000 })
-        if (show) toast.show()
-        else toast.hide()
-    })
+    function showSnack(message: string, color: string = 'error') {
+        snackbar.value = { show: true, message, color }
+    }
 
-    // Mappa colore snackbar → classi toast
     const toastHeaderClass = computed(() => {
         switch (snackbar.value.color) {
             case 'error': return 'bg-danger text-white'
@@ -449,7 +580,6 @@
             default: return 'bg-primary text-white'
         }
     })
-
     const toastBodyClass = computed(() => {
         switch (snackbar.value.color) {
             case 'error': return 'bg-danger-subtle text-danger'
@@ -457,6 +587,35 @@
             case 'warning': return 'bg-warning-subtle text-warning'
             default: return ''
         }
+    })
+
+    watch(() => snackbar.value.show, async (show) => {
+        if (!toastRef.value) return
+        if (!window.bootstrap) {
+            // Carica dinamicamente se non presente
+            await import('bootstrap-italia/dist/js/bootstrap-italia.bundle.min.js')
+            await nextTick()
+        }
+        const toast = window.bootstrap.Toast.getOrCreateInstance(toastRef.value, { delay: 3000 })
+        show ? toast.show() : toast.hide()
+    })
+
+    /* ======================
+     * UX: coerenza filtri e pagine
+     * ====================== */
+    // Mantieni dal <= al
+    watch([dataDal, dataAl], ([dal, al]) => {
+        const dDal = parseISODate(dal)
+        const dAl = parseISODate(al)
+        if (dDal && dAl && dDal > dAl) {
+            dataAl.value = dal || null
+        }
+    })
+
+    // Quando cambiano filtri/tab, vai a pagina 1 del tab corrente
+    watch([searchNome, dataDal, dataAl, statoPratica, tab], () => {
+        if (tab.value === 'one') currentPageOne.value = 1
+        else currentPageTwo.value = 1
     })
 </script>
 
@@ -479,5 +638,51 @@
     /* Adegua dimensioni icone nei bottoni actions se necessario */
     .btn .icon {
         vertical-align: middle;
+    }
+
+    /* ===== Filtri ===== */
+    .filters-wrapper {
+        background: #ffffff;
+        border: 1px solid #d9dce1;
+        border-radius: 8px;
+        padding: 1.2rem 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 2 filtri + colonna reset */
+        grid-template-rows: auto auto; /* 2 righe */
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .reset-col {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .reset-btn {
+        height: 48px;
+        padding: 0 22px;
+        border-radius: 6px !important;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .filters-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+        }
+
+        .reset-col {
+            grid-column: 1 !important;
+            grid-row: auto !important;
+            justify-content: flex-start;
+            margin-top: .5rem;
+        }
     }
 </style>
