@@ -9,7 +9,7 @@
             <button type="button" class="btn btn-secondary" @click="goTo('/authCIE')">EntraConCIE</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/singleProjectDocumentsView')">SingleProjectDocumentsView</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/formPratica')">Form nuov pratica</button>
-            <button type="button" class="btn btn-secondary" @click="goTo('/singleFileOpen')">Form nuov pratica</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/singleFileOpen')">Form pratica</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/messages')">Messaggi</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/newProject')">newProject</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/Notifications')">Notifications</button>

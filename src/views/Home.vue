@@ -94,7 +94,7 @@
                             <div class="col-12 col-md-6">
                                 <h2 class="h6">Entra con le tue credenziali CIE</h2>
 
-                                <form @submit.prevent="salvaUsername">
+                                <form @submit.prevent="login">
                                     <div class="mb-3">
                                         <label for="usernameInput" class="form-label">Numero CIE o Codice fiscale o Email</label>
                                         <input id="usernameInput"
@@ -106,10 +106,13 @@
 
                                     <div class="mb-3">
                                         <label for="passwordInput" class="form-label">Password</label>
+
                                         <input id="passwordInput"
+                                               v-model="passwordInput"
                                                type="password"
                                                autocomplete="current-password"
                                                class="form-control" />
+
                                     </div>
 
                                     <p class="small mt-2">
@@ -191,6 +194,8 @@
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
+    import api from '@/services/api';
+
     const spritesHref = spritesUrl
 
     // Tipi bootstrap in window (per TS)
@@ -204,6 +209,7 @@
     const router = useRouter()
     const store = useStore()
     const usernameInput = ref('')
+    const passwordInput = ref('');
 
     const snackbar = ref<{ show: boolean; message: string; color: string }>({
         show: false,
@@ -244,11 +250,46 @@
         }
     })
 
-    const salvaUsername = () => {
-        store.commit('setUsername', usernameInput.value)
-        console.log('Username salvato:', store.state.username)
+    /*const salvaUsername = () => {
+        login();
+
         router.push({ name: 'dashboard' })
     }
+    */
+
+    //connessione con backend
+
+
+
+
+
+ 
+
+
+
+    async function login() {
+        store.commit('setUsername', usernameInput.value);
+        try {
+            const { data } = await api.post('users/login', {   // <--- niente /api qui
+                username: usernameInput.value,
+                password: passwordInput.value
+            });
+
+            console.log('Login OK:', data);
+            // eventuale salvataggio token
+            if (data.token) localStorage.setItem('token', data.token);
+
+            // sposta il redirect PRIMA del return
+            router.push({ name: 'dashboard' });
+            return data;
+
+        } catch (error) {
+            console.error('Errore login:', error);
+            throw error;
+        }
+    }
+
+
 </script>
 
 <style scoped>

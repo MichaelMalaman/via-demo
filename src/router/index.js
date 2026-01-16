@@ -1,28 +1,30 @@
-
+﻿
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
-import dashboard from '../views/Dashboard.vue'
-import singleProjectDocumentsView from '../views/SingleProjectDocumentsView.vue'
-import formPratica from '../views/formPratica.vue'
-import singleFileOpen from '../views/SingleFileOpen.vue'
-import messages from '../views/Messages.vue'
-import newProject from '../views/newProject.vue'
+import Dashboard from '../views/Dashboard.vue'
+import SingleProjectDocumentsView from '../views/SingleProjectDocumentsView.vue'
+import FormPratica from '../views/formPratica.vue'
+import SingleFileOpen from '../views/SingleFileOpen.vue'
+import Messages from '../views/Messages.vue'
+import NewProject from '../views/newProject.vue'
 import Notifications from '../views/Notifications.vue'
 
-
+import api from '@/services/api'   // <--- usa il tuo client axios
 
 const routes = [
-    { path: '/', name: 'home', component: Home, meta: { title:'home'} },
-    { path: '/about', name: 'about', component: About, meta: { title: 'about' } },
-    { path: '/dashboard', name: 'dashboard', component: dashboard, meta: { title: 'dashboard' } },
-    { path: '/singleProjectDocumentsView', name: 'singleProjectDocumentsView', component: singleProjectDocumentsView, meta: { title: 'singleProjectDocumentsView' } },
-    { path: '/formPratica', name: 'formPratica', component: formPratica, meta: { title: 'formPratica' } },
-    { path: '/singleFileOpen', name: 'singleFileOpen', component: singleFileOpen, meta: { title: 'singleFileOpen' } },
-    { path: '/messages', name: 'messages', component: messages, meta: { title: 'messages' } },
-    { path: '/newProject', name: 'newProject', component: newProject, meta: { title: 'newProject' } },
-    { path: '/Notifications', name: 'Notifications', component: Notifications, meta: { title: 'Notifications' } }
+    //  ROTTA PUBBLICA
+    { path: '/', name: 'home', component: Home, meta: { title: 'home', public: true } },
 
+    //  TUTTE LE ALTRE ROTTE SONO PROTETTE
+    { path: '/about', name: 'about', component: About, meta: { title: 'about' } },
+    { path: '/dashboard', name: 'dashboard', component: Dashboard, meta: { title: 'dashboard' } },
+    { path: '/singleProjectDocumentsView', name: 'singleProjectDocumentsView', component: SingleProjectDocumentsView },
+    { path: '/formPratica', name: 'formPratica', component: FormPratica },
+    { path: '/singleFileOpen', name: 'singleFileOpen', component: SingleFileOpen },
+    { path: '/messages', name: 'messages', component: Messages },
+    { path: '/newProject', name: 'newProject', component: NewProject },
+    { path: '/notifications', name: 'notifications', component: Notifications }
 ]
 
 const router = createRouter({
@@ -30,16 +32,44 @@ const router = createRouter({
     routes
 })
 
-
-// Imposta il titolo pagina e protezione delle rotte
-router.beforeEach((to, from, next) => {
-    if (to.meta?.title) document.title = `Via Portale - ${to.meta.title}`
-
-    if (to.meta?.requiresAuth && !store.getters.isAuthenticated) {
-        return next({ path: '/', query: { redirect: to.fullPath } })
+// ===================================================
+//  ROUTER GUARD CON VALIDAZIONE JWT
+// ===================================================
+router.beforeEach(async (to, from, next) => {
+    // Imposta il titolo
+    if (to.meta?.title) {
+        document.title = `Via Portale - ${to.meta.title}`
     }
-    next()
+
+    // Controlla se la rotta è pubblica
+    if (to.meta.public) {
+        return next()
+    }
+
+    // Controlla token localStorage
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+        // Token mancante → torna alla login
+        return next({ name: 'home' })
+    }
+
+    // Verifica token col backend
+    try {
+        await api.get('users/me', {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+
+        // Token valido → avanti
+        return next()
+    } catch (err) {
+        console.error('JWT NON valido:', err)
+
+        // Rimuovi token e rimanda alla login
+        localStorage.removeItem('token')
+
+        return next({ name: 'home' })
+    }
 })
 
 export default router
-

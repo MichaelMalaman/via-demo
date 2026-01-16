@@ -540,6 +540,10 @@
         router.push({ name: 'formPratica' })
     }
 
+    function goToSingleProjectDocument() {
+        router.push({ name: 'singleProjectDocumentsView' })
+    }
+
     /*function============
  * Delete
         * ====================== */

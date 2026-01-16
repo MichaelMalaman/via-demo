@@ -18,7 +18,7 @@
 
     const store = useStore()
 
-    const dataDal = computed({
+    const dataAl = computed({
         get: () => store.state.filters.dataAl, 
         set: (val) => {
             store.commit('setFilterField', { key: 'dataAl', value: val })
