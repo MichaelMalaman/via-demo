@@ -38,20 +38,18 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="light"
-     
                                                             text="Fornisce il frontespizio con dati minimi (progetto, proponente, localizzazione, data) secondo gli schemi di presentazione VIA."
                                                             placement="bottom"
                                                             outline
-                                                            :iconOnly="true" 
-                                                            size="xs"></PopoverExplain>
-
+                                                            :iconOnly="true"
+                                                            size="xs" />
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="light"
-                                                            title="Come è stata generata"
                                                             text="Campi compilati a partire dai metadati di progetto e da modelli interni; formattazione conforme allo stile VIA."
                                                             placement="bottom"
                                                             outline
+                                                            :iconOnly="true"
                                                             size="xs">Come</PopoverExplain>
                                         </span>
                                     </div>
@@ -81,19 +79,19 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="primary"
-                                                            title="Perché c’è questa sezione"
                                                             text="Serve a chiarire scopo e campo di applicazione del documento, come previsto dal quadro normativo applicabile."
                                                             placement="top"
                                                             outline
+                                                            :iconOnly="true"
                                                             size="xs">Perché</PopoverExplain>
 
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="primary"
-                                                            title="Come è stata compilata"
                                                             text="L’AI ha estratto riferimenti normativi e obiettivi chiave dal prompt e dai modelli interni, assicurando coerenza con la struttura VIA."
                                                             placement="top"
                                                             outline
+                                                            :iconOnly="true"
                                                             size="xs">Come</PopoverExplain>
                                         </span>
                                     </p>
@@ -106,19 +104,19 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="secondary"
-                                                            title="Perché descrivere il progetto"
                                                             text="La descrizione consente di comprendere scala, caratteristiche tecniche e fasi progettuali, fondamentali per la pre‑valutazione degli impatti."
                                                             placement="top"
                                                             outline
+                                                            :iconOnly="true"
                                                             size="xs">Perché</PopoverExplain>
 
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="secondary"
-                                                            title="Come è stata compilata"
                                                             text="Aggregazione di capitolato e scheda tecnica; normalizzazione di potenza, superfici e cronoprogramma secondo schemi standard."
                                                             placement="top"
                                                             outline
+                                                            :iconOnly="true"
                                                             size="xs">Come</PopoverExplain>
                                         </span>
                                     </p>
@@ -135,7 +133,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="info"
-                                                            title="Perché evidenziare il riuso"
+                                                            :iconOnly="true"
                                                             text="Il riuso dell’area attenua il consumo di suolo e costituisce elemento favorevole nella valutazione di compatibilità."
                                                             placement="top"
                                                             outline
@@ -144,7 +142,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="info"
-                                                            title="Come è stata prodotta la nota"
+                                                            :iconOnly="true"
                                                             text="Confronto tra destinazione urbanistica dell’area e linee guida VIA; inserimento automatico della nota nel punto opportuno."
                                                             placement="top"
                                                             outline
@@ -164,7 +162,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="success"
-                                                            title="Perché inquadrare il territorio"
+                                                            :iconOnly="true"
                                                             text="Supporta l’analisi di coerenza localizzativa e la verifica preliminare di possibili interferenze con aree sensibili."
                                                             placement="top"
                                                             outline
@@ -173,7 +171,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="success"
-                                                            title="Come sono stati popolati i dati"
+                                                            :iconOnly="true"
                                                             text="Consultazione di layer GIS e repertori territoriali; estrazione di distanze chiave e sintesi degli elementi rilevanti."
                                                             placement="top"
                                                             outline
@@ -193,7 +191,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="success"
-                                                            title="Perché descrivere le componenti"
+                                                            :iconOnly="true"
                                                             text="Individua i recettori ambientali potenzialmente esposti e guida la definizione delle misure di mitigazione."
                                                             placement="top"
                                                             outline
@@ -202,7 +200,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="success"
-                                                            title="Come sono stati compilati i punti"
+                                                            :iconOnly="true"
                                                             text="Raccolta di dati disponibili (report pregressi, banche dati) e sintesi assistita per ogni componente."
                                                             placement="top"
                                                             outline
@@ -222,7 +220,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="warning"
-                                                            title="Perché valutare gli impatti di cantiere"
+                                                            :iconOnly="true"
                                                             text="Consente di anticipare criticità operative e dimensionare le misure di prevenzione/mitigazione."
                                                             placement="top"
                                                             outline
@@ -231,7 +229,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="warning"
-                                                            title="Come sono stati stimati"
+                                                            :iconOnly="true"
                                                             text="L’AI applica una tassonomia di impatti per fase e assegna livelli di rischio in base a tipologia e contesto."
                                                             placement="top"
                                                             outline
@@ -250,7 +248,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="warning"
-                                                            title="Perché valutare l’esercizio"
+                                                            :iconOnly="true"
                                                             text="Definisce eventuali effetti residui nel lungo periodo e verifica l’adeguatezza dei controlli."
                                                             placement="top"
                                                             outline
@@ -259,7 +257,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="warning"
-                                                            title="Come sono stati valutati"
+                                                            :iconOnly="true"
                                                             text="Confronto con casistica analoga e criteri interni; attribuzione di impatto residuale e raccomandazione di monitoraggio."
                                                             placement="top"
                                                             outline
@@ -279,7 +277,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="danger"
-                                                            title="Perché indicare i rischi"
+                                                            :iconOnly="true"
                                                             text="Supporta la decisione di assoggettabilità e orienta priorità di approfondimento."
                                                             placement="top"
                                                             outline
@@ -288,7 +286,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="danger"
-                                                            title="Come sono stati sintetizzati"
+                                                            :iconOnly="true"
                                                             text="Classificazione dei rischi su base normativa e territoriale; riepilogo automatico dei punti di attenzione."
                                                             placement="top"
                                                             outline
@@ -308,7 +306,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="success"
-                                                            title="Perché definire le misure"
+                                                            :iconOnly="true"
                                                             text="Riduce i rischi individuati e dimostra la capacità di controllo nel cantiere e nell’esercizio."
                                                             placement="top"
                                                             outline
@@ -317,7 +315,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="success"
-                                                            title="Come sono state proposte"
+                                                            :iconOnly="true"
                                                             text="Selezione da libreria di misure standard e suggerimenti AI sulla base della tipologia d’intervento e del contesto."
                                                             placement="top"
                                                             outline
@@ -334,7 +332,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="dark"
-                                                            title="Perché concludere in questo modo"
+                                                            :iconOnly="true"
                                                             text="Riassume gli esiti della pre‑valutazione e rende esplicite le raccomandazioni per l’autorità competente."
                                                             placement="top"
                                                             outline
@@ -343,7 +341,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="dark"
-                                                            title="Come è stata costruita la sintesi"
+                                                            :iconOnly="true"
                                                             text="Raccolta dei punti chiave dalle sezioni precedenti e verifica di coerenza interna tramite regole di controllo."
                                                             placement="top"
                                                             outline
@@ -363,7 +361,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-info-circle"
                                                             color="secondary"
-                                                            title="Perché elencare le fonti"
+                                                            :iconOnly="true"
                                                             text="Garantisce trasparenza e tracciabilità delle informazioni riportate nel documento."
                                                             placement="top"
                                                             outline
@@ -372,7 +370,7 @@
                                             <PopoverExplain :spritesHref="spritesHref"
                                                             icon="it-help-circle"
                                                             color="secondary"
-                                                            title="Come sono state riportate"
+                                                            :iconOnly="true"
                                                             text="Raccolta e normalizzazione dei riferimenti; formattazione omogenea per consultazione rapida."
                                                             placement="top"
                                                             outline
@@ -396,15 +394,97 @@
                     <button class="btn btn-success w-100" type="button">VALIDAZIONE NORMATIVA</button>
                 </div>
 
+                <!--  CHECKLIST CON VALIDAZIONE FINTA -->
                 <div class="card border p-4">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h4 class="mb-0">Checklist VIA – Parti obbligatorie</h4>
-                        <button class="btn btn-primary btn-sm d-inline-flex align-items-center" type="button">
-                            Valida checklist
-                        </button>
+                        <div>
+                            <!-- Toggle Seleziona/Deseleziona tutto -->
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    type="button"
+                                    @click="toggleSelectAll"
+                                    :disabled="isValidating">
+                                {{ selectAllLabel }}
+                            </button>
+
+                            <!-- Reset stati -->
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    type="button"
+                                    @click="resetStatuses"
+                                    :disabled="isValidating || !hasAnyStatus"
+                                    title="Azzera gli esiti (mantiene le selezioni)">
+                                Reset
+                            </button>
+
+                            <button class="btn btn-primary btn-sm d-inline-flex align-items-center"
+                                    type="button"
+                                    @click="validateChecklist"
+                                    :disabled="isValidating || selectedCount === 0">
+                                <span v-if="isValidating" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span>{{ isValidating ? 'Validazione…' : 'Valida checklist' }}</span>
+                            </button>
+                        </div>
+
+                        </div>
+
+                        <small class="text-muted d-block mb-3">
+                            Seleziona i punti da validare. La verifica produrrà esiti casuali (OK / Da rivedere / Mancante).
+                        </small>
+
+                        <ul class="list-unstyled mt-2">
+                            <li v-for="item in checklist" :key="item.id"
+                                class="check-item p-2 rounded mb-1"
+                                :class="statusClass(item.status)">
+                                <div class="d-flex align-items-start">
+                                    <input class="form-check-input mt-1 me-2"
+                                           type="checkbox"
+                                           v-model="item.selected"
+                                           :disabled="isValidating" />
+
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center">
+                                            <span class="item-label">{{ item.label }}</span>
+
+                                            <!-- Stato a destra -->
+                                            <span class="ms-auto d-inline-flex align-items-center status-badge" v-if="item.status !== 'idle'">
+                                                <!-- loading -->
+                                                <span v-if="item.status === 'loading'"
+                                                      class="spinner-border spinner-border-sm text-primary me-1"
+                                                      role="status"
+                                                      aria-hidden="true"></span>
+                                                <small v-if="item.status === 'loading'" class="text-primary">Verifica…</small>
+
+                                                <!-- ok -->
+                                                <template v-else-if="item.status === 'ok'">
+                                                    <svg class="icon text-success me-1"><use :href="`${spritesHref}#it-check-circle`" /></svg>
+                                                    <small class="text-success">OK</small>
+                                                </template>
+
+                                                <!-- warn -->
+                                                <template v-else-if="item.status === 'warn'">
+                                                    <svg class="icon text-warning me-1"><use :href="`${spritesHref}#it-warning`" /></svg>
+                                                    <small class="text-warning">Da rivedere</small>
+                                                </template>
+
+                                                <!-- error -->
+                                                <template v-else-if="item.status === 'error'">
+                                                    <!-- uso la stessa icona triangolo ma rossa -->
+                                                    <svg class="icon text-danger me-1"><use :href="`${spritesHref}#it-warning`" /></svg>
+                                                    <small class="text-danger">Mancante</small>
+                                                </template>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <!-- Piccolo promemoria sul conteggio -->
+                        <div class="mt-3 d-flex justify-content-between small text-muted">
+                            <span>Selezionati: {{ selectedCount }}</span>
+                            <span v-if="!isValidating && selectedCount === 0">Seleziona almeno un elemento</span>
+                        </div>
                     </div>
-                    <!-- … elenco rimasto invariato … -->
-                </div>
             </div>
         </div>
     </div>
@@ -412,8 +492,9 @@
 
 <script setup lang="ts">
     import PopoverExplain from '@/components/PopoverExplain.vue'
-
+    import { reactive, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
+
     const router = useRouter()
 
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
@@ -422,6 +503,121 @@
     function goTo(path: string) {
         router.push(path)
     }
+
+    /** ====== CHECKLIST LOGIC (mock) ====== */
+
+    type Status = 'idle' | 'loading' | 'ok' | 'warn' | 'error'
+    interface ChecklistItem {
+        id: string
+        label: string
+        selected: boolean
+        status: Status
+    }
+
+    // Punti della checklist (derivati dai titoli/contenuti del documento)
+    const checklist = reactive<ChecklistItem[]>([
+        { id: '1.1', label: 'Obiettivo dello SPA definito', selected: false, status: 'idle' },
+        { id: '1.2', label: 'Riferimenti normativi indicati', selected: false, status: 'idle' },
+        { id: '1.3', label: 'Descrizione sintetica del progetto', selected: false, status: 'idle' },
+        { id: '1.4', label: 'Interazioni ambientali individuate', selected: false, status: 'idle' },
+
+        { id: '2.1', label: 'Descrizione tecnica impianto', selected: false, status: 'idle' },
+        { id: '2.2', label: 'Localizzazione e cartografia', selected: false, status: 'idle' },
+        { id: '2.3', label: 'Cronoprogramma cantiere/esercizio', selected: false, status: 'idle' },
+        { id: '2.4', label: 'Infrastrutture correlate', selected: false, status: 'idle' },
+
+        { id: '3.1', label: 'Destinazione d’uso e stato dell’area', selected: false, status: 'idle' },
+        { id: '3.2', label: 'Verifica vincoli ambientali/paesaggistici', selected: false, status: 'idle' },
+        { id: '3.3', label: 'Distanze da aree sensibili', selected: false, status: 'idle' },
+
+        { id: '3.4', label: 'Suolo e sottosuolo', selected: false, status: 'idle' },
+        { id: '3.5', label: 'Atmosfera / qualità dell’aria', selected: false, status: 'idle' },
+        { id: '3.6', label: 'Idrologia', selected: false, status: 'idle' },
+        { id: '3.7', label: 'Flora e fauna', selected: false, status: 'idle' },
+
+        { id: '4.1', label: 'Impatti su aria/rumore (cantiere)', selected: false, status: 'idle' },
+        { id: '4.2', label: 'Gestione terre e rocce da scavo', selected: false, status: 'idle' },
+        { id: '4.3', label: 'Impatto visivo (esercizio)', selected: false, status: 'idle' },
+        { id: '4.4', label: 'Consumo di suolo (esercizio)', selected: false, status: 'idle' },
+        { id: '4.5', label: 'Effetti su fauna/ecosistemi', selected: false, status: 'idle' },
+
+        { id: '5.1', label: 'Rischio idrogeologico', selected: false, status: 'idle' },
+        { id: '5.2', label: 'Rischio paesaggistico', selected: false, status: 'idle' },
+        { id: '5.3', label: 'Rischio habitat protetti / Natura 2000', selected: false, status: 'idle' },
+
+        { id: '6.1', label: 'Misure per aria/rumore', selected: false, status: 'idle' },
+        { id: '6.2', label: 'Misure per suolo/acque', selected: false, status: 'idle' },
+        { id: '6.3', label: 'Misure per biodiversità', selected: false, status: 'idle' },
+        { id: '6.4', label: 'Piano di monitoraggio', selected: false, status: 'idle' },
+
+        { id: '7.1', label: 'Sintesi degli impatti', selected: false, status: 'idle' },
+        { id: '7.2', label: 'Raccomandazioni finali', selected: false, status: 'idle' }
+    ])
+
+    const isValidating = ref(false)
+    const selectedCount = computed(() => checklist.filter(i => i.selected).length)
+
+    function statusClass(status: Status) {
+        return {
+            'status-idle': status === 'idle',
+            'status-loading': status === 'loading',
+            'status-ok': status === 'ok',
+            'status-warn': status === 'warn',
+            'status-error': status === 'error'
+        }
+    }
+
+    function uniformOutcome(): Status {
+        // esito uniforme su 3 stati finali (ok/warn/error)
+        const r = Math.floor(Math.random() * 3)
+        return (['ok', 'warn', 'error'] as const)[r]
+    }
+
+    function delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+
+    async function validateChecklist() {
+        if (isValidating.value) return
+        const toCheck = checklist.filter(i => i.selected)
+        if (!toCheck.length) return
+
+        isValidating.value = true
+
+        // reset stato degli elementi selezionati
+        toCheck.forEach(i => { i.status = 'idle' })
+
+        // sequenziale: uno dopo l’altro
+        for (const item of toCheck) {
+            item.status = 'loading'
+            await delay(600) // tempo finto per “loading”
+            item.status = uniformOutcome()
+        }
+
+        isValidating.value = false
+    }
+
+    //seleziona / deseleziona tutto
+
+    const allSelected = computed(() => checklist.length > 0 && checklist.every(i => i.selected))
+    const anySelected = computed(() => checklist.some(i => i.selected))
+    const selectAllLabel = computed(() => (allSelected.value ? 'Deseleziona tutto' : 'Seleziona tutto'))
+
+    const hasAnyStatus = computed(() => checklist.some(i => i.status !== 'idle'))
+
+    function toggleSelectAll() {
+        const target = !allSelected.value
+        checklist.forEach(i => {
+            i.selected = target
+        })
+    }
+
+    function resetStatuses() {
+        checklist.forEach(i => {
+            i.status = 'idle'
+        })
+    }
+
 </script>
 
 <style scoped>
@@ -448,5 +644,50 @@
     .icon {
         width: 16px;
         height: 16px;
+    }
+
+    /* ======= Checklist styles ======= */
+    .check-item {
+        background-color: #fff;
+        border-left: 4px solid transparent;
+        transition: background-color .2s ease, border-color .2s ease;
+    }
+
+    /* loading */
+    .status-loading {
+        background-color: #e7f1ff; /* azzurrino */
+        border-left-color: var(--bs-primary);
+    }
+
+    /* ok */
+    .status-ok {
+        background-color: #e6f4ea; /* verdino */
+        border-left-color: var(--bs-success);
+    }
+
+    /* warn */
+    .status-warn {
+        background-color: #fff7e6; /* giallino */
+        border-left-color: var(--bs-warning);
+    }
+
+    /* error */
+    .status-error {
+        background-color: #fde7e9; /* rosato */
+        border-left-color: var(--bs-danger);
+    }
+
+    /* idle (nessun colore) */
+    .status-idle {
+        background-color: #fff;
+        border-left-color: transparent;
+    }
+
+    .item-label {
+        line-height: 1.25;
+    }
+
+    .status-badge small {
+        font-weight: 600;
     }
 </style>

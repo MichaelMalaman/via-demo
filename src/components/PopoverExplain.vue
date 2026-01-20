@@ -29,6 +29,7 @@
           ref="triggerRef"
           role="button"
           tabindex="0"
+          :class="iconColorClass"
           class="icon-only-trigger"
           data-bs-toggle="popover"
           data-bs-trigger="manual"
