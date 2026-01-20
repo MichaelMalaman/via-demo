@@ -47,54 +47,89 @@
             </li>
         </ul>
 
-        <!-- FILTRI 2×2 + Reset laterale -->
-        <div class="filters-wrapper mb-4">
-            <div class="filters-grid">
-                <!-- Filtro 1 -->
-                <div>
-                    <label class="form-label fw-semibold">Nome progetto</label>
-                    <input v-model="searchNome"
-                           type="text"
-                           class="form-control"
-                           placeholder="Digita per cercare (nome o ente)..." />
-                </div>
 
-                <!-- Filtro 2 -->
-                <div>
-                    <label class="form-label fw-semibold">Data dal</label>
-                    <input v-model="dataDal" type="date" class="form-control" />
-                </div>
-
-                <!-- Pulsante reset (centrato su 2 righe) -->
-                <div class="reset-col">
-                    <button class="btn btn-outline-secondary reset-btn" @click="resetFiltri">
-                        Reset filtri
+        <div class="accordion accordion-background-active" id="accordionFiltri">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFiltri">
+                    <button class="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseFiltri"
+                            aria-expanded="true"
+                            aria-controls="collapseFiltri">
+                        Filtri
                     </button>
-                </div>
+                </h2>
 
-                <!-- Filtro 3 -->
-                <div>
-                    <label class="form-label fw-semibold">Data al</label>
-                    <input v-model="dataAl" type="date" class="form-control" />
-                </div>
+                <div id="collapseFiltri"
+                     class="accordion-collapse collapse show"
+                     role="region"
+                     aria-labelledby="headingFiltri"
+                     data-bs-parent="#accordionFiltri">
 
-                <!-- Filtro 4 -->
-                <div>
-                    <label class="form-label fw-semibold">Stato pratica</label>
-                    <select v-model="statoPratica" class="form-select">
-                        <option :value="null">Tutti</option>
-                        <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
-                    </select>
-                </div>
-            </div>
+                    <div class="accordion-body">
 
-            <!-- Badge risultato -->
-            <div class="filters-bottom mt-3">
-                <span class="badge rounded-pill bg-primary text-white px-3 py-2">
-                    Mostrati {{ shownCount }} di {{ totalCount }}
-                </span>
+
+
+
+                        <div class="filters-row d-flex align-items-end gap-3 flex-wrap">
+
+                            <!-- Nome progetto -->
+                            <div class="filter-equal flex-fill">
+                                <label class="form-label fw-semibold">Nome progetto</label>
+                                <input v-model="searchNome"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="Digita per cercare (nome o ente)..." />
+                            </div>
+
+                            <!-- Data dal -->
+                            <div class="filter-equal flex-fill">
+                                <label class="form-label fw-semibold">Data dal</label>
+                                <input v-model="dataDal" type="date" class="form-control" />
+                            </div>
+
+                            <!-- Data al -->
+                            <div class="filter-equal flex-fill">
+                                <label class="form-label fw-semibold">Data al</label>
+                                <input v-model="dataAl" type="date" class="form-control" />
+                            </div>
+
+                            <!-- Stato pratica -->
+                            <div class="filter-equal flex-fill">
+                                <label class="form-label fw-semibold">Stato pratica</label>
+                                <select v-model="statoPratica" class="form-select">
+                                    <option :value="null">Tutti</option>
+                                    <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Reset -->
+                            <div class="filter-equal flex-fill">
+                                <button class="btn btn-outline-secondary w-100 reset-btn"
+                                        @click="resetFiltri">
+                                    Reset filtri
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Badge -->
+                        <div class="filters-bottom mt-3">
+                            <span class="badge rounded-pill bg-primary text-white px-3 py-2">
+                                Mostrati {{ shownCount }} di {{ totalCount }}
+                            </span>
+                        </div>
+
+
+
+                    </div>
+
+                </div>
             </div>
         </div>
+
+
 
         <!-- Tab: Pratiche in corso -->
         <div v-show="tab === 'one'">

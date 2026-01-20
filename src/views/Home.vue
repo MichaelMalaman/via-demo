@@ -94,7 +94,7 @@
                             <div class="col-12 col-md-6">
                                 <h2 class="h6">Entra con le tue credenziali CIE</h2>
 
-                                <form @submit.prevent="login">
+                                <form @submit.prevent="salvaUsername">
                                     <div class="mb-3">
                                         <label for="usernameInput" class="form-label">Numero CIE o Codice fiscale o Email</label>
                                         <input id="usernameInput"
@@ -250,12 +250,13 @@
         }
     })
 
-    /*const salvaUsername = () => {
-        login();
-
+    const salvaUsername = () => {
+        //login();
+        store.commit('setUsername', usernameInput.value);
+        console.log("usernameInput", usernameInput.value)
         router.push({ name: 'dashboard' })
     }
-    */
+    
 
     //connessione con backend
 
@@ -267,7 +268,7 @@
 
 
 
-    async function login() {
+   /* async function login() {
         store.commit('setUsername', usernameInput.value);
         try {
             const { data } = await api.post('users/login', {
@@ -288,6 +289,7 @@
             throw error;
         }
     }
+    */
 
 
 </script>

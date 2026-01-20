@@ -21,58 +21,89 @@
 
 
 
-        <!-- FILTRI 2×2 + RESET -->
-        <div class="filters-wrapper mb-4">
 
-            <div class="filters-grid">
-
-                <!-- Filtro 1 -->
-                <div>
-                    <label class="form-label fw-semibold">Nome file</label>
-                    <input type="text"
-                           class="form-control"
-                           v-model="nomeFile"
-                           placeholder="Digita per cercare (es. impianto)" />
-                </div>
-
-                <!-- Filtro 2 -->
-                <div>
-                    <label class="form-label fw-semibold">Data dal</label>
-                    <VueDatePickerDal v-model="dataDal" />
-                </div>
-
-                <!-- Pulsante Reset centrato su 2 righe -->
-                <div class="reset-col">
-                    <button class="btn btn-outline-secondary reset-btn" @click="resetFilters">
-                        Reset filtri
+        <div class="accordion accordion-background-active" id="accordionFiltri">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFiltri">
+                    <button class="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseFiltri"
+                            aria-expanded="true"
+                            aria-controls="collapseFiltri">
+                        Filtri
                     </button>
-                </div>
+                </h2>
 
-                <!-- Filtro 3 -->
-                <div>
-                    <label class="form-label fw-semibold">Data al</label>
-                    <VueDatePickerAl v-model="dataAl" />
-                </div>
+                <div id="collapseFiltri"
+                     class="accordion-collapse collapse show"
+                     role="region"
+                     aria-labelledby="headingFiltri"
+                     data-bs-parent="#accordionFiltri">
 
-                <!-- Filtro 4 -->
-                <div>
-                    <label class="form-label fw-semibold">Stato pratica</label>
-                    <select class="form-select" v-model="statoPratica">
-                        <option :value="null">Tutti</option>
-                        <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
-                    </select>
-                </div>
+                    <div class="accordion-body">
 
+
+
+
+                        <div class="filters-row d-flex align-items-end gap-3 flex-wrap">
+
+                            <!-- Nome progetto -->
+                            <div class="filter-equal flex-fill">
+                                <label class="form-label fw-semibold">Nome progetto</label>
+                                <input v-model="searchNome"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="Digita per cercare (nome o ente)..." />
+                            </div>
+
+                            <!-- Data dal -->
+                            <div class="filter-equal flex-fill">
+                                <label class="form-label fw-semibold">Data dal</label>
+                                <input v-model="dataDal" type="date" class="form-control" />
+                            </div>
+
+                            <!-- Data al -->
+                            <div class="filter-equal flex-fill">
+                                <label class="form-label fw-semibold">Data al</label>
+                                <input v-model="dataAl" type="date" class="form-control" />
+                            </div>
+
+                            <!-- Stato pratica -->
+                            <div class="filter-equal flex-fill">
+                                <label class="form-label fw-semibold">Stato pratica</label>
+                                <select v-model="statoPratica" class="form-select">
+                                    <option :value="null">Tutti</option>
+                                    <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Reset -->
+                            <div class="filter-equal flex-fill">
+                                <button class="btn btn-outline-secondary w-100 reset-btn"
+                                        @click="resetFiltri">
+                                    Reset filtri
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Badge -->
+                        <div class="filters-bottom mt-3">
+                            <span class="badge rounded-pill bg-primary text-white px-3 py-2">
+                                Mostrati {{ shownCount }} di {{ totalCount }}
+                            </span>
+                        </div>
+
+
+
+                    </div>
+
+                </div>
             </div>
-
-            <!-- Badge risultato -->
-            <div class="filters-bottom mt-3">
-                <span class="badge rounded-pill bg-primary text-white px-3 py-2">
-                    Mostrati {{ filteredItems.length }} di {{ currentItems.length }}
-                </span>
-            </div>
-
         </div>
+
+
 
 
 
@@ -238,13 +269,14 @@
     }
     const norm = (s: string | null) => (s === '' ? null : s)
 
-    /* ---------- Proxy computed verso Vuex (NO watcher deep) ---------- */
-    const nomeFile = computed<string | null>({
+
+    const searchNome = computed<string | null>({
         get: () => store.state.filters.nomeFile ?? null,
         set: (v) => {
             store.commit('setFilters', { ...store.state.filters, nomeFile: norm(v) })
         },
     })
+
 
     const statoPratica = computed<string | null>({
         get: () => store.state.filters.statoPratica ?? null,
@@ -434,6 +466,12 @@
     })
 
 
+    /* ======================
+     * Badge conteggi
+     * ====================== */
+    const shownCount = computed(() => filteredItems.value.length)
+    const totalCount = computed(() => currentItems.value.length)
+
 
 </script>
 
@@ -453,7 +491,7 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: auto auto;
-        gap: 1rem;
+        gap: 0.5rem;
         align-items: center;
     }
 

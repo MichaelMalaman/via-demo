@@ -17,14 +17,14 @@ const routes = [
     { path: '/', name: 'home', component: Home, meta: { title: 'home', public: true } },
 
     //  TUTTE LE ALTRE ROTTE SONO PROTETTE
-    { path: '/about', name: 'about', component: About, meta: { title: 'about', public: false } },
-    { path: '/dashboard', name: 'dashboard', component: Dashboard, meta: { title: 'dashboard', public: false } },
-    { path: '/singleProjectDocumentsView', name: 'singleProjectDocumentsView', component: SingleProjectDocumentsView, meta: { title: 'SingleProjectDocumentsView', public: false } },
-    { path: '/formPratica', name: 'formPratica', component: FormPratica, public: false, meta: { title: 'formPratica', public: false } },
-    { path: '/singleFileOpen', name: 'singleFileOpen', component: SingleFileOpen, meta: { title: 'singleFileOpen', public: false } },
-    { path: '/messages', name: 'messages', component: Messages, meta: { title: 'messages', public: false } },
-    { path: '/newProject', name: 'newProject', component: NewProject, meta: { title: 'newProject', public: false } },
-    { path: '/notifications', name: 'notifications', component: Notifications, meta: { title: 'notifications', public: false } }
+    { path: '/about', name: 'about', component: About, meta: { title: 'about', public: true } },
+    { path: '/dashboard', name: 'dashboard', component: Dashboard, meta: { title: 'dashboard', public: true } },
+    { path: '/singleProjectDocumentsView', name: 'singleProjectDocumentsView', component: SingleProjectDocumentsView, meta: { title: 'SingleProjectDocumentsView', public: true } },
+    { path: '/formPratica', name: 'formPratica', component: FormPratica, public: true, meta: { title: 'formPratica', public: true } },
+    { path: '/singleFileOpen', name: 'singleFileOpen', component: SingleFileOpen, meta: { title: 'singleFileOpen', public: true } },
+    { path: '/messages', name: 'messages', component: Messages, meta: { title: 'messages', public: true } },
+    { path: '/newProject', name: 'newProject', component: NewProject, meta: { title: 'newProject', public: true } },
+    { path: '/notifications', name: 'notifications', component: Notifications, meta: { title: 'notifications', public: true } }
 ]
 
 const router = createRouter({

@@ -66,7 +66,7 @@ function goAbout() {
 }
 
 .brand-via {
-  font-size: 1.25rem; 
+  font-size: 4rem; 
   line-height: 1.1;   
   letter-spacing: 0.02em; 
 }
