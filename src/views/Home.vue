@@ -270,7 +270,7 @@
     async function login() {
         store.commit('setUsername', usernameInput.value);
         try {
-            const { data } = await api.post('users/login', {   // <--- niente /api qui
+            const { data } = await api.post('users/login', {
                 username: usernameInput.value,
                 password: passwordInput.value
             });

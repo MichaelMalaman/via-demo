@@ -5,7 +5,7 @@
         <div class="row align-items-center mt-4 mb-4">
             <!-- Pulsante sinistro -->
             <div class="col-6 d-flex justify-content-start">
-                <button class="btn btn-outline-primary bg-white d-inline-flex align-items-center"
+                <button class="btn btn-back btn-outline-primary bg-white d-inline-flex align-items-center"
                         @click="goToHome"
                         style="height: 50px;">
                     <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
@@ -689,4 +689,20 @@
             margin-top: .5rem;
         }
     }
+
+
+    .btn-back {
+        color: #000; /* colore normale del testo */
+        background-color: #f2f2f2; /* sfondo normale */
+        border: 1px solid #6c757d;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-back:hover,
+    .btn-back:focus {
+        background-color: #004080 !important; /* blu accessibile ad alto contrasto */
+        color: #ffffff; /* testo bianco leggibile */
+        outline: 2px solid #002a5e; /* focus ring visibile */
+    }
+
 </style>

@@ -3,7 +3,7 @@
 <template>
     <div class="bg-primary min-vh-100 d-flex flex-column">
         <topNavbar />
-        <main class="flex-grow-1 p-1 mt-5">
+        <main class="flex-grow-1 mt-1">
             <router-view />
         </main>
 
