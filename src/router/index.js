@@ -9,6 +9,9 @@ import SingleFileOpen from '../views/SingleFileOpen.vue'
 import Messages from '../views/Messages.vue'
 import NewProject from '../views/newProject.vue'
 import Notifications from '../views/Notifications.vue'
+import AreaCommunityCommenti from '../views/AreaCommunityCommenti.vue'
+
+
 
 import api from '@/services/api'   
 
@@ -24,7 +27,8 @@ const routes = [
     { path: '/singleFileOpen', name: 'singleFileOpen', component: SingleFileOpen, meta: { title: 'singleFileOpen', public: true } },
     { path: '/messages', name: 'messages', component: Messages, meta: { title: 'messages', public: true } },
     { path: '/newProject', name: 'newProject', component: NewProject, meta: { title: 'newProject', public: true } },
-    { path: '/notifications', name: 'notifications', component: Notifications, meta: { title: 'notifications', public: true } }
+    { path: '/notifications', name: 'notifications', component: Notifications, meta: { title: 'notifications', public: true } },
+    { path: '/AreaCommunityCommenti', name: 'AreaCommunityCommenti', component: AreaCommunityCommenti, meta: { title: 'AreaCommunityCommenti', public: true } }
 ]
 
 const router = createRouter({

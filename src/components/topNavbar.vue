@@ -13,8 +13,8 @@
           <button
             type="button"
             class="btn btn-link text-white text-decoration-none fw-bold px-0 brand-via"
-            @click="goAbout"
-            aria-label="Vai alla pagina About"
+            @click="goHome"
+            aria-label="Vai alla pagina Home"
           >
             VIA
           </button>
@@ -40,10 +40,10 @@ const router = useRouter()
 
 const isHome = computed(() => route.name === 'Home')
 
-// click su brand
-function goAbout() {
-  router.push('/about')
+function goHome() {
+  router.push('/')
 }
+
 </script>
 
 <style scoped>

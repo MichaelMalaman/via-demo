@@ -394,97 +394,77 @@
                     <button class="btn btn-success w-100" type="button">VALIDAZIONE NORMATIVA</button>
                 </div>
 
-                <!--  CHECKLIST CON VALIDAZIONE FINTA -->
+                <!-- ✅ CHECKLIST CON VALIDAZIONE FINTA -->
                 <div class="card border p-4">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h4 class="mb-0">Checklist VIA – Parti obbligatorie</h4>
-                        <div>
-                            <!-- Toggle Seleziona/Deseleziona tutto -->
-                            <button class="btn btn-outline-secondary btn-sm"
-                                    type="button"
-                                    @click="toggleSelectAll"
-                                    :disabled="isValidating">
-                                {{ selectAllLabel }}
-                            </button>
+                        <button class="btn btn-primary btn-sm d-inline-flex align-items-center"
+                                type="button"
+                                @click="validateChecklist"
+                                :disabled="isValidating || selectedCount === 0">
+                            <span v-if="isValidating" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>{{ isValidating ? 'Validazione…' : 'Valida checklist' }}</span>
+                        </button>
+                    </div>
 
-                            <!-- Reset stati -->
-                            <button class="btn btn-outline-secondary btn-sm"
-                                    type="button"
-                                    @click="resetStatuses"
-                                    :disabled="isValidating || !hasAnyStatus"
-                                    title="Azzera gli esiti (mantiene le selezioni)">
-                                Reset
-                            </button>
+                    <small class="text-muted d-block mb-3">
+                        Seleziona i punti da validare. La verifica produrrà esiti casuali (OK / Da rivedere / Mancante).
+                    </small>
 
-                            <button class="btn btn-primary btn-sm d-inline-flex align-items-center"
-                                    type="button"
-                                    @click="validateChecklist"
-                                    :disabled="isValidating || selectedCount === 0">
-                                <span v-if="isValidating" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                <span>{{ isValidating ? 'Validazione…' : 'Valida checklist' }}</span>
-                            </button>
-                        </div>
+                    <ul class="list-unstyled mt-2">
+                        <li v-for="item in checklist" :key="item.id"
+                            class="check-item p-2 rounded mb-1"
+                            :class="statusClass(item.status)">
+                            <div class="d-flex align-items-start">
+                                <input class="form-check-input mt-1 me-2"
+                                       type="checkbox"
+                                       v-model="item.selected"
+                                       :disabled="isValidating" />
 
-                        </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center">
+                                        <span class="item-label">{{ item.label }}</span>
 
-                        <small class="text-muted d-block mb-3">
-                            Seleziona i punti da validare. La verifica produrrà esiti casuali (OK / Da rivedere / Mancante).
-                        </small>
+                                        <!-- Stato a destra -->
+                                        <span class="ms-auto d-inline-flex align-items-center status-badge" v-if="item.status !== 'idle'">
+                                            <!-- loading -->
+                                            <span v-if="item.status === 'loading'"
+                                                  class="spinner-border spinner-border-sm text-primary me-1"
+                                                  role="status"
+                                                  aria-hidden="true"></span>
+                                            <small v-if="item.status === 'loading'" class="text-primary">Verifica…</small>
 
-                        <ul class="list-unstyled mt-2">
-                            <li v-for="item in checklist" :key="item.id"
-                                class="check-item p-2 rounded mb-1"
-                                :class="statusClass(item.status)">
-                                <div class="d-flex align-items-start">
-                                    <input class="form-check-input mt-1 me-2"
-                                           type="checkbox"
-                                           v-model="item.selected"
-                                           :disabled="isValidating" />
+                                            <!-- ok -->
+                                            <template v-else-if="item.status === 'ok'">
+                                                <svg class="icon text-success me-1"><use :href="`${spritesHref}#it-check-circle`" /></svg>
+                                                <small class="text-success">OK</small>
+                                            </template>
 
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center">
-                                            <span class="item-label">{{ item.label }}</span>
+                                            <!-- warn -->
+                                            <template v-else-if="item.status === 'warn'">
+                                                <svg class="icon text-warning me-1"><use :href="`${spritesHref}#it-warning`" /></svg>
+                                                <small class="text-warning">Da rivedere</small>
+                                            </template>
 
-                                            <!-- Stato a destra -->
-                                            <span class="ms-auto d-inline-flex align-items-center status-badge" v-if="item.status !== 'idle'">
-                                                <!-- loading -->
-                                                <span v-if="item.status === 'loading'"
-                                                      class="spinner-border spinner-border-sm text-primary me-1"
-                                                      role="status"
-                                                      aria-hidden="true"></span>
-                                                <small v-if="item.status === 'loading'" class="text-primary">Verifica…</small>
-
-                                                <!-- ok -->
-                                                <template v-else-if="item.status === 'ok'">
-                                                    <svg class="icon text-success me-1"><use :href="`${spritesHref}#it-check-circle`" /></svg>
-                                                    <small class="text-success">OK</small>
-                                                </template>
-
-                                                <!-- warn -->
-                                                <template v-else-if="item.status === 'warn'">
-                                                    <svg class="icon text-warning me-1"><use :href="`${spritesHref}#it-warning`" /></svg>
-                                                    <small class="text-warning">Da rivedere</small>
-                                                </template>
-
-                                                <!-- error -->
-                                                <template v-else-if="item.status === 'error'">
-                                                    <!-- uso la stessa icona triangolo ma rossa -->
-                                                    <svg class="icon text-danger me-1"><use :href="`${spritesHref}#it-warning`" /></svg>
-                                                    <small class="text-danger">Mancante</small>
-                                                </template>
-                                            </span>
-                                        </div>
+                                            <!-- error -->
+                                            <template v-else-if="item.status === 'error'">
+                                                <!-- uso la stessa icona triangolo ma rossa -->
+                                                <svg class="icon text-danger me-1"><use :href="`${spritesHref}#it-warning`" /></svg>
+                                                <small class="text-danger">Mancante</small>
+                                            </template>
+                                        </span>
                                     </div>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </li>
+                    </ul>
 
-                        <!-- Piccolo promemoria sul conteggio -->
-                        <div class="mt-3 d-flex justify-content-between small text-muted">
-                            <span>Selezionati: {{ selectedCount }}</span>
-                            <span v-if="!isValidating && selectedCount === 0">Seleziona almeno un elemento</span>
-                        </div>
+                    <!-- Piccolo promemoria sul conteggio -->
+                    <div class="mt-3 d-flex justify-content-between small text-muted">
+                        <span>Selezionati: {{ selectedCount }}</span>
+                        <span v-if="!isValidating && selectedCount === 0">Seleziona almeno un elemento</span>
                     </div>
+                </div>
             </div>
         </div>
     </div>
@@ -598,25 +578,6 @@
     }
 
     //seleziona / deseleziona tutto
-
-    const allSelected = computed(() => checklist.length > 0 && checklist.every(i => i.selected))
-    const anySelected = computed(() => checklist.some(i => i.selected))
-    const selectAllLabel = computed(() => (allSelected.value ? 'Deseleziona tutto' : 'Seleziona tutto'))
-
-    const hasAnyStatus = computed(() => checklist.some(i => i.status !== 'idle'))
-
-    function toggleSelectAll() {
-        const target = !allSelected.value
-        checklist.forEach(i => {
-            i.selected = target
-        })
-    }
-
-    function resetStatuses() {
-        checklist.forEach(i => {
-            i.status = 'idle'
-        })
-    }
 
 </script>
 

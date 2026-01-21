@@ -13,6 +13,7 @@
             <button type="button" class="btn btn-secondary" @click="goTo('/messages')">Messaggi</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/newProject')">newProject</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/Notifications')">Notifications</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/AreaCommunityCommenti')">AreaCommunityCommenti</button>
             
         </div>
     </div>

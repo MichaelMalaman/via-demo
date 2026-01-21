@@ -20,13 +20,12 @@
 
                         <li>
                             <a href="#" @click.prevent="goToAccount"><span>Account</span></a>
-
                         </li>
                         <li>
                             <a href="#" @click.prevent="goToNotifications"><span>Notifications</span></a>
                         </li>
                         <li>
-                            <a href="#" @click.prevent="goToMessages"><span>Messaggi</span></a>
+                            <a href="#" @click.prevent="goToAbout"><span>Tree</span></a>
                         </li>
                         <li>
                             <a href="#" @click.prevent="onLogout"><span>Disconnetti</span></a>
@@ -41,8 +40,8 @@
         <div v-else>
             <button class="btn btn-primary d-flex align-items-center gap-2"
                     @click.prevent="goToHome">
+                Non sei autenticato torna alla Home
                 <svg class="icon"><use :href="`${spritesHref}#it-home`"></use></svg>
-                Torna alla homepage
             </button>
         </div>
     </div>
@@ -68,17 +67,20 @@ const isHome = computed(() => route.name === 'home')
     // Computed che legge lo username dallo store
     const username = computed(() => store.state.username ?? '')
 
-    // Azioni del menu
+
+    
     const goToAccount = () => {
         router.push('/') // aggiorna con il tuo path reale
     }
 
-    const goToMessages = () => {
-        router.push('/messages') // aggiorna con il tuo path reale
-    }
-    const goToNotifications = () => {
+        const goToNotifications = () => {
         router.push('/Notifications') // aggiorna con il tuo path reale
     }
+
+    const goToAbout = () => {
+        router.push('/About') // aggiorna con il tuo path reale
+    }
+
 
     function goToHome() { router.push({ name: 'home' }) }
 
