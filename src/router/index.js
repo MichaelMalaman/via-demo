@@ -1,4 +1,4 @@
-﻿
+
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
@@ -10,6 +10,9 @@ import Messages from '../views/Messages.vue'
 import NewProject from '../views/newProject.vue'
 import Notifications from '../views/Notifications.vue'
 import AreaCommunityCommenti from '../views/AreaCommunityCommenti.vue'
+import AssistenteAnalisiImpatti from '../views/AssistenteAnalisiImpatti.vue'
+import scoping from '../views/scoping.vue'
+import provvedimentoDiConsultazione from '../views/provvedimentoDiConsultazione.vue'
 
 
 
@@ -28,7 +31,10 @@ const routes = [
     { path: '/messages', name: 'messages', component: Messages, meta: { title: 'messages', public: true } },
     { path: '/newProject', name: 'newProject', component: NewProject, meta: { title: 'newProject', public: true } },
     { path: '/notifications', name: 'notifications', component: Notifications, meta: { title: 'notifications', public: true } },
-    { path: '/AreaCommunityCommenti', name: 'AreaCommunityCommenti', component: AreaCommunityCommenti, meta: { title: 'AreaCommunityCommenti', public: true } }
+    { path: '/AreaCommunityCommenti', name: 'AreaCommunityCommenti', component: AreaCommunityCommenti, meta: { title: 'AreaCommunityCommenti', public: true } },
+    { path: '/AssistenteAnalisiImpatti', name: 'AssistenteAnalisiImpatti', component: AssistenteAnalisiImpatti, meta: { title: 'AssistenteAnalisiImpatti', public: true } },
+    { path: '/scoping', name: 'scoping', component: scoping, meta: { title: 'scoping', public: true } },
+    { path: '/provvedimentoDiConsultazione', name: 'provvedimentoDiConsultazione', component: provvedimentoDiConsultazione, meta: { title: 'scoping', public: true } }
 ]
 
 const router = createRouter({

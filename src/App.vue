@@ -1,4 +1,4 @@
-﻿
+
 
 <template>
     <div class="bg-primary min-vh-100 d-flex flex-column">

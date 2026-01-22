@@ -374,18 +374,20 @@
         { id: 8, nomeProgetto: 'NUOVA ARENA', dataInizio: '12/03/2022', ente: 'REGIONE LOMBARDIA', scadenza: '12/04/2022', statoChiuso: false, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
     ])
 
-    const items2 = ref<Item[]>([
-        { id: 101, nomeProgetto: 'IMPIANTO GEOTERMICO', dataInizio: '05/02/2023', ente: 'REGIONE PIEMONTE', scadenza: '15/05/2023', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 102, nomeProgetto: 'BONIFICA AREA INDUSTRIALE', dataInizio: '18/07/2022', ente: 'REGIONE VENETO', scadenza: '30/09/2022', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 103, nomeProgetto: 'NUOVO PARCO URBANO', dataInizio: '10/01/2024', ente: 'COMUNE DI MILANO', scadenza: '20/03/2024', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 104, nomeProgetto: 'IMPIANTO IDROELETTRICO', dataInizio: '22/11/2023', ente: 'REGIONE TRENTINO-ALTO ADIGE', scadenza: '15/02/2024', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 105, nomeProgetto: 'RECUPERO DISCARICA', dataInizio: '03/06/2023', ente: 'REGIONE EMILIA-ROMAGNA', scadenza: '10/08/2023', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 106, nomeProgetto: 'NUOVA CICLABILE', dataInizio: '12/09/2022', ente: 'COMUNE DI TORINO', scadenza: '25/11/2022', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 107, nomeProgetto: 'IMPIANTO BIOMASSA', dataInizio: '08/04/2023', ente: 'REGIONE LOMBARDIA', scadenza: '18/06/2023', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 108, nomeProgetto: 'RIQUALIFICAZIONE LAGUNA', dataInizio: '20/08/2023', ente: 'REGIONE VENETO', scadenza: '05/10/2023', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 109, nomeProgetto: 'NUOVO CENTRO SPORTIVO', dataInizio: '15/03/2024', ente: 'COMUNE DI FIRENZE', scadenza: '30/05/2024', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-        { id: 110, nomeProgetto: 'IMPIANTO SOLARE TERMICO', dataInizio: '01/07/2023', ente: 'REGIONE SICILIA', scadenza: '15/09/2023', statoChiuso: true, ultimoCommento: 'REGIONE LOMBARDIA', AutoreCommento: 'Giovanni Rana' },
-    ])
+    
+const items2 = ref<Item[]>([
+  { id: 101, nomeProgetto: 'IMPIANTO GEOTERMICO',       dataInizio: '05/02/2023', ente: 'REGIONE PIEMONTE',            scadenza: '15/05/2023', statoChiuso: true, ultimoCommento: 'Confrontare con il PAI aggiornato 2024.',                 AutoreCommento: 'Luca Bianchi' },
+  { id: 102, nomeProgetto: 'BONIFICA AREA INDUSTRIALE', dataInizio: '18/07/2022', ente: 'REGIONE VENETO',              scadenza: '30/09/2022', statoChiuso: true, ultimoCommento: 'Integrare esiti analisi di laboratorio (soil gas).',       AutoreCommento: 'Chiara Rizzi' },
+  { id: 103, nomeProgetto: 'NUOVO PARCO URBANO',        dataInizio: '10/01/2024', ente: 'COMUNE DI MILANO',            scadenza: '20/03/2024', statoChiuso: true, ultimoCommento: 'Valutare ombreggiamento e specie autoctone.',              AutoreCommento: 'Stefano Gatti' },
+  { id: 104, nomeProgetto: 'IMPIANTO IDROELETTRICO',    dataInizio: '22/11/2023', ente: 'REGIONE TRENTINO-ALTO ADIGE', scadenza: '15/02/2024', statoChiuso: true, ultimoCommento: 'Richiesta integrazione su deflusso minimo vitale.',         AutoreCommento: 'Elena Russo' },
+  { id: 105, nomeProgetto: 'RECUPERO DISCARICA',        dataInizio: '03/06/2023', ente: 'REGIONE EMILIA-ROMAGNA',      scadenza: '10/08/2023', statoChiuso: true, ultimoCommento: 'Allineare piano di monitoraggio alle nuove linee ARPA.',    AutoreCommento: 'Davide Conti' },
+  { id: 106, nomeProgetto: 'NUOVA CICLABILE',           dataInizio: '12/09/2022', ente: 'COMUNE DI TORINO',            scadenza: '25/11/2022', statoChiuso: true, ultimoCommento: 'Integrare studio incidentalità e attraversamenti.',         AutoreCommento: 'Marta Leone' },
+  { id: 107, nomeProgetto: 'IMPIANTO BIOMASSA',         dataInizio: '08/04/2023', ente: 'REGIONE LOMBARDIA',           scadenza: '18/06/2023', statoChiuso: true, ultimoCommento: 'Aggiornare bilancio emissivo rispetto a BAT 2023.',         AutoreCommento: 'Paolo Ferri' },
+  { id: 108, nomeProgetto: 'RIQUALIFICAZIONE LAGUNA',   dataInizio: '20/08/2023', ente: 'REGIONE VENETO',              scadenza: '05/10/2023', statoChiuso: true, ultimoCommento: 'Verificare interferenze con ZPS limitrofe.',               AutoreCommento: 'Francesca De Luca' },
+  { id: 109, nomeProgetto: 'NUOVO CENTRO SPORTIVO',     dataInizio: '15/03/2024', ente: 'COMUNE DI FIRENZE',           scadenza: '30/05/2024', statoChiuso: true, ultimoCommento: 'Integrare valutazione acustica in orario serale.',          AutoreCommento: 'Riccardo Neri' },
+  { id: 110, nomeProgetto: 'IMPIANTO SOLARE TERMICO',   dataInizio: '01/07/2023', ente: 'REGIONE SICILIA',             scadenza: '15/09/2023', statoChiuso: true, ultimoCommento: 'Confermare allineamento con PR FESR – Azione 2.2.',         AutoreCommento: 'Sara Colombo' },
+])
+
 
     /* ======================
      * Filtri

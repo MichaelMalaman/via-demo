@@ -1,4 +1,4 @@
-﻿
+
 <template>
     <div class="container-fluid px-4">
         <!-- Barra azioni -->

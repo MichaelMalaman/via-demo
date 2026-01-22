@@ -14,6 +14,9 @@
             <button type="button" class="btn btn-secondary" @click="goTo('/newProject')">newProject</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/Notifications')">Notifications</button>
             <button type="button" class="btn btn-secondary" @click="goTo('/AreaCommunityCommenti')">AreaCommunityCommenti</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/AssistenteAnalisiImpatti')">AssistenteAnalisiImpatti</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/scoping')">scoping</button>
+            <button type="button" class="btn btn-secondary" @click="goTo('/provvedimentoDiConsultazione')">provvedimentoDiConsultazione</button>
             
         </div>
     </div>
