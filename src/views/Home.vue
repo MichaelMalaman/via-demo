@@ -1,7 +1,7 @@
 
 <template>
     <!-- Frame a tutta viewport -->
-    <div class="app-frame d-flex justify-content-center align-items-center bg-primary px-5">
+    <div class="app-frame d-flex justify-content-center align-items-center px-5">
         <!-- Card centrale -->
         <div class="card app-card shadow">
             <!-- Tabs -->

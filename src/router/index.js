@@ -13,6 +13,8 @@ import AreaCommunityCommenti from '../views/AreaCommunityCommenti.vue'
 import AssistenteAnalisiImpatti from '../views/AssistenteAnalisiImpatti.vue'
 import scoping from '../views/scoping.vue'
 import provvedimentoDiConsultazione from '../views/provvedimentoDiConsultazione.vue'
+import AggregazioneESintesi from '../views/AggregazioneESintesi.vue'
+import ControdeduzioniConsultazionePubblica from '../views/ControdeduzioniConsultazionePubblica.vue'
 
 
 
@@ -34,7 +36,10 @@ const routes = [
     { path: '/AreaCommunityCommenti', name: 'AreaCommunityCommenti', component: AreaCommunityCommenti, meta: { title: 'AreaCommunityCommenti', public: true } },
     { path: '/AssistenteAnalisiImpatti', name: 'AssistenteAnalisiImpatti', component: AssistenteAnalisiImpatti, meta: { title: 'AssistenteAnalisiImpatti', public: true } },
     { path: '/scoping', name: 'scoping', component: scoping, meta: { title: 'scoping', public: true } },
-    { path: '/provvedimentoDiConsultazione', name: 'provvedimentoDiConsultazione', component: provvedimentoDiConsultazione, meta: { title: 'scoping', public: true } }
+    { path: '/provvedimentoDiConsultazione', name: 'provvedimentoDiConsultazione', component: provvedimentoDiConsultazione, meta: { title: 'scoping', public: true } },
+    { path: '/AggregazioneESintesi', name: 'AggregazioneESintesi', component: AggregazioneESintesi, meta: { title: 'scoping', public: true } },
+    { path: '/ControdeduzioniConsultazionePubblica', name: 'ControdeduzioniConsultazionePubblica', component: ControdeduzioniConsultazionePubblica, meta: { title: 'ControdeduzioniConsultazionePubblica', public: true } }
+
 ]
 
 const router = createRouter({

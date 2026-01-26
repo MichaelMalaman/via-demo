@@ -1,4 +1,4 @@
-﻿
+
 <template>
     <div class="container-fluid px-4">
 
@@ -6,7 +6,7 @@
         <div class="row align-items-center mt-4 mb-4">
 
             <div class="col-6 d-flex justify-content-start">
-                <button class="btn btn-outline-primary bg-white d-inline-flex align-items-center action-btn"
+                <button class="btn btn-outline-primary btn-back bg-white d-inline-flex align-items-center action-btn"
                         @click="goToDashboard">
                     <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
                     Indietro
@@ -525,22 +525,7 @@
         transition: .15s;
     }
 
-    /* Pulsanti azioni */
-    .action-btn {
-        border-width: 2px !important;
-        border-radius: 6px !important;
-        padding: 0 20px;
-        height: 48px;
-    }
 
-        .action-btn:hover {
-            background: var(--bs-primary);
-            color: #fff !important;
-        }
-
-            .action-btn:hover .icon {
-                color: #fff !important;
-            }
 
     /* Pulsanti FUNZIONI */
     .DeleteItemButton .btn {

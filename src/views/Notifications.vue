@@ -1,4 +1,4 @@
-﻿
+
 <template>
     <!--
       PAGINA NOTIFICHE (Mock data da unico JSON)
@@ -136,6 +136,16 @@
                                     <small class="text-secondary d-block">Versione</small>
                                     <span class="fw-semibold">{{ activeDocument.version }}</span>
                                 </div>
+                                <div class="border rounded-3 p-2">
+                                    <small class="text-secondary d-block">Apri il Documento</small>
+
+<span class="fw-semibold d-flex align-items-center justify-content-center">
+  <svg class="icon">
+    <use href="/node_modules/bootstrap-italia/dist/svg/sprites.svg#it-file"></use>
+  </svg>
+</span>
+
+                                </div>
                             </div>
                         </div>
 
@@ -195,6 +205,8 @@
 </template>
 
 <script setup>
+    import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
+    const spritesHref = spritesUrl
     /*
       SCRIPT (human-like, pulito)
       ---------------------------

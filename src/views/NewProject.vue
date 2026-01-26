@@ -1,6 +1,23 @@
 
 <template>
     <div class="container my-4">
+        <!-- Barra azioni -->
+        <div class="row align-items-center mt-4 mb-4">
+            <!-- Pulsante sinistro -->
+            <div class="col-6 d-flex justify-content-start">
+                <button class="btn btn-back btn-outline-primary bg-white d-inline-flex align-items-center"
+                        @click="goTo('dashboard')"
+                        style="height: 50px;">
+                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`"></use></svg>
+                    <span class="ms-2">Indietro</span>
+                </button>
+            </div>
+
+            <!-- Pulsante destro -->
+            <div class="col-6 d-flex justify-content-end">
+
+            </div>
+        </div>
         <!-- Header -->
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h1 class="h4 mb-0">Nuovo progetto - Studio di Impatto Ambientale</h1>
@@ -233,7 +250,7 @@
         },
         {
             key: 'quadroNormativo', label: 'Quadro normativo e pianificazione',
-            help: 'Conformit‡ a D.Lgs. 152/2006, Dir. 2014/52/UE; PAI, PPTR e vincoli.'
+            help: 'Conformit√† a D.Lgs. 152/2006, Dir. 2014/52/UE; PAI, PPTR e vincoli.'
         },
         {
             key: 'analisiAmbientale', label: 'Analisi ambientale',
@@ -245,7 +262,7 @@
         },
         {
             key: 'mitigazioniCompensazioni', label: 'Misure di mitigazione e compensazione',
-            help: 'Strategie su aria/acqua/suolo/biodiversit‡; piano di monitoraggio.'
+            help: 'Strategie su aria/acqua/suolo/biodiversit√†; piano di monitoraggio.'
         },
         {
             key: 'sintesiNonTecnica', label: 'Sintesi non tecnica',
@@ -324,7 +341,7 @@
         const list = input.files
         if (!list || list.length === 0) return
         const entries: FileEntry[] = Array.from(list).map(f => Object.assign(f, { _id: uid() }))
-        // se il doc non Ë multiplo, conserva solo il primo
+        // se il doc non √® multiplo, conserva solo il primo
         const def = [...REQUIRED_DOCS, ...ATTACHMENTS].find(d => d.key === key)
         if (def?.multiple) {
             filesMap[key].push(...entries)
@@ -386,13 +403,16 @@
 
     /** Bootstrap Italia JS opzionale per Toast (se non caricato globalmente) */
     onMounted(async () => {
-        // se non hai gi‡ importato il bundle BI globalmente:
+        // se non hai gi√† importato il bundle BI globalmente:
         // await import('bootstrap-italia/dist/js/bootstrap-italia.bundle.min.js')
     })
+    function goTo(path: string) {
+        router.push(path)
+    }
 </script>
 
 <style scoped>
-    /* Piccole utilit‡ di visualizzazione */
+    /* Piccole utilit√† di visualizzazione */
     .card-header .icon {
         width: 1rem;
         height: 1rem;

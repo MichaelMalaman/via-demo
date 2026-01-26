@@ -1,23 +1,26 @@
 
 <template>
     <div v-if="!isHome">
-        <div v-if="username" class="dropdown">
-            {{username}}
+        <div v-if="username" class="dropdown position-static" @click.stop>
+            <span class="me-2">{{ username }}</span>
 
-            <button class="btn btn-dropdown dropdown-toggle"
+            <button ref="ddBtn"
+                    class="btn btn-dropdown dropdown-toggle"
                     type="button"
-                    id="dropdownMenuLink"
+                    :id="dropdownId"
                     data-bs-toggle="dropdown"
                     data-bs-display="static"
+                    data-bs-auto-close="outside"
                     data-focus-mouse="false"
                     aria-expanded="false">
-                <svg class="icon"><use :href="`${spritesHref}#it-user`"></use></svg>
+                <svg class="icon">
+                    <use :href="`${spritesHref}#it-user`"></use>
+                </svg>
             </button>
 
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <div class="dropdown-menu dropdown-menu-end" :aria-labelledby="dropdownId">
                 <div class="link-list-wrapper">
                     <ul class="link-list">
-
                         <li>
                             <a href="#" @click.prevent="goToAccount"><span>Account</span></a>
                         </li>
@@ -30,16 +33,13 @@
                         <li>
                             <a href="#" @click.prevent="onLogout"><span>Disconnetti</span></a>
                         </li>
-
-
                     </ul>
                 </div>
             </div>
         </div>
 
         <div v-else>
-            <button class="btn btn-primary d-flex align-items-center gap-2"
-                    @click.prevent="goToHome">
+            <button class="btn btn-primary d-flex align-items-center gap-2" @click.prevent="goToHome">
                 Non sei autenticato torna alla Home
                 <svg class="icon"><use :href="`${spritesHref}#it-home`"></use></svg>
             </button>
@@ -50,52 +50,47 @@
 <script setup>
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
     const spritesHref = spritesUrl
-    import { ref, computed } from 'vue'
+
+    import { ref, computed, onMounted, nextTick } from 'vue'
     import { useStore } from 'vuex'
+    import { useRouter, useRoute } from 'vue-router'
 
-import { useRouter, useRoute } from 'vue-router'
+    const store = useStore()
+    const router = useRouter()
+    const route = useRoute()
 
-
-const store = useStore()
-const router = useRouter()
-const route = useRoute()
-
-    
-const isHome = computed(() => route.name === 'home')
-
-
-    // Computed che legge lo username dallo store
+    const isHome = computed(() => route.name === 'home')
     const username = computed(() => store.state.username ?? '')
 
-
-    
-    const goToAccount = () => {
-        router.push('/') // aggiorna con il tuo path reale
-    }
-
-        const goToNotifications = () => {
-        router.push('/Notifications') // aggiorna con il tuo path reale
-    }
-
-    const goToAbout = () => {
-        router.push('/About') // aggiorna con il tuo path reale
-    }
+    // ---- Dropdown: id univoco + ref al bottone
+    const dropdownId = `userMenu_${Math.random().toString(36).slice(2)}`
+    const ddBtn = ref(null)
 
 
-    function goToHome() { router.push({ name: 'home' }) }
 
-    goToNotifications
+    // ---- Navigazione
+    const goToAccount = () => router.push('/')                 // aggiorna con il path reale
+    const goToNotifications = () => router.push('/Notifications') // aggiorna con il path reale
+    const goToAbout = () => router.push('/About')
+    const goToHome = () => router.push({ name: 'home' })
+
+    // ---- Logout
     const doLogout = async () => {
         try {
-            // Esempio di logout: pulisci lo store e vai alla login
-            // Adatta a come gestisci l’autenticazione (action Vuex, token, ecc.)
-            await store.dispatch?.('logout') // se hai un'azione 'logout', altrimenti rimuovi questa riga
-            store.commit?.('setUsername', '') // se hai una mutation dedicata; altrimenti:
-            // store.state.username = '' // NON consigliato: evita mutazioni dirette
+            await store.dispatch?.('logout')         // se esiste
+            store.commit?.('setUsername', '')        // se esiste
         } catch (e) {
             console.error('Errore logout:', e)
         } finally {
-            router.push('/') // pagina di autenticazione
+            router.push('/')                         // pagina di autenticazione
         }
     }
+    const onLogout = () => doLogout()
 </script>
+
+<style scoped>
+    /* Evita che un ancestor "tagli" il menu */
+    .dropdown {
+        overflow: visible;
+    }
+</style>
