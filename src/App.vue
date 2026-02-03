@@ -46,5 +46,4 @@
             color: #ffffff; /* testo bianco leggibile */
             outline: 2px solid #002a5e; /* focus ring visibile */
         }
-
 </style>

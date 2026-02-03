@@ -249,7 +249,6 @@
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
     import DeleteItemButton from '../components/DeleteItemButton.vue'
-
     import spritesUrl from 'bootstrap-italia/dist/svg/sprites.svg?url'
     const spritesHref = spritesUrl
 

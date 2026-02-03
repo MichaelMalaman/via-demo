@@ -139,11 +139,41 @@
                                 <div class="border rounded-3 p-2">
                                     <small class="text-secondary d-block">Apri il Documento</small>
 
-<span class="fw-semibold d-flex align-items-center justify-content-center">
-  <svg class="icon">
-    <use href="/node_modules/bootstrap-italia/dist/svg/sprites.svg#it-file"></use>
-  </svg>
-</span>
+
+                                    <div v-if="activeDocument" class="p-3  bg-white">
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class=" p-2">
+                                                <small class="text-secondary d-block">Owner</small>
+                                                <span class="fw-semibold">{{ activeDocument.owner }}</span>
+                                            </div>
+                                            <div class=" p-2">
+                                                <small class="text-secondary d-block">Repository</small>
+                                                <span class="fw-semibold">{{ activeDocument.repository }}</span>
+                                            </div>
+                                            <div class=" p-2">
+                                                <small class="text-secondary d-block">Versione</small>
+                                                <span class="fw-semibold">{{ activeDocument.version }}</span>
+                                            </div>
+
+                                            <!-- Apri il Documento (trigger modale) -->
+                                            <div class=" p-2">
+                                                <small class="text-secondary d-block">Apri il documento</small>
+                                                <button class="btn btn-outline-primary d-inline-flex align-items-center gap-2 mt-1"
+                                                        type="button"
+                                                        :disabled="!activeDocument"
+                                                        :aria-disabled="!activeDocument"
+                                                        :title="`Apri '${activeDocument?.title || ''}' in modale`"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#fakeDocModal">
+                                                    <svg class="icon">
+                                                        <use :href="`${spritesHref}#it-file`"></use>
+                                                    </svg>
+                                                    <span>Apri</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
 
                                 </div>
                             </div>
@@ -198,6 +228,103 @@
                         </div>
                     </div>
                 </div>
+
+
+
+
+                <!-- MODALE: Documento finto -->
+                <div class="modal fade"
+                     id="fakeDocModal"
+                     tabindex="-1"
+                     aria-labelledby="fakeDocModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title d-flex align-items-center gap-2" id="fakeDocModalLabel">
+                                    <svg class="icon">
+                                        <use :href="`${spritesHref}#it-file`"></use>
+                                    </svg>
+                                    <span>
+                                        {{ activeDocument?.title || 'Documento' }}
+                                        <small class="text-secondary d-block fw-normal">
+                                            {{ activeDocument?.subtitle }} — v{{ activeDocument?.version || '—' }}
+                                        </small>
+                                    </span>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <!-- Documento finto: corpo leggibile -->
+                                <article class="prose">
+                                    <h6>Abstract</h6>
+                                    <p>
+                                        Questo è un <strong>documento finto</strong> mostrato a scopo dimostrativo.
+                                        Serve per verificare l’esperienza di apertura in modale e la leggibilità
+                                        dei contenuti senza navigare verso repository esterni.
+                                    </p>
+
+                                    <h6>Contesto</h6>
+                                    <p>
+                                        Repository: <strong>{{ activeDocument?.repository || '—' }}</strong> —
+                                        Owner: <strong>{{ activeDocument?.owner || '—' }}</strong> —
+                                        Ultimo aggiornamento: <strong>{{ activeDocument?.lastUpdate || '—' }}</strong>
+                                    </p>
+
+                                    <h6>Estratto (mock)</h6>
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur
+                                        efficitur, arcu ac hendrerit gravida, justo ante bibendum velit, a
+                                        laoreet arcu enim a sem. Donec vel dui at mauris tempus cursus.
+                                    </p>
+
+                                    <h6>Ultimi eventi</h6>
+                                    <ul>
+                                        <li v-for="ev in (activeDocument?.events || []).slice(-3)" :key="ev.id">
+                                            <strong>{{ eventTitle(ev.type) }}</strong> — {{ ev.time }}:
+                                            <span>{{ ev.message }}</span>
+                                        </li>
+                                    </ul>
+                                </article>
+
+                                <!-- (Opzionale) Preview grezza tipo 'document viewer' -->
+                                <div class="mt-3">
+                                    <small class="text-secondary d-block">Preview semplificata</small>
+                                    <div class="border rounded-3 p-3 bg-light">
+                                        <pre class="mb-0" style="white-space: pre-wrap;">
+Titolo: {{ activeDocument?.title }}
+Stato:  {{ statusLabel(activeDocument?.status) }}
+Owner:  {{ activeDocument?.owner }}
+Repo:   {{ activeDocument?.repository }}
+Ver.:   {{ activeDocument?.version }}
+
+Contenuto fittizio:
+- Sezione 1: Introduzione
+- Sezione 2: Metodologia
+- Sezione 3: Risultati preliminari
+- Sezione 4: Conclusioni
+            </pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <!-- Azioni contestuali -->
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                    Chiudi
+                                </button>
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        @click="simulateIncomingEvent(activeDocument?.id)">
+                                    <span class="icon it-reload me-1" aria-hidden="true"></span> Simula aggiornamento
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </section>
 
         </div>
@@ -609,6 +736,17 @@
 
     /** Selezioniamo il primo documento disponibile all’avvio */
     state.activeDocumentId = state.documents[0]?.id ?? null
+
+    // OPZIONALE: apertura programmatica
+    // import { Modal } from 'bootstrap' // se esponi 'bootstrap' via bundler
+
+    function openFakeDocModal() {
+        const el = document.getElementById('fakeDocModal')
+        if (!el) return
+        const modal = Modal.getOrCreateInstance(el)
+        modal.show()
+    }
+
 </script>
 
 <style scoped>
@@ -621,5 +759,17 @@
         /* (Opzionale) Accent visivo sulla categoria nella list-group
        .list-group-item[data-category="Obbligatorio"] { border-left: 4px solid #dc3545; }
        .list-group-item[data-category="Facoltativo"]  { border-left: 4px solid #0dcaf0; }
-    */
+        */
+
+
+    /* Migliora la leggibilità del corpo del “documento finto” */
+    .prose h6 {
+        margin-top: .75rem;
+        margin-bottom: .25rem;
+    }
+
+    .prose p, .prose ul {
+        margin-bottom: .5rem;
+    }
+
 </style>

@@ -1,4 +1,3 @@
-
 <template>
     <div class="container-fluid p-4" style="background-color:#e3f2fd;">
 
@@ -8,7 +7,7 @@
                 <button class="btn btn-outline-primary bg-white d-inline-flex align-items-center"
                         @click="goTo('/dashboard')"
                         style="height:50px;">
-                    <svg class="icon">`${spritesHref}#it-arrow-left`</svg>
+                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`" /></svg>
                     <span class="ms-2">Indietro</span>
                 </button>
             </div>
@@ -28,15 +27,41 @@
                             <div class="col-12">
                                 <div class="card p-4 text-white" style="background-color:#1565c0;">
                                     <div class="d-flex align-items-center justify-content-between">
-                                        <h2 class="mb-2">Scoping – Aggregazione Pareri Enti</h2>
+                                        <h2 class="mb-2">SCOPING – Gestione fasi (AC)</h2>
 
                                         <span class="explain-pack">
-                                            spritesHref
-                                            spritesHref
+                                            <PopoverExplain :spritesHref="spritesHref"
+                                                            icon="it-info-circle"
+                                                            color="light"
+                                                            text="Questa pagina copre le fasi di SCOPING: invio richiesta, coinvolgimento strutture, parere e pubblicazione."
+                                                            placement="bottom"
+                                                            outline
+                                                            :iconOnly="true"
+                                                            size="xs" />
+                                            <PopoverExplain :spritesHref="spritesHref"
+                                                            icon="it-help-circle"
+                                                            color="light"
+                                                            text="Validazione real-time della completezza/coerenza, gestione osservazioni, bozza AI del parere e pubblicazione."
+                                                            placement="bottom"
+                                                            outline
+                                                            :iconOnly="true"
+                                                            size="xs">Aiuto</PopoverExplain>
                                         </span>
                                     </div>
 
-                                    <p class="mb-1"><strong>Progetto:</strong> Impianto fotovoltaico – Fase Scoping</p>
+                                    <p class="mb-1">
+                                        <strong>Stato:</strong>
+                                        <span class="badge ms-1"
+                                              :class="{
+                            'bg-secondary': stato === 'bozza',
+                            'bg-info': stato === 'inviata',
+                            'bg-primary': stato === 'autorizzata',
+                            'bg-success': stato === 'pubblicataProposta',
+                            'bg-dark': stato === 'parerePubblicato'
+                          }">
+                                            {{ statoLabel }}
+                                        </span>
+                                    </p>
                                     <p class="mb-0"><strong>Data:</strong> {{ today }}</p>
                                 </div>
                             </div>
@@ -47,13 +72,13 @@
 
                             <!-- Stepper -->
                             <ul class="nav nav-pills flex-wrap gap-2 mb-3" role="tablist">
-                                <li v-for="(s, idx) in steps" :key="idx" class="nav-item">
+                                <li v-for="(s, idx) in steps" :key="s.key" class="nav-item">
                                     <button class="nav-link d-inline-flex align-items-center gap-2"
                                             :class="{ active: currentStep === idx }"
                                             @click="goToStep(idx)">
                                         <span class="badge rounded-pill" :class="badgeClass(idx)">
                                             <template v-if="completed[idx]">
-                                                <svg class="icon">`${spritesHref}#it-check-circle`</svg>
+                                                <svg class="icon"><use :href="`${spritesHref}#it-check-circle`" /></svg>
                                             </template>
                                             <template v-else>
                                                 {{ idx + 1 }}
@@ -65,338 +90,359 @@
                             </ul>
 
                             <!-- STEP CONTENT -->
-                            <!-- STEP 1: Raccolta Pareri -->
+                            <!-- STEP 1: Invio richiesta di confronto -->
                             <div v-if="currentStep === 0">
-
-                                <h3 class="mb-2">1. Raccolta Pareri dagli Enti</h3>
-                                <p class="text-muted">Compila il form e aggiungi i pareri ricevuti.</p>
+                                <h3 class="mb-2">1. Invio richiesta di confronto</h3>
+                                <p class="text-muted">
+                                    Inserisci i contenuti richiesti. Il sistema esegue una verifica di completezza e coerenza in tempo reale.
+                                    L’AC autorizza la pubblicazione della proposta sul portale.
+                                </p>
 
                                 <div class="card p-3 mb-3">
                                     <div class="row g-3">
-                                        <div class="col-12 col-md-6">
-                                            <label class="form-label fw-semibold">Ente</label>
-                                            <input class="form-control" v-model="formEnte" placeholder="ARPA, Comune, Soprintendenza…" />
-                                        </div>
-
-                                        <div class="col-12 col-md-6">
-                                            <label class="form-label fw-semibold">Tema principale</label>
-                                            <select class="form-select" v-model="formTema">
-                                                <option disabled value="">— Seleziona —</option>
-                                                <option>Aria</option>
-                                                <option>Acqua</option>
-                                                <option>Suolo</option>
-                                                <option>Rumore</option>
-                                                <option>Paesaggio</option>
-                                                <option>Fauna</option>
-                                                <option>Traffico</option>
-                                            </select>
-                                        </div>
-
+                                        <!-- Descrizione progetto -->
                                         <div class="col-12">
-                                            <label class="form-label fw-semibold">Testo del parere</label>
-                                            <textarea class="form-control" rows="3" v-model="formTesto"
-                                                      placeholder="Inserisci il parere sintetico dell’ente…"></textarea>
+                                            <label class="form-label fw-semibold">Descrizione progetto</label>
+                                            <textarea class="form-control"
+                                                      rows="4"
+                                                      v-model="descrizioneProgetto"
+                                                      placeholder="Descrizione sintetica dell’intervento, localizzazione, fasi operative, opere connesse…"></textarea>
+                                            <div class="form-text">
+                                                Lunghezza: <strong>{{ descrizioneProgetto.trim().length }}</strong> caratteri
+                                            </div>
                                         </div>
 
-                                        <div class="col-12 d-flex justify-content-end">
-                                            <button class="btn btn-primary" @click="addParere" :disabled="!formEnte || !formTema || !formTesto">
-                                                Aggiungi parere
-                                            </button>
+                                        <!-- SPA -->
+                                        <div class="col-12 col-lg-6">
+                                            <label class="form-label fw-semibold">Studio Preliminare Ambientale (SPA)</label>
+                                            <input class="form-control"
+                                                   type="file"
+                                                   accept=".pdf,.doc,.docx"
+                                                   @change="onFileChange($event, 'spa')" />
+                                            <div class="form-text">
+                                                File: <strong>{{ spaFileName || '—' }}</strong>
+                                                <span v-if="spaSize">({{ spaSize }})</span>
+                                            </div>
+                                            <div class="mt-1">
+                                                <span class="badge" :class="hasSpa ? 'bg-success' : 'bg-secondary'">
+                                                    {{ hasSpa ? 'Caricato' : 'Manca' }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Proposta SIA -->
+                                        <div class="col-12 col-lg-6">
+                                            <label class="form-label fw-semibold">Proposta Studio Impatto Ambientale (SIA)</label>
+                                            <input class="form-control"
+                                                   type="file"
+                                                   accept=".pdf,.doc,.docx"
+                                                   @change="onFileChange($event, 'propostaSia')" />
+                                            <div class="form-text">
+                                                File: <strong>{{ propostaSiaFileName || '—' }}</strong>
+                                                <span v-if="propostaSiaSize">({{ propostaSiaSize }})</span>
+                                            </div>
+                                            <div class="mt-1">
+                                                <span class="badge" :class="hasPropostaSia ? 'bg-success' : 'bg-secondary'">
+                                                    {{ hasPropostaSia ? 'Caricato' : 'Manca' }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <h5 class="mb-2">Pareri raccolti</h5>
-
-                                <div v-if="pareri.length === 0" class="text-muted small">
-                                    Nessun parere inserito.
-                                </div>
-
-                                <div v-for="p in pareri" :key="p.id" class="card p-3 mb-2 shadow-sm">
-                                    <div class="d-flex justify-content-between">
-                                        <strong>{{ p.ente }}</strong>
-                                        <span class="badge bg-primary">{{ p.tema }}</span>
-                                    </div>
-                                    <p class="small mt-2 mb-0">{{ p.testo }}</p>
-                                </div>
-
-                            </div>
-
-                            <!-- STEP 2: Topic Extraction -->
-                            <div v-else-if="currentStep === 1">
-
-                                <h3 class="mb-2">2. Analisi AI – Topic Extraction</h3>
-                                <p class="text-muted">
-                                    L’AI identifica automaticamente i temi ricorrenti nei pareri raccolti.
-                                </p>
-
-                                <div class="alert alert-info d-flex gap-2 align-items-center">
-                                    <svg class="icon">`${spritesHref}#it-info-circle`</svg>
-                                    <strong>{{ topics.length }} temi rilevati</strong>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-6" v-for="t in topics" :key="t.nome">
-                                        <div class="card p-3 mb-3 border">
-                                            <h6 class="mb-1">{{ t.nome }}</h6>
-                                            <p class="small mb-1 text-muted">Ricorrenza: {{ t.percentuale }}%</p>
-
+                                    <!-- Esiti real-time -->
+                                    <div class="row g-3 mt-2">
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label small fw-semibold">Completezza documentale</label>
                                             <div class="progress">
                                                 <div class="progress-bar"
-                                                     :style="{ width: t.percentuale + '%' }"
-                                                     :class="topicClass(t.percentuale)">
+                                                     role="progressbar"
+                                                     :style="{ width: completenessScore + '%' }"
+                                                     :class="scoreBarClass(completenessScore)">
+                                                    {{ completenessScore }}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label small fw-semibold">Coerenza documentale</label>
+                                            <div class="alert py-2 px-3 mb-0"
+                                                 :class="coerenzaOk ? 'alert-success' : 'alert-warning'">
+                                                <strong>{{ coerenzaOk ? 'OK' : 'Da verificare' }}</strong> —
+                                                {{ coerenzaOk ? 'formati attesi e campi minimi presenti' : 'mancano contenuti o formati non validi' }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Azioni -->
+                                    <div class="d-flex flex-wrap gap-2 mt-3">
+                                        <button class="btn btn-outline-secondary" @click="resetRichiesta" :disabled="isProcessing">
+                                            Annulla / Svuota
+                                        </button>
+                                        <button class="btn btn-primary"
+                                                @click="inviaRichiesta"
+                                                :disabled="!isInvioAbilitato || isProcessing">
+                                            <svg class="icon"><use :href="`${spritesHref}#it-mail`" /></svg>
+                                            <span class="ms-2">Invia richiesta di confronto</span>
+                                        </button>
+                                        <button class="btn btn-success"
+                                                @click="autorizzaPubblicazione"
+                                                :disabled="!puoiAutorizzare || isProcessing">
+                                            <svg class="icon"><use :href="`${spritesHref}#it-check-circle`" /></svg>
+                                            <span class="ms-2">Autorizza pubblicazione proposta</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="row g-3 mt-3">
+                                        <div class="col-12 col-md-4">
+                                            <div class="small text-muted">Richiesta inviata:</div>
+                                            <div><strong>{{ inviataAt ? formatDateTime(inviataAt) : '—' }}</strong></div>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <div class="small text-muted">Autorizzazione AC:</div>
+                                            <div><strong>{{ autorizzataAt ? formatDateTime(autorizzataAt) : '—' }}</strong></div>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <div class="small text-muted">Pubblicazione proposta:</div>
+                                            <div><strong>{{ pubblicataPropostaAt ? formatDateTime(pubblicataPropostaAt) : '—' }}</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 2: Coinvolgimento strutture regionali -->
+                            <div v-else-if="currentStep === 1">
+                                <h3 class="mb-2">2. Coinvolgimento strutture regionali</h3>
+                                <p class="text-muted">
+                                    La documentazione è a disposizione di amministrazioni/enti che possono presentare osservazioni.
+                                    L’AC recepisce le osservazioni e le integra nella pratica.
+                                </p>
+
+                                <div class="row g-3">
+                                    <div class="col-12 col-lg-6">
+                                        <div class="card p-3 h-100">
+                                            <strong>Invia osservazione</strong>
+                                            <div class="mt-2">
+                                                <label class="form-label small">Struttura / Ente</label>
+                                                <input class="form-control"
+                                                       type="text"
+                                                       v-model="obsAutore"
+                                                       placeholder="ARPA, Comune, Soprintendenza…" />
+                                            </div>
+                                            <div class="mt-2">
+                                                <label class="form-label small">Testo osservazione</label>
+                                                <textarea class="form-control"
+                                                          rows="3"
+                                                          v-model="obsTesto"
+                                                          placeholder="Inserisci osservazione…"></textarea>
+                                            </div>
+                                            <div class="mt-2 d-flex gap-2">
+                                                <button class="btn btn-primary"
+                                                        @click="aggiungiOsservazione"
+                                                        :disabled="!obsTesto.trim()">
+                                                    Aggiungi osservazione
+                                                </button>
+                                                <span class="align-self-center small text-muted">
+                                                    Totale: <strong>{{ osservazioni.length }}</strong>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-lg-6">
+                                        <div class="card p-3 h-100">
+                                            <strong>Note di integrazione AC</strong>
+                                            <textarea class="form-control mt-2"
+                                                      rows="6"
+                                                      v-model="noteIntegrazione"
+                                                      placeholder="Bozza di integrazione interna alle osservazioni per la pratica…"></textarea>
+
+                                            <div class="mt-3">
+                                                <label class="form-label small fw-semibold">Avanzamento integrazione osservazioni</label>
+                                                <div class="progress">
+                                                    <div class="progress-bar"
+                                                         role="progressbar"
+                                                         :style="{ width: integrazioneProgress + '%' }"
+                                                         :class="scoreBarClass(integrazioneProgress)">
+                                                        {{ integrazioneProgress }}%
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
+                                <div v-if="osservazioni.length" class="card p-3 mt-3">
+                                    <h6 class="mb-2">Osservazioni ricevute</h6>
+                                    <ul class="list-group">
+                                        <li v-for="o in osservazioni" :key="o.id" class="list-group-item">
+                                            <div class="d-flex justify-content-between flex-wrap">
+                                                <div>
+                                                    <strong>{{ o.autore || 'Ente/Struttura' }}</strong>
+                                                    <span class="text-muted small ms-2">{{ formatDateTime(o.data) }}</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="badge" :class="o.integrata ? 'bg-success' : 'bg-secondary'">
+                                                        {{ o.integrata ? 'Integrata' : 'Da integrare' }}
+                                                    </span>
+                                                    <button class="btn btn-sm btn-outline-success" @click="toggleIntegrata(o)">
+                                                        {{ o.integrata ? 'Segna come non integrata' : 'Segna come integrata' }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="mt-1">{{ o.testo }}</div>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
 
-                            <!-- STEP 3: Divergenze / Convergenze -->
+                            <!-- STEP 3: Valutazione e Parere -->
                             <div v-else-if="currentStep === 2">
-
-                                <h3 class="mb-2">3. Divergenze e Convergenze tra Enti</h3>
-                                <p class="text-muted">L’AI evidenzia accordi e disallineamenti tematici.</p>
-
-                                <div class="alert alert-warning d-flex gap-2 align-items-center">
-                                    <svg class="icon">`${spritesHref}#it-warning`</svg>
-                                    <strong>{{ divergenze.length }} divergenze rilevate</strong>
-                                </div>
-
-                                <h5>Convergenze</h5>
-                                <ul>
-                                    <li v-for="c in convergenze" :key="c" class="small">
-                                        {{ c }}
-                                    </li>
-                                </ul>
-
-                                <h5 class="mt-3">Divergenze</h5>
-                                <div v-for="d in divergenze" :key="d.id" class="card p-3 mb-2">
-                                    <strong>{{ d.tema }}</strong>
-                                    <p class="small text-muted mb-1">Enti coinvolti: {{ d.enti }}</p>
-                                    <p class="small mb-0"><em>{{ d.note }}</em></p>
-                                </div>
-
-                            </div>
-
-                            <!-- STEP 4: Dashboard -->
-                            <div v-else-if="currentStep === 3">
-                                <h3 class="mb-3">4. Dashboard Tematizzata dei Pareri</h3>
-
-                                <div class="row g-3">
-                                    <div class="col-6 col-md-4" v-for="p in dashboard" :key="p.tema">
-                                        <div class="card p-3 text-center shadow-sm">
-                                            <h6>{{ p.tema }}</h6>
-                                            <p class="display-6 fw-bold mb-0">{{ p.count }}</p>
-                                            <p class="small text-muted">pareri</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- STEP 5: Bozza SIA -->
-                            <div v-else-if="currentStep === 4">
-                                <h3 class="mb-2">5. Generazione Bozza SIA (Studio Impatto Ambientale)</h3>
+                                <h3 class="mb-2">3. Valutazione e Parere</h3>
                                 <p class="text-muted">
-                                    Genera uno scheletro di SIA a partire dai pareri e dai temi rilevati. Puoi modificarlo prima della validazione finale.
+                                    Un tool AI genera una bozza di parere (contenuti, criticità, spunti) con linee guida.
+                                    Entro <strong>45 giorni</strong> l’AC esprime il parere sulle informazioni necessarie nella SIA.
                                 </p>
 
-                                <!-- Avvisi di validazione -->
-                                <div v-if="siaValidationWarnings.length" class="alert alert-warning d-flex align-items-start gap-2">
-                                    <svg class="icon">`${spritesHref}#it-warning-circle`</svg>
-                                    <div>
-                                        <strong>Attenzione:</strong>
-                                        <ul class="mb-0">
-                                            <li v-for="w in siaValidationWarnings" :key="w">{{ w }}</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex gap-2 mb-3">
-                                    <button class="btn btn-primary" @click="generateSIA" :disabled="pareri.length === 0">
-                                        <svg class="icon">`${spritesHref}#it-magic`</svg>
-                                        <span class="ms-2">Genera bozza SIA</span>
-                                    </button>
-                                    <button class="btn btn-outline-secondary" @click="clearSIA" :disabled="!sia.boilerplateReady">
-                                        Pulisci bozza
-                                    </button>
-                                </div>
-
-                                <div class="card p-3 mb-3">
-                                    <div class="row g-3">
-                                        <div class="col-12 col-md-6">
-                                            <label class="form-label fw-semibold">Titolo SIA</label>
-                                            <input class="form-control" v-model="sia.titolo" placeholder="Esempio: SIA — Impianto fotovoltaico — Scoping" />
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label class="form-label fw-semibold">Proponente / Progetto</label>
-                                            <input class="form-control" v-model="sia.progetto" placeholder="Esempio: Progetto preliminare impianto FV — Località XYZ" />
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label fw-semibold">Descrizione dell’intervento</label>
-                                            <textarea class="form-control" rows="3" v-model="sia.descrizione"
-                                                      placeholder="Descrizione sintetica dell’intervento, fasi e area di localizzazione…"></textarea>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label fw-semibold">Quadro normativo di riferimento</label>
-                                            <textarea class="form-control" rows="3" v-model="sia.quadroNormativo"
-                                                      placeholder="Riferimenti normativi (es. D.Lgs. 152/2006 e s.m.i., norme regionali, linee guida ISPRA…)"></textarea>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label fw-semibold">Metodologia generale di analisi (suggerita)</label>
-                                            <textarea class="form-control" rows="3" v-model="sia.metodologiaGenerale"
-                                                      placeholder="Approccio metodologico generale suggerito in base ai temi…"></textarea>
+                                <div class="row g-3">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="card p-3 h-100">
+                                            <div class="mb-2">
+                                                <strong>Inizio scoping:</strong>
+                                                <span class="ms-1">{{ scopingStart ? formatDateTime(scopingStart) : '—' }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Scadenza parere (45 gg):</strong>
+                                                <span class="ms-1">{{ parereDeadline ? formatDateTime(parereDeadline) : '—' }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Giorni residui:</strong>
+                                                <span class="badge ms-1"
+                                                      :class="{
+                                                      'bg-success' : giorniResiduiParere>
+                                                    10,
+                                                    'bg-warning': giorniResiduiParere <= 10 && giorniResiduiParere > 0,
+                                                    'bg-danger': giorniResiduiParere <= 0
+                                                    }">
+                                                    {{ parereDeadline ? giorniResiduiParere : '—' }}
+                                                </span>
+                                            </div>
+                                            <div class="mt-3">
+                                                <label class="form-label small fw-semibold">Avanzamento verso scadenza</label>
+                                                <div class="progress">
+                                                    <div class="progress-bar"
+                                                         role="progressbar"
+                                                         :style="{ width: parereProgress + '%' }"
+                                                         :class="scoreBarClass(parereProgress)">
+                                                        {{ parereProgress }}%
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <h5 class="mb-2">Analisi per tema (auto-compilata e modificabile)</h5>
-                                <div v-if="sia.analisiTemi.length === 0" class="text-muted small mb-2">
-                                    Nessun tema da analizzare. Genera la bozza oppure torna ai passi precedenti.
-                                </div>
+                                    <div class="col-12 col-xl-6">
+                                        <div class="card p-3 h-100">
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <button class="btn btn-outline-primary" @click="generaBozzaParere" :disabled="isProcessing">
+                                                    <svg class="icon"><use :href="`${spritesHref}#it-magic`" /></svg>
+                                                    <span class="ms-2">Genera bozza AI</span>
+                                                </button>
+                                                <button class="btn btn-outline-secondary" @click="rigeneraBozzaParere" :disabled="isProcessing">
+                                                    Rigenera
+                                                </button>
+                                                <button class="btn btn-success"
+                                                        @click="finalizzaParere"
+                                                        :disabled="!parereBozza.trim() || !!parereFinalizzatoAt || isProcessing">
+                                                    <svg class="icon"><use :href="`${spritesHref}#it-check-circle`" /></svg>
+                                                    <span class="ms-2">Segna come finalizzato</span>
+                                                </button>
+                                            </div>
 
-                                <div v-for="(a, i) in sia.analisiTemi" :key="a.tema" class="card p-3 mb-2 border">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <strong class="me-2">{{ a.tema }}</strong>
-                                        <span class="badge" :class="i % 2 === 0 ? 'bg-primary' : 'bg-secondary'">Tema</span>
+                                            <div v-if="parereFinalizzatoAt" class="alert alert-success mt-3">
+                                                <svg class="icon"><use :href="`${spritesHref}#it-check-circle`" /></svg>
+                                                <strong class="ms-1">Parere finalizzato:</strong>
+                                                {{ formatDateTime(parereFinalizzatoAt) }}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <label class="form-label mt-2 small fw-semibold">Metodologie suggerite</label>
-                                    <textarea class="form-control" rows="2" v-model="a.metodologie"></textarea>
-
-                                    <label class="form-label mt-2 small fw-semibold">Sintesi analitica</label>
-                                    <textarea class="form-control" rows="3" v-model="a.sintesi"></textarea>
-
-                                    <label class="form-label mt-2 small fw-semibold">Misure di mitigazione</label>
-                                    <textarea class="form-control" rows="2" v-model="a.mitigazioni"></textarea>
                                 </div>
 
                                 <div class="card p-3 mt-3">
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <label class="form-label fw-semibold">Monitoraggio e reporting</label>
-                                            <textarea class="form-control" rows="3" v-model="sia.monitoraggio"
-                                                      placeholder="Piani di monitoraggio pre/durante/post operam, indicatori e frequenze…"></textarea>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label fw-semibold">Conclusioni e risultati attesi</label>
-                                            <textarea class="form-control" rows="3" v-model="sia.conclusioni"
-                                                      placeholder="Sintesi delle evidenze emerse, compatibilità attesa, condizioni e prescrizioni…"></textarea>
-                                        </div>
-                                    </div>
+                                    <h6 class="mb-2">Linee guida suggerite</h6>
+                                    <ul class="small">
+                                        <li v-for="g in lineeGuida" :key="g">{{ g }}</li>
+                                    </ul>
+                                </div>
 
-                                    <div class="form-check mt-3">
-                                        <input class="form-check-input" type="checkbox" id="chkValidazione" v-model="sia.validato">
-                                        <label class="form-check-label" for="chkValidazione">
-                                            Ho completato la revisione della bozza SIA (validazione interna)
-                                        </label>
-                                    </div>
-
-                                    <div class="mt-3 d-flex gap-2">
-                                        <button class="btn btn-success" :disabled="!isSIAValid" @click="markSIAReady">
-                                            <svg class="icon">`${spritesHref}#it-check-circle`</svg>
-                                            <span class="ms-2">Contrassegna come pronto</span>
-                                        </button>
-                                        <span v-if="sia.boilerplateReady" class="badge bg-success align-self-center">Bozza SIA pronta</span>
-                                    </div>
+                                <div class="card p-3 mt-3">
+                                    <label class="form-label fw-semibold">Bozza di parere (modificabile)</label>
+                                    <textarea class="form-control" rows="10" v-model="parereBozza"
+                                              placeholder="La bozza AI del parere apparirà qui. Puoi modificarla prima della pubblicazione."></textarea>
                                 </div>
                             </div>
 
-                            <!-- STEP 6: SNT -->
-                            <div v-else-if="currentStep === 5">
-                                <h3 class="mb-2">6. Generazione automatica SNT (Sintesi Non Tecnica)</h3>
+                            <!-- STEP 4: Pubblicazione Parere -->
+                            <div v-else-if="currentStep === 3">
+                                <h3 class="mb-2">4. Pubblicazione parere</h3>
                                 <p class="text-muted">
-                                    Riassunto divulgativo del SIA generato automaticamente. Puoi regolare lingua, tono e lunghezza.
+                                    L’AC pubblica il parere sul sito web istituzionale.
                                 </p>
 
-                                <div class="alert" :class="sia.boilerplateReady ? 'alert-success' : 'alert-info'">
-                                    <svg class="icon">`${spritesHref}#it-info-circle`</svg>
-                                    <strong class="ms-2">
-                                        {{ sia.boilerplateReady ? 'Bozza SIA pronta: puoi generare l’SNT.' : 'Suggerimento: genera e valida la bozza SIA per un SNT più accurato.' }}
-                                    </strong>
-                                </div>
-
-                                <div class="card p-3 mb-3">
-                                    <div class="row g-3">
-                                        <div class="col-12 col-md-4">
-                                            <label class="form-label fw-semibold">Destinatari</label>
-                                            <select class="form-select" v-model="snt.destinatari">
-                                                <option value="Cittadini">Cittadini</option>
-                                                <option value="Stakeholder locali">Stakeholder locali</option>
-                                                <option value="Amministratori">Amministratori</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-md-4">
-                                            <label class="form-label fw-semibold">Lunghezza</label>
-                                            <select class="form-select" v-model="snt.lunghezza">
-                                                <option value="breve">Breve</option>
-                                                <option value="media">Media</option>
-                                                <option value="estesa">Estesa</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-md-4">
-                                            <label class="form-label fw-semibold">Tono</label>
-                                            <select class="form-select" v-model="snt.tono">
-                                                <option value="neutro">Neutro</option>
-                                                <option value="positivo">Positivo</option>
-                                                <option value="istituzionale">Istituzionale</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex gap-2 mt-3">
-                                        <button class="btn btn-primary" @click="generateSNT" :disabled="!hasSIAContent">
-                                            <svg class="icon">`${spritesHref}#it-magic`</svg>
-                                            <span class="ms-2">Genera SNT</span>
-                                        </button>
-                                        <button class="btn btn-outline-secondary" @click="clearSNT" :disabled="!snt.testo">
-                                            Pulisci SNT
-                                        </button>
-                                    </div>
-                                </div>
-
                                 <div class="card p-3">
-                                    <label class="form-label fw-semibold">Testo SNT (modificabile)</label>
-                                    <textarea class="form-control" rows="10" v-model="snt.testo"
-                                              placeholder="La Sintesi Non Tecnica apparirà qui una volta generata."></textarea>
-                                </div>
-                            </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button class="btn btn-success"
+                                                @click="pubblicaParere"
+                                                :disabled="!parereFinalizzatoAt || !!parerePublishedAt || isProcessing">
+                                            <svg class="icon"><use :href="`${spritesHref}#it-upload`" /></svg>
+                                            <span class="ms-2">Pubblica parere</span>
+                                        </button>
+                                        <button class="btn btn-outline-primary"
+                                                @click="exportParereTxt"
+                                                :disabled="!parereBozza.trim()">
+                                            Esporta parere (.txt)
+                                        </button>
+                                    </div>
 
-                            <!-- STEP 7: Esportazione -->
-                            <div v-else-if="currentStep === 6">
-                                <h3 class="mb-2">7. Esporta Analisi Aggregata</h3>
-                                <p class="text-muted">Scarica una sintesi completa: pareri, analisi, bozza SIA e SNT.</p>
+                                    <div class="row g-3 mt-3">
+                                        <div class="col-12 col-md-6">
+                                            <div class="small text-muted">Parere finalizzato:</div>
+                                            <div><strong>{{ parereFinalizzatoAt ? formatDateTime(parereFinalizzatoAt) : '—' }}</strong></div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="small text-muted">Parere pubblicato:</div>
+                                            <div><strong>{{ parerePublishedAt ? formatDateTime(parerePublishedAt) : '—' }}</strong></div>
+                                        </div>
+                                    </div>
 
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button class="btn btn-primary" @click="exportReport">
-                                        Scarica report completo (.txt)
-                                    </button>
-                                    <button class="btn btn-outline-primary" @click="exportSIA" :disabled="!hasSIAContent">
-                                        Esporta solo SIA (.txt)
-                                    </button>
-                                    <button class="btn btn-outline-primary" @click="exportSNT" :disabled="!snt.testo">
-                                        Esporta solo SNT (.txt)
-                                    </button>
+                                    <div v-if="parerePublishedAt" class="alert alert-success mt-3">
+                                        <svg class="icon"><use :href="`${spritesHref}#it-check-circle`" /></svg>
+                                        <strong class="ms-1">Parere pubblicato</strong> sul portale istituzionale in data
+                                        <strong>{{ formatDateTime(parerePublishedAt) }}</strong>.
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- NAVIGATION -->
                             <div class="d-flex justify-content-between mt-4">
                                 <button class="btn btn-outline-secondary" @click="prevStep" :disabled="currentStep === 0">
-                                    <svg class="icon">`${spritesHref}#it-arrow-left`</svg> Indietro
+                                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`" /></svg> Indietro
                                 </button>
 
-                                <button class="btn btn-primary" @click="nextStep" :disabled="currentStep === steps.length - 1">
-                                    Avanti <svg class="icon">`${spritesHref}#it-arrow-right`</svg>
+                                <button v-if="currentStep === steps.length - 1 || isProcessing"
+                                        class="btn btn-primary"
+                                        @click="goTo('/provvedimentoDiConsultazione')">
+                                    <span class="me-1">Prossima fase</span>
+                                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-right`" /></svg>
+                                </button>
+                                <button v-else class="btn btn-primary" @click="nextStep" :disabled="isNextDisabled">
+                                    <span class="me-1">Avanti</span>
+                                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-right`" /></svg>
                                 </button>
                             </div>
 
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <!-- RIGHT COLUMN -->
@@ -404,17 +450,86 @@
                 <div class="card border p-4">
                     <h4>AI Helper</h4>
 
-                    <button class="btn btn-primary w-100 mb-2" @click="autoFill">
-                        Compila pareri demo
+                    <button class="btn btn-primary w-100 mb-2"
+                            @click="generaBozzaParere"
+                            :disabled="isProcessing">
+                        Genera bozza di parere
+                    </button>
+                    <button class="btn btn-secondary w-100 mb-2"
+                            @click="popolaDemo"
+                            :disabled="isProcessing">
+                        Compila dati demo
                     </button>
 
-                    <button class="btn btn-secondary w-100" @click="regenAnalysis">
-                        Rigenera analisi AI
-                    </button>
+                    <div class="mt-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="mb-0">Indicatori</h6>
+                            <button class="btn btn-outline-secondary btn-sm" @click="refreshIndicators" :disabled="isProcessing">
+                                Aggiorna
+                            </button>
+                        </div>
+
+                        <!-- Completezza -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="small fw-semibold">Completezza documentale</span>
+                                <span class="small">{{ completenessScore }}%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar"
+                                     role="progressbar"
+                                     :style="{ width: completenessScore + '%' }"
+                                     :class="scoreBarClass(completenessScore)"></div>
+                            </div>
+                        </div>
+
+                        <!-- Coerenza -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="small fw-semibold">Coerenza</span>
+                                <span class="small">{{ coerenzaOk ? 'OK' : 'Da verificare' }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar"
+                                     role="progressbar"
+                                     :style="{ width: (coerenzaOk ? 100 : 40) + '%' }"
+                                     :class="coerenzaOk ? 'bg-success' : 'bg-warning'"></div>
+                            </div>
+                        </div>
+
+                        <!-- Scadenza 45 gg -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="small fw-semibold">Avanzamento verso scadenza (45 gg)</span>
+                                <span class="small">{{ parereProgress }}%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar"
+                                     role="progressbar"
+                                     :style="{ width: parereProgress + '%' }"
+                                     :class="scoreBarClass(parereProgress)"></div>
+                            </div>
+                        </div>
+
+                        <!-- Integrazione osservazioni -->
+                        <div>
+                            <div class="d-flex justify-content-between">
+                                <span class="small fw-semibold">% osservazioni integrate</span>
+                                <span class="small">{{ integrazioneProgress }}%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar"
+                                     role="progressbar"
+                                     :style="{ width: integrazioneProgress + '%' }"
+                                     :class="scoreBarClass(integrazioneProgress)"></div>
+                            </div>
+                        </div>
+
+                    </div>
 
                     <div v-if="isProcessing" class="text-center mt-3">
                         <div class="spinner-border text-primary"></div>
-                        <p class="text-muted small mt-2">Analisi in corso…</p>
+                        <p class="text-muted small mt-2">Elaborazione…</p>
                     </div>
                 </div>
             </div>
@@ -425,8 +540,8 @@
 
 <script setup lang="ts">
     /**
-     * Componenti e setup
-     * Nota: tutti i commenti aggiunti sono in italiano come richiesto.
+     * SCOPING – Vue3 + bootstrap-italia
+     * Funzioni chiave: verifica real-time, autorizzazione AC, osservazioni, bozza AI parere, scadenza 45gg, pubblicazione.
      */
     import PopoverExplain from '@/components/PopoverExplain.vue'
     import { ref, computed } from 'vue'
@@ -437,527 +552,349 @@
     const router = useRouter()
     function goTo(path: string) { router.push(path) }
 
-    const today = new Date().toLocaleDateString('it-IT')
+    const today = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' })
 
-    /* ------------------------------------
+    /* ---------------------------
      * WIZARD STATE
-     * ------------------------------------ */
+     * --------------------------- */
     const steps = [
-        { label: 'Raccolta Pareri' },
-        { label: 'Topic Extraction' },
-        { label: 'Divergenze / Convergenze' },
-        { label: 'Dashboard Tematica' },
-        { label: 'Bozza SIA' },            // 5.2
-        { label: 'Sintesi Non Tecnica (SNT)' }, // 5.3
-        { label: 'Esporta Report' },
+        { key: 'invio', label: 'Invio richiesta' },
+        { key: 'coinvolgimento', label: 'Coinvolgimento strutture' },
+        { key: 'parere', label: 'Valutazione & Parere' },
+        { key: 'pubblicazione', label: 'Pubblicazione parere' },
     ]
-
     const currentStep = ref(0)
     const completed = ref<boolean[]>(steps.map(() => false))
 
-    const nextStep = () => {
+    function goToStep(i: number) { currentStep.value = i }
+    function nextStep() {
         if (currentStep.value < steps.length - 1) {
             completed.value[currentStep.value] = true
             currentStep.value++
         }
     }
-    const prevStep = () => currentStep.value = Math.max(0, currentStep.value - 1)
-    const goToStep = (i: number) => currentStep.value = i
-
-    const badgeClass = (i: number) => {
+    function prevStep() { currentStep.value = Math.max(0, currentStep.value - 1) }
+    function badgeClass(i: number) {
         if (currentStep.value === i) return 'bg-primary'
         if (completed.value[i]) return 'bg-success'
         return 'bg-secondary'
     }
 
-    /* ------------------------------------
-     * RACCOLTA PARERI
-     * ------------------------------------ */
-    const pareri = ref<any[]>([])
-    const formEnte = ref('')
-    const formTema = ref('')
-    const formTesto = ref('')
+    /* ---------------------------
+     * STATO PRATICA
+     * --------------------------- */
+    type Stato = 'bozza' | 'inviata' | 'autorizzata' | 'pubblicataProposta' | 'parerePubblicato'
+    const stato = ref<Stato>('bozza')
+    const statoLabel = computed(() => {
+        switch (stato.value) {
+            case 'inviata': return 'Richiesta inviata'
+            case 'autorizzata': return 'Autorizzata da AC'
+            case 'pubblicataProposta': return 'Proposta pubblicata'
+            case 'parerePubblicato': return 'Parere pubblicato'
+            default: return 'Bozza'
+        }
+    })
 
-    function addParere() {
-        pareri.value.push({
-            id: crypto.randomUUID(),
-            ente: formEnte.value,
-            tema: formTema.value,
-            testo: formTesto.value
-        })
-        formEnte.value = ''
-        formTema.value = ''
-        formTesto.value = ''
+    /* ---------------------------
+     * INPUT RICHIESTA (Descrizione, SPA, Proposta SIA)
+     * --------------------------- */
+    const descrizioneProgetto = ref<string>('')
+
+    // SPA
+    const spaFile = ref<File | null>(null)
+    const spaFileName = ref<string>(''); const spaSize = ref<string>('')
+
+    // Proposta SIA
+    const propostaSiaFile = ref<File | null>(null)
+    const propostaSiaFileName = ref<string>(''); const propostaSiaSize = ref<string>('')
+
+    function onFileChange(e: Event, type: 'spa' | 'propostaSia') {
+        const input = e.target as HTMLInputElement
+        const f = input.files?.[0] || null
+        if (type === 'spa') {
+            spaFile.value = f
+            spaFileName.value = f?.name || ''
+            spaSize.value = f ? humanSize(f.size) : ''
+        } else {
+            propostaSiaFile.value = f
+            propostaSiaFileName.value = f?.name || ''
+            propostaSiaSize.value = f ? humanSize(f.size) : ''
+        }
     }
 
-    /** Compilatore rapido per demo */
-    function autoFill() {
-        pareri.value = [
-            { id: '1', ente: 'ARPA', tema: 'Aria', testo: 'Emissioni prevedibili moderate in fase di cantiere.' },
-            { id: '2', ente: 'Comune', tema: 'Rumore', testo: 'Valutare orari di cantiere e mitigazioni acustiche.' },
-            { id: '3', ente: 'Soprintendenza', tema: 'Paesaggio', testo: 'Verificare visibilità da contesti tutelati.' },
-            { id: '4', ente: 'ASL', tema: 'Suolo', testo: 'Analisi ulteriori su contaminazione pregressa.' },
-            { id: '5', ente: 'Consorzio Idrico', tema: 'Acqua', testo: 'Gestione acque meteoriche e prevenzione dilavamento.' },
-        ]
+    function humanSize(n: number) {
+        if (!n) return ''
+        const units = ['B', 'KB', 'MB', 'GB']
+        let i = 0; let s = n
+        while (s >= 1024 && i < units.length - 1) { s = s / 1024; i++ }
+        return `${s.toFixed(1)} ${units[i]}`
     }
 
-    /* ------------------------------------
-     * TOPIC EXTRACTION (Mock AI)
-     * ------------------------------------ */
-    const topics = ref([
-        { nome: 'Aria', percentuale: 65 },
-        { nome: 'Rumore', percentuale: 48 },
-        { nome: 'Suolo', percentuale: 32 },
-        { nome: 'Paesaggio', percentuale: 22 },
-        { nome: 'Fauna', percentuale: 18 },
-        { nome: 'Acqua', percentuale: 28 },
-    ])
+    const hasDescrizione = computed(() => descrizioneProgetto.value.trim().length >= 50) // soglia minima sensata
+    const hasSpa = computed(() => !!spaFile.value)
+    const hasPropostaSia = computed(() => !!propostaSiaFile.value)
 
-    function topicClass(p: number) {
-        if (p >= 60) return 'bg-success'
-        if (p >= 30) return 'bg-warning'
+    /* ---------------------------
+     * COMPLETEZZA & COERENZA (real-time)
+     * --------------------------- */
+    // Formati attesi e check minimi
+    const spaFormatoOk = computed(() => !!spaFileName.value.match(/\.(pdf|docx?|PDF)$/))
+    const propostaSiaFormatoOk = computed(() => !!propostaSiaFileName.value.match(/\.(pdf|docx?|PDF)$/))
+    const coerenzaOk = computed(() => hasDescrizione.value && hasSpa.value && hasPropostaSia.value && spaFormatoOk.value && propostaSiaFormatoOk.value)
+
+    // Completezza: pesi 40% descrizione, 30% SPA, 30% Proposta SIA, +10% bonus coerenza (cap 100)
+    const completenessScore = computed(() => {
+        let s = 0
+        if (hasDescrizione.value) s += 40
+        if (hasSpa.value) s += 30
+        if (hasPropostaSia.value) s += 30
+        if (coerenzaOk.value) s = Math.min(100, s + 10)
+        return Math.min(100, s)
+    })
+    function scoreBarClass(v: number) {
+        if (v >= 80) return 'bg-success'
+        if (v >= 60) return 'bg-warning'
         return 'bg-danger'
     }
 
-    /* ------------------------------------
-     * DIVERGENZE & CONVERGENZE
-     * ------------------------------------ */
-    const convergenze = ref([
-        'Tutti gli enti concordano sulla necessità di mitigazioni acustiche.',
-        'Convergenza generale sulla gestione corretta delle acque meteoriche.',
-    ])
-
-    const divergenze = ref([
-        { id: 'd1', tema: 'Aria', enti: 'ARPA vs Comune', note: 'ARPA richiede limiti più severi sulle polveri.' },
-        { id: 'd2', tema: 'Paesaggio', enti: 'Comune vs Soprintendenza', note: 'Divergenza sulla visibilità del campo FV.' },
-    ])
-
-    /* ------------------------------------
-     * DASHBOARD TEMATICA
-     * ------------------------------------ */
-    const dashboard = computed(() => {
-        const map: any = {}
-        pareri.value.forEach(p => {
-            map[p.tema] = (map[p.tema] || 0) + 1
-        })
-        return Object.keys(map).map(k => ({ tema: k, count: map[k] }))
-    })
-
-    /* ------------------------------------
-     * FINTA ANALISI
-     * ------------------------------------ */
+    /* ---------------------------
+     * INVIO & AUTORIZZAZIONE & PUBBLICAZIONE PROPOSTA
+     * --------------------------- */
     const isProcessing = ref(false)
-    function regenAnalysis() {
+    const inviataAt = ref<Date | null>(null)
+    const autorizzataAt = ref<Date | null>(null)
+    const pubblicataPropostaAt = ref<Date | null>(null)
+
+    const isInvioAbilitato = computed(() => completenessScore.value >= 70 && coerenzaOk.value)
+    const puoiAutorizzare = computed(() => !!inviataAt.value && coerenzaOk.value && !autorizzataAt.value)
+
+    function resetRichiesta() {
+        descrizioneProgetto.value = ''
+        spaFile.value = null; spaFileName.value = ''; spaSize.value = ''
+        propostaSiaFile.value = null; propostaSiaFileName.value = ''; propostaSiaSize.value = ''
+        inviataAt.value = null; autorizzataAt.value = null; pubblicataPropostaAt.value = null
+        stato.value = 'bozza'
+    }
+
+    function inviaRichiesta() {
+        if (!isInvioAbilitato.value) return
         isProcessing.value = true
         setTimeout(() => {
-            topics.value = topics.value.map(t => ({
-                ...t,
-                percentuale: Math.floor(Math.random() * 70) + 10
-            }))
+            inviataAt.value = new Date()
+            stato.value = 'inviata'
             isProcessing.value = false
-        }, 900)
+        }, 600)
     }
 
-    /* ------------------------------------
-     * 5.2 — GENERAZIONE BOZZA SIA
-     * - Obiettivo: creare uno scheletro SIA automatico basato sui pareri/temi
-     * - Include: metodologie suggerite, aree editabili, validazione & marcatura "pronto"
-     * ------------------------------------ */
-
-    /** Struttura di lavoro per la bozza SIA */
-    type AnalisiTema = {
-        tema: string
-        metodologie: string
-        sintesi: string
-        mitigazioni: string
+    function autorizzaPubblicazione() {
+        if (!puoiAutorizzare.value) return
+        isProcessing.value = true
+        setTimeout(() => {
+            autorizzataAt.value = new Date()
+            pubblicataPropostaAt.value = new Date()
+            stato.value = 'pubblicataProposta'
+            // Avvio scoping per il conteggio 45 gg
+            scopingStart.value = pubblicataPropostaAt.value
+            parereDeadline.value = addDays(scopingStart.value!, 45)
+            isProcessing.value = false
+        }, 600)
     }
 
-    const sia = ref({
-        titolo: '',
-        progetto: '',
-        descrizione: '',
-        quadroNormativo: '',
-        metodologiaGenerale: '',
-        analisiTemi: [] as AnalisiTema[],
-        monitoraggio: '',
-        conclusioni: '',
-        validato: false,         // flag che l’utente ha completato la revisione
-        boilerplateReady: false, // flag "pronto" post-validazione
-    })
+    /* ---------------------------
+     * COINVOLGIMENTO STRUTTURE: osservazioni & integrazione
+     * --------------------------- */
+    type Osservazione = { id: number; autore: string; testo: string; data: Date; integrata: boolean }
+    const osservazioni = ref<Osservazione[]>([])
+    const obsAutore = ref<string>(''); const obsTesto = ref<string>('')
+    const noteIntegrazione = ref<string>('')
 
-    /** True se almeno una sezione SIA contiene contenuto utile */
-    const hasSIAContent = computed(() => {
-        const s = sia.value
-        return !!(
-            s.titolo || s.progetto || s.descrizione ||
-            s.quadroNormativo || s.metodologiaGenerale ||
-            s.analisiTemi.length || s.monitoraggio || s.conclusioni
-        )
-    })
-
-    /** Validazione minima SIA (campi essenziali per marcare come pronto) */
-    const siaValidationWarnings = computed(() => {
-        const warnings: string[] = []
-        const s = sia.value
-        if (!s.titolo.trim()) warnings.push('Manca il titolo del SIA.')
-        if (!s.progetto.trim()) warnings.push('Manca il campo Proponente/Progetto.')
-        if (!s.descrizione.trim()) warnings.push('Manca la descrizione dell’intervento.')
-        if (!s.metodologiaGenerale.trim()) warnings.push('Manca la metodologia generale.')
-        if (s.analisiTemi.length === 0) warnings.push('Non è presente alcuna analisi per tema.')
-        if (!s.validato) warnings.push('Spunta la casella di validazione interna per procedere.')
-        return warnings
-    })
-
-    /** Abilitazione del bottone "pronto" */
-    const isSIAValid = computed(() => siaValidationWarnings.value.length === 0)
-
-    /** Dizionario metodi suggeriti per tema (mock sensato) */
-    const metodoPerTema: Record<string, string> = {
-        'Aria': 'Modelli di dispersione (AERMOD/ADMS), campagne PM10/PM2.5 e NOx, fattori di emissione (EMEP/EEA).',
-        'Rumore': 'Mappatura acustica con ISO 9613-2 / CNOSSOS-EU, misure fonometria in continuo, barriere e layout.',
-        'Suolo': 'Indagini geognostiche, carotaggi e analisi chimiche (UNI 10802), verifica siti potenzialmente contaminati.',
-        'Paesaggio': 'Analisi percettiva e visiva (VIA), fotoinserimenti, simulazioni da punti di vista sensibili.',
-        'Fauna': 'Monitoraggi pre- e post-operam, periodi di cantiere compatibili con fenologia, corridoi ecologici.',
-        'Acqua': 'Bilanci idrici, gestione acque meteoriche, campionamenti in conformità a D.Lgs. 152/2006.',
-        'Traffico': 'Valutazioni di cantiere ed esercizio, microsimulazioni, piani di accesso e scaglionamento mezzi.',
-    }
-
-    /** Genera testo "misure di mitigazione" per tema in base alle convergenze/dati */
-    function mitigazioniPerTema(tema: string): string {
-        const cvg = convergenze.value.join(' ').toLowerCase()
-        const common: Record<string, string> = {
-            'Rumore': 'Pianificazione orari di cantiere, barriere acustiche, distanza dai ricettori sensibili.',
-            'Acqua': 'Regimazione acque meteoriche, vasche di prima pioggia, prevenzione del dilavamento.',
-            'Aria': 'Bagnatura piste e cumuli, velocità limitata mezzi, manutenzione macchinari.',
-            'Suolo': 'Gestione terre e rocce, piani scavo selettivo, ripristino morfologico.',
-            'Paesaggio': 'Schermature vegetali, colorazioni a bassa riflettanza, ottimizzazione altezze.',
-            'Fauna': 'Calendari lavori a bassa interferenza, fasce tampone, dissuasori temporanei.',
-            'Traffico': 'Piano di viabilità di cantiere, segnaliazione, scaglionamento consegne.',
-        }
-        // Aggiunge enfasi alle mitigazioni acustiche/acqua se presenti nelle convergenze
-        if (tema === 'Rumore' && cvg.includes('acustic')) {
-            return common['Rumore'] + ' Monitoraggi in continuo nelle fasi più impattanti.'
-        }
-        if (tema === 'Acqua' && cvg.includes('acque') || cvg.includes('meteoriche')) {
-            return common['Acqua'] + ' Dispositivi di filtrazione e controllo qualità in uscita.'
-        }
-        return common[tema] || ''
-    }
-
-    /** Utility: normalizza nome tema (gestisce possibili refusi) */
-    function normTema(t: string): string {
-        if (t.toLowerCase() === 'paisaggio') return 'Paesaggio'
-        return t
-    }
-
-    /** Costruisce l’elenco temi da pareri + topics (unione) */
-    const temiRilevati = computed<string[]>(() => {
-        const set = new Set<string>()
-        pareri.value.forEach(p => set.add(normTema(p.tema)))
-        topics.value.forEach(t => set.add(normTema(t.nome)))
-        return Array.from(set)
-    })
-
-    /** Genera la bozza SIA a partire dai temi/pareri */
-    function generateSIA() {
-        // Titoli e campi generali proposti automaticamente
-        sia.value.titolo = sia.value.titolo || 'SIA — Impianto fotovoltaico — Scoping'
-        sia.value.progetto = sia.value.progetto || 'Progetto preliminare impianto fotovoltaico — Località da definire'
-        sia.value.descrizione = sia.value.descrizione || [
-            'Il progetto prevede la realizzazione di un impianto fotovoltaico con opere connesse.',
-            'Il cantiere contempla attività di movimentazione terra, posa strutture e connessioni elettriche.',
-            'L’area d’intervento è caratterizzata da contesto rurale con ricettori sensibili entro il raggio di influenza.'
-        ].join(' ')
-
-        sia.value.quadroNormativo = sia.value.quadroNormativo || [
-            'Quadro normativo di riferimento: D.Lgs. 152/2006 e s.m.i., normative regionali in materia ambientale,',
-            'linee guida ISPRA e documenti tecnici pertinenti ai singoli comparti ambientali.'
-        ].join(' ')
-
-        // Metodologia generale suggerita in base ai temi aggregati
-        const temi = temiRilevati.value
-        const metodi = temi.map(t => `- ${t}: ${metodoPerTema[t] || 'Raccolta dati di base, modellazione e valutazioni di compatibilità.'}`).join('\n')
-        sia.value.metodologiaGenerale = sia.value.metodologiaGenerale || [
-            'L’analisi segue un approccio per componenti ambientali con raccolta dati di base, modellazione e confronto con valori/vincoli.',
-            'Per i temi rilevati si adottano le seguenti metodologie:',
-            metodi
-        ].join('\n')
-
-        // Analisi per tema: auto-popolamento (sintesi + miti)
-        const nuoviTemi: AnalisiTema[] = temi.map(t => ({
-            tema: t,
-            metodologie: metodoPerTema[t] || 'Metodologia da definire in funzione delle evidenze.',
-            sintesi: `Sulla componente ${t.toLowerCase()}, i pareri pervenuti indicano criticità e misure da valutare in fase di progettazione esecutiva.`,
-            mitigazioni: mitigazioniPerTema(t),
-        }))
-
-        // Se già presenti alcuni temi, mantieni le modifiche e unisci i mancanti
-        const esistenti = new Map(sia.value.analisiTemi.map(a => [a.tema, a]))
-        nuoviTemi.forEach(a => {
-            if (!esistenti.has(a.tema)) esistenti.set(a.tema, a)
+    function aggiungiOsservazione() {
+        if (!obsTesto.value.trim()) return
+        const id = osservazioni.value.length + 1
+        osservazioni.value.push({
+            id,
+            autore: (obsAutore.value || '').trim(),
+            testo: obsTesto.value.trim(),
+            data: new Date(),
+            integrata: false,
         })
-        sia.value.analisiTemi = Array.from(esistenti.values())
-
-        // Monitoraggio e conclusioni suggerite
-        sia.value.monitoraggio = sia.value.monitoraggio || 'Si prevedono piani di monitoraggio pre/durante/post operam con indicatori specifici per ciascun tema.'
-        const sintCvg = convergenze.value.length ? `Convergenze: ${convergenze.value.join(' ')}` : ''
-        const sintDiv = divergenze.value.length ? `Divergenze: ${divergenze.value.map(d => `${d.tema} (${d.enti})`).join('; ')}.` : ''
-        sia.value.conclusioni = sia.value.conclusioni || [
-            'Le misure di mitigazione proposte e la pianificazione di cantiere risultano idonee a contenere gli impatti.',
-            sintCvg, sintDiv
-        ].filter(Boolean).join(' ')
-
-        // La bozza non è automaticamente "pronta": richiede validazione manuale
-        sia.value.boilerplateReady = false
-        sia.value.validato = false
+        obsAutore.value = ''; obsTesto.value = ''
     }
 
-    /** Pulisce la bozza SIA */
-    function clearSIA() {
-        sia.value = {
-            titolo: '',
-            progetto: '',
-            descrizione: '',
-            quadroNormativo: '',
-            metodologiaGenerale: '',
-            analisiTemi: [],
-            monitoraggio: '',
-            conclusioni: '',
-            validato: false,
-            boilerplateReady: false,
-        }
+    function toggleIntegrata(o: Osservazione) {
+        o.integrata = !o.integrata
     }
-
-    /** Marca la bozza come "pronta" se validazione ok */
-    function markSIAReady() {
-        if (!isSIAValid.value) return
-        sia.value.boilerplateReady = true
-    }
-
-    /* ------------------------------------
-     * 5.3 — GENERAZIONE AUTOMATICA SNT
-     * - Obiettivo: sintetizzare in linguaggio divulgativo il contenuto del SIA
-     * - Controlli: destinatari, lunghezza, tono
-     * ------------------------------------ */
-    const snt = ref({
-        destinatari: 'Cittadini',
-        lunghezza: 'media',   // breve | media | estesa
-        tono: 'neutro',       // neutro | positivo | istituzionale
-        testo: '',
+    const integrazioneProgress = computed(() => {
+        if (!osservazioni.value.length) return 0
+        const done = osservazioni.value.filter(o => o.integrata).length
+        return Math.round((done / osservazioni.value.length) * 100)
     })
 
-    /** Genera testo SNT a partire dal SIA (sezioni principali) */
-    function generateSNT() {
-        if (!hasSIAContent.value) return
+    /* ---------------------------
+     * VALUTAZIONE & PARERE: scadenza 45 gg + bozza AI
+     * --------------------------- */
+    const scopingStart = ref<Date | null>(null)
+    const parereDeadline = ref<Date | null>(null)
 
-        const intro = (() => {
-            const titolo = sia.value.titolo || 'Studio di Impatto Ambientale'
-            const progetto = sia.value.progetto || 'Progetto in valutazione'
-            const apertura = {
-                neutro: `Questo documento presenta la sintesi non tecnica del ${titolo} relativo a ${progetto}.`,
-                positivo: `Questa sintesi non tecnica illustra in modo chiaro e accessibile il ${titolo} relativo a ${progetto}.`,
-                istituzionale: `Si riporta di seguito la Sintesi Non Tecnica del ${titolo} riguardante ${progetto}.`,
-            }[snt.value.tono]
-            return apertura
-        })()
+    const parereProgress = computed(() => {
+        if (!scopingStart.value || !parereDeadline.value) return 0
+        const total = parereDeadline.value.getTime() - scopingStart.value.getTime()
+        const done = Math.min(Math.max(new Date().getTime() - scopingStart.value.getTime(), 0), total)
+        const p = Math.round((done / total) * 100)
+        return isNaN(p) ? 0 : p
+    })
+    const giorniResiduiParere = computed(() => {
+        if (!parereDeadline.value) return 0
+        const ms = parereDeadline.value.getTime() - new Date().getTime()
+        return Math.ceil(ms / (1000 * 60 * 60 * 24))
+    })
 
-        const descr = sia.value.descrizione
-            ? sia.value.descrizione
-            : 'L’intervento prevede opere di cantiere, installazione e connessione, con valutazione degli impatti nelle fasi di realizzazione ed esercizio.'
+    const lineeGuida = ref<string[]>([
+        'Indicare gli elementi minimi che devono essere sviluppati nella SIA definitiva.',
+        'Esplicitare le criticità potenziali e i relativi indicatori di monitoraggio.',
+        'Suggerire metodologie di analisi per ciascuna componente ambientale pertinente.',
+        'Richiamare la normativa e le linee guida di riferimento (es. D.Lgs. 152/2006).',
+        'Definire misure di mitigazione e condizioni per fasi di cantiere ed esercizio.'
+    ])
 
-        // Sintesi per temi: pick breve/media/estesa
-        const blocchiTemi = sia.value.analisiTemi.map(a => {
-            const base = `Tema ${a.tema}: ${a.sintesi}`
-            const metodo = ` Metodologie: ${a.metodologie}`
-            const miti = a.mitigazioni ? ` Mitigazioni previste: ${a.mitigazioni}` : ''
-            if (snt.value.lunghezza === 'breve') return `- ${base}.`
-            if (snt.value.lunghezza === 'media') return `- ${base}. ${miti}`
-            return `- ${base}. ${metodo}.${miti ? ' ' + miti : ''}`
-        }).join('\n')
+    const parereBozza = ref<string>('')
+    const parereFinalizzatoAt = ref<Date | null>(null)
+    const parerePublishedAt = ref<Date | null>(null)
 
-        const conclusioni = sia.value.conclusioni
-            ? sia.value.conclusioni
-            : 'Alla luce delle misure e dei controlli proposti, l’intervento risulta compatibile con il contesto, nel rispetto delle prescrizioni.'
-
-        const destinatari = {
-            'Cittadini': 'L’obiettivo è offrire una lettura trasparente e comprensibile.',
-            'Stakeholder locali': 'L’obiettivo è supportare un confronto informato con il territorio.',
-            'Amministratori': 'L’obiettivo è facilitare le valutazioni decisionali con elementi chiari e sintetici.',
-        }[snt.value.destinatari]
-
-        snt.value.testo = [
-            intro,
-            '',
-            `In sintesi, ${descr}`,
-            '',
-            'Valutazioni per tema:',
-            blocchiTemi || '- I temi specifici saranno approfonditi nella versione definitiva del SIA.',
-            '',
-            'Monitoraggio:',
-            sia.value.monitoraggio || 'Sono previsti piani di monitoraggio con indicatori ambientali mirati.',
-            '',
-            'Conclusioni:',
-            conclusioni,
-            '',
-            destinatari
-        ].join('\n')
+    function generaBozzaParere() {
+        isProcessing.value = true
+        setTimeout(() => {
+            const obsSint = osservazioni.value.length
+                ? `Sono pervenute ${osservazioni.value.length} osservazioni; integrazione AC al ${integrazioneProgress.value}%.`
+                : 'Non risultano osservazioni pervenute alla data odierna.'
+            const descr = descrizioneProgetto.value.trim() || 'Progetto descritto in termini generali (dettagli in proposta SIA/SPA).'
+            parereBozza.value = [
+                '=== Bozza di Parere (SCOPING) ===',
+                '',
+                '1) Contenuti considerati',
+                `- Descrizione progetto: ${cut(descr, 500)}`,
+                `- SPA: ${spaFileName.value || '—'}; Proposta SIA: ${propostaSiaFileName.value || '—'}`,
+                '',
+                '2) Osservazioni e integrazioni',
+                `- ${obsSint}`,
+                noteIntegrazione.value ? `- Note AC: ${noteIntegrazione.value}` : null,
+                '',
+                '3) Criticità e spunti',
+                '- Valutare impatti in fase di cantiere su suolo, aria e rumore; definire misure di mitigazione proporzionate.',
+                '- Verificare eventuali corridoi ecologici e ricettori sensibili (paesaggio/abitati).',
+                '- Gestione acque meteoriche e terre/rocce da scavo secondo normativa.',
+                '',
+                '4) Linee guida per la SIA',
+                ...lineeGuida.value.map(g => `- ${g}`),
+                '',
+                '5) Conclusioni (proposta)',
+                'Alla luce dei materiali preliminari e delle osservazioni pervenute, si delineano i contenuti minimi necessari per la SIA definitiva, con particolare attenzione alle componenti ambientali maggiormente esposte e ai relativi piani di monitoraggio.',
+                '',
+                '=== Fine Bozza ==='
+            ].filter(Boolean).join('\n')
+            isProcessing.value = false
+        }, 600)
+    }
+    function rigeneraBozzaParere() { generaBozzaParere() }
+    function finalizzaParere() {
+        if (!parereBozza.value.trim()) return
+        parereFinalizzatoAt.value = new Date()
     }
 
-    /** Pulisce l’SNT */
-    function clearSNT() {
-        snt.value.testo = ''
+    function pubblicaParere() {
+        if (!parereFinalizzatoAt.value || parerePublishedAt.value) return
+        parerePublishedAt.value = new Date()
+        stato.value = 'parerePubblicato'
     }
 
-    /* ------------------------------------
-     * EXPORT REPORT (esteso con SIA + SNT)
-     * ------------------------------------ */
-    function downloadText(filename: string, content: string) {
-        const blob = new Blob([content], { type: 'text/plain' })
+    /* ---------------------------
+     * NAV GUARD: disabilita Avanti quando non sensato
+     * --------------------------- */
+    const isNextDisabled = computed(() => {
+        if (currentStep.value === 0) return !(inviataAt.value && autorizzataAt.value && pubblicataPropostaAt.value)
+        if (currentStep.value === 1) return false
+        if (currentStep.value === 2) return !parereFinalizzatoAt.value // prima di andare a pubblicazione, finalizza
+        return false
+    })
+
+    /* ---------------------------
+     * HELPERS
+     * --------------------------- */
+    function refreshIndicators() {
+        // Computed si aggiornano automaticamente; questo è un placeholder per eventuali calcoli lato server.
+    }
+    function popolaDemo() {
+        if (!descrizioneProgetto.value.trim()) {
+            descrizioneProgetto.value = 'Realizzazione di impianto fotovoltaico con opere connesse in area produttiva; ' +
+                'sono previste fasi di cantiere con movimentazione terra, installazione strutture e cablaggi.'
+        }
+        if (!osservazioni.value.length) {
+            osservazioni.value = [
+                { id: 1, autore: 'ARPA', testo: 'Considerare mitigazioni per emissioni di polveri in cantiere.', data: new Date(), integrata: true },
+                { id: 2, autore: 'Comune', testo: 'Valutare la viabilità di accesso mezzi pesanti.', data: new Date(), integrata: false },
+            ]
+        }
+        if (!noteIntegrazione.value.trim()) {
+            noteIntegrazione.value = 'Si propone piano mitigazioni polveri/rumore e verifica accessi con fasature orarie.'
+        }
+    }
+    function formatDateTime(d: Date | null): string {
+        if (!d) return '—'
+        return d.toLocaleString('it-IT', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    }
+    function addDays(d: Date, n: number): Date { const x = new Date(d); x.setDate(x.getDate() + n); return x }
+    function cut(s: string, n: number) { return s.length <= n ? s : s.slice(0, n - 3) + '...' }
+
+    /* ---------------------------
+     * EXPORT PARERE
+     * --------------------------- */
+    function exportParereTxt() {
+        const content = parereBozza.value.trim() || 'Nessun contenuto disponibile.'
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
         const a = document.createElement('a')
         a.href = URL.createObjectURL(blob)
-        a.download = filename
+        a.download = 'Parere-SCOPING.txt'
         a.click()
-    }
-
-    /** Export “report completo” che include pareri, analisi, SIA e SNT */
-    function exportReport() {
-        const content = [
-            '=== REPORT COMPLETO (Mock) ===',
-            '',
-            'PARERI RACCOLTI:',
-            ...pareri.value.map(p => `- ${p.ente}: [${p.tema}] ${p.testo}`),
-            '',
-            'TOPIC EXTRACTION:',
-            ...topics.value.map(t => `- ${t.nome}: ${t.percentuale}%`),
-            '',
-            'CONVERGENZE:',
-            ...(convergenze.value.length ? convergenze.value.map(c => `- ${c}`) : ['- Nessuna convergenza rilevata']),
-            '',
-            'DIVERGENZE:',
-            ...(divergenze.value.length ? divergenze.value.map(d => `- ${d.tema} (${d.enti}): ${d.note}`) : ['- Nessuna divergenza rilevata']),
-            '',
-            '--- BOZZA SIA ---',
-            `Titolo: ${sia.value.titolo}`,
-            `Progetto: ${sia.value.progetto}`,
-            '',
-            'Descrizione:',
-            sia.value.descrizione || '(vuoto)',
-            '',
-            'Quadro normativo:',
-            sia.value.quadroNormativo || '(vuoto)',
-            '',
-            'Metodologia generale:',
-            sia.value.metodologiaGenerale || '(vuoto)',
-            '',
-            'Analisi per tema:',
-            ...(sia.value.analisiTemi.length
-                ? sia.value.analisiTemi.flatMap(a => [
-                    `* ${a.tema}`,
-                    `  - Metodologie: ${a.metodologie}`,
-                    `  - Sintesi: ${a.sintesi}`,
-                    `  - Mitigazioni: ${a.mitigazioni}`,
-                ])
-                : ['(nessun tema)']),
-            '',
-            'Monitoraggio:',
-            sia.value.monitoraggio || '(vuoto)',
-            '',
-            'Conclusioni:',
-            sia.value.conclusioni || '(vuoto)',
-            '',
-            `Validato: ${sia.value.validato ? 'Sì' : 'No'} — Pronto: ${sia.value.boilerplateReady ? 'Sì' : 'No'}`,
-            '',
-            '--- SINTESI NON TECNICA (SNT) ---',
-            snt.value.testo || '(non generata)',
-        ].join('\n')
-
-        downloadText('Report-Scoping-Completo.txt', content)
-    }
-
-    /** Export solo SIA */
-    function exportSIA() {
-        const content = [
-            '=== BOZZA SIA (Mock) ===',
-            `Titolo: ${sia.value.titolo}`,
-            `Progetto: ${sia.value.progetto}`,
-            '',
-            'Descrizione:',
-            sia.value.descrizione || '(vuoto)',
-            '',
-            'Quadro normativo:',
-            sia.value.quadroNormativo || '(vuoto)',
-            '',
-            'Metodologia generale:',
-            sia.value.metodologiaGenerale || '(vuoto)',
-            '',
-            'Analisi per tema:',
-            ...(sia.value.analisiTemi.length
-                ? sia.value.analisiTemi.flatMap(a => [
-                    `* ${a.tema}`,
-                    `  - Metodologie: ${a.metodologie}`,
-                    `  - Sintesi: ${a.sintesi}`,
-                    `  - Mitigazioni: ${a.mitigazioni}`,
-                ])
-                : ['(nessun tema)']),
-            '',
-            'Monitoraggio:',
-            sia.value.monitoraggio || '(vuoto)',
-            '',
-            'Conclusioni:',
-            sia.value.conclusioni || '(vuoto)',
-            '',
-            `Validato: ${sia.value.validato ? 'Sì' : 'No'} — Pronto: ${sia.value.boilerplateReady ? 'Sì' : 'No'}`,
-        ].join('\n')
-
-        downloadText('Bozza-SIA.txt', content)
-    }
-
-    /** Export solo SNT */
-    function exportSNT() {
-        const content = [
-            '=== SINTESI NON TECNICA (Mock) ===',
-            snt.value.testo || '(non generata)',
-        ].join('\n')
-
-        downloadText('Sintesi-Non-Tecnica.txt', content)
+        URL.revokeObjectURL(a.href)
     }
 </script>
 
 <style scoped>
-    h2, h3, h4 {
+    h2, h3, h4, h6 {
         font-weight: bold;
     }
 
+    /* Pacchetto explainability allineato a destra */
     .explain-pack {
         float: right;
-        display: flex;
+        display: inline-flex;
         gap: .5rem;
+        margin-left: .5rem;
     }
 
+    /* Clear del float per evitare sovrapposizioni */
     p::after, h3::after, h4::after, ul::after {
         content: "";
         display: block;
         clear: both;
     }
 
+    /* Icone bootstrap-italia */
     .icon {
         width: 16px;
         height: 16px;
     }
 
+    /* Nav pills stepper */
     .nav-pills .nav-link {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: .5rem;
     }
 
+    /* Badge step */
     .badge .icon {
         width: 14px;
         height: 14px;
-    }
-
-    .card:after {
-        margin-top: 0px;
-        
     }
 </style>

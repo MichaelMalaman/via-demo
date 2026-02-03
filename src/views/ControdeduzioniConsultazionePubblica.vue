@@ -563,8 +563,15 @@
                                 <button class="btn btn-outline-secondary" @click="prevStep" :disabled="currentStep === 0">
                                     <svg class="icon"><use :href="`${spritesHref}#it-arrow-left`" /></svg> Indietro
                                 </button>
-                                <button class="btn btn-primary" @click="nextStep" :disabled="currentStep === steps.length - 1">
-                                    Avanti <svg class="icon"><use :href="`${spritesHref}#it-arrow-right`" /></svg>
+
+                                <button v-if="currentStep === steps.length - 1 || isProcessing" class="btn btn-primary" @click="goTo('dashboard')">
+                                    <span class="me-1">Prossima fase</span>
+                                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-right`" /></svg>
+                                </button>
+
+                                <button v-else class="btn btn-primary" @click="nextStep">
+                                    <span class="me-1">Avanti</span>
+                                    <svg class="icon"><use :href="`${spritesHref}#it-arrow-right`" /></svg>
                                 </button>
                             </div>
                         </div>

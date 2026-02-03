@@ -13,9 +13,9 @@
             <button type="button" class="btn btn-success" @click="goTo('/newProject')">newProject</button>
             <button type="button" class="btn btn-success" @click="goTo('/Notifications')">Notifications</button>
             <button type="button" class="btn btn-success" @click="goTo('/AreaCommunityCommenti')">AreaCommunityCommenti</button>
-            <button type="button" class="btn btn-success" @click="goTo('/AssistenteAnalisiImpatti')">AssistenteAnalisiImpatti</button>
+            <button type="button" class="btn btn-success" @click="goTo('/Screening')">Screening</button>
             <button type="button" class="btn btn-success" @click="goTo('/scoping')">scoping</button>
-            <button type="button" class="btn btn-success" @click="goTo('/provvedimentoDiConsultazione')">provvedimentoDiConsultazione</button>
+            <button type="button" class="btn btn-success" @click="goTo('/presentazioneIstanza')">Presentazione Istanza</button>
             <button type="button" class="btn btn-success" @click="goTo('/AggregazioneESintesi')">AggregazioneESintesi</button>
             <button type="button" class="btn btn-success" @click="goTo('/ControdeduzioniConsultazionePubblica')">ControdeduzioniConsultazionePubblica</button>
 

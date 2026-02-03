@@ -10,9 +10,9 @@ import Messages from '../views/Messages.vue'
 import NewProject from '../views/newProject.vue'
 import Notifications from '../views/Notifications.vue'
 import AreaCommunityCommenti from '../views/AreaCommunityCommenti.vue'
-import AssistenteAnalisiImpatti from '../views/AssistenteAnalisiImpatti.vue'
+import Screening from '../views/Screening.vue'
 import scoping from '../views/scoping.vue'
-import provvedimentoDiConsultazione from '../views/provvedimentoDiConsultazione.vue'
+import PresentazioneIstanza from '../views/PresentazioneIstanza.vue'
 import AggregazioneESintesi from '../views/AggregazioneESintesi.vue'
 import ControdeduzioniConsultazionePubblica from '../views/ControdeduzioniConsultazionePubblica.vue'
 
@@ -34,9 +34,9 @@ const routes = [
     { path: '/newProject', name: 'newProject', component: NewProject, meta: { title: 'newProject', public: true } },
     { path: '/notifications', name: 'notifications', component: Notifications, meta: { title: 'notifications', public: true } },
     { path: '/AreaCommunityCommenti', name: 'AreaCommunityCommenti', component: AreaCommunityCommenti, meta: { title: 'AreaCommunityCommenti', public: true } },
-    { path: '/AssistenteAnalisiImpatti', name: 'AssistenteAnalisiImpatti', component: AssistenteAnalisiImpatti, meta: { title: 'AssistenteAnalisiImpatti', public: true } },
+    { path: '/Screening', name: 'Screening', component: Screening, meta: { title: 'Screening', public: true } },
     { path: '/scoping', name: 'scoping', component: scoping, meta: { title: 'scoping', public: true } },
-    { path: '/provvedimentoDiConsultazione', name: 'provvedimentoDiConsultazione', component: provvedimentoDiConsultazione, meta: { title: 'scoping', public: true } },
+    { path: '/PresentazioneIstanza', name: 'PresentazioneIstanza', component: PresentazioneIstanza, meta: { title: 'scoping', public: true } },
     { path: '/AggregazioneESintesi', name: 'AggregazioneESintesi', component: AggregazioneESintesi, meta: { title: 'scoping', public: true } },
     { path: '/ControdeduzioniConsultazionePubblica', name: 'ControdeduzioniConsultazionePubblica', component: ControdeduzioniConsultazionePubblica, meta: { title: 'ControdeduzioniConsultazionePubblica', public: true } }
 
